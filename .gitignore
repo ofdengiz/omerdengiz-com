@@ -1,0 +1,42 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+terraform.tfvars
+*.auto.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform/.build/
+
+# Secrets / AWS — NEVER commit these
+.env
+.env.*
+aws-credentials
+*.pem
+*accessKeys*.csv
+*AccessKeys*.csv
+credentials.csv
+.aws/
+
+# Editor / tooling local state
+.claude/
+.cursor/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Source files not part of the website
+Omer_Dengiz_Resume.docx
+New Text Document.txt
+AWS-DevOps/
+Job_Application/
