@@ -11,6 +11,27 @@ import '../styles/fonts.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
 
+/**
+ * Preload the two faces that render above the fold: Space Grotesk carries the
+ * page title (usually the LCP element) and Plex Sans carries body copy. Both
+ * are discovered late otherwise — the browser has to parse CSS, resolve the
+ * @font-face, and only then fetch — which is what shows up as layout shift
+ * when the fallback is swapped out.
+ *
+ * Imported through Vite so the preload href carries the same content hash as
+ * the stylesheet's url(), rather than being a second, unhashed copy.
+ *
+ * Mono is preloaded too, despite the usual advice to preload sparingly. In
+ * this design mono is not decorative metadata — it sets every label and every
+ * title-block value, all above the fold. Leaving it out measured as CLS 0.15
+ * on the case-study pages: mono arrived after first paint and its fallback
+ * (Courier New, stretched 116% to match) wrapped differently, changing the
+ * title-block row heights and pushing the page down.
+ */
+import displayFont from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import bodyFont from '@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2?url';
+import monoFont from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url';
+
 interface Props {
   title: string;
   description: string;
@@ -50,6 +71,12 @@ const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL('/assets/og.png', Astro.site)} />
+
+    {/* crossorigin is required on font preloads even same-origin, or the
+        browser fetches the file twice. */}
+    <link rel="preload" as="font" type="font/woff2" href={displayFont} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={bodyFont} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={monoFont} crossorigin />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 

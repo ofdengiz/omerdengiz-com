@@ -70,15 +70,30 @@ function handleViewerResponse(response, callback) {
   setHeader(headers, 'Permissions-Policy',
     'camera=(), microphone=(), geolocation=(), interest-cohort=()');
 
-  // Content Security Policy — site is HTML/CSS/JS with Google Fonts CSS only
+  // Content Security Policy.
+  //
+  // Everything the site loads comes from its own origin: fonts are self-hosted
+  // woff2 subsets emitted by the build, scripts are external ES modules, and
+  // stylesheets are never inlined. There is therefore no third-party origin in
+  // this policy and no 'unsafe-inline' anywhere.
+  //
+  // scripts/verify-csp.mjs parses this exact array and audits the built HTML
+  // against it on every build, so a page that violates the policy fails CI
+  // rather than silently breaking in production. Loosening anything here will
+  // not go unnoticed — but it also will not be caught by the browser until it
+  // ships, which is the whole reason that check exists.
   setHeader(headers, 'Content-Security-Policy', [
     "default-src 'self'",
     "script-src 'self'",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    "style-src 'self'",
+    "font-src 'self'",
     "img-src 'self' data:",
     "connect-src 'self'",
+    "media-src 'self'",
+    "manifest-src 'self'",
+    "worker-src 'self'",
     "object-src 'none'",
+    "frame-src 'none'",
     "base-uri 'self'",
     "frame-ancestors 'none'",
     "form-action 'self'",

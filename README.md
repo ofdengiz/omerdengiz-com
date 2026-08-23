@@ -16,20 +16,27 @@ Browser  ──►  Route 53 (domain account)       ──►  CloudFront (hosti
 
 ```
 .
-├── site/                    # static site (this is what gets uploaded to S3)
-│   ├── index.html
-│   ├── 404.html
-│   └── assets/
-│       ├── css/ js/ img/
-│       ├── resume/Omer_Dengiz_Resume.pdf
-│       └── docs/Capstone_Technical_Report.pdf
+├── src/                     # Astro source — the site is built from here
+│   ├── pages/               # routes: /, /meta, /projects/[slug], /404
+│   ├── layouts/             # Base, CaseStudy
+│   ├── components/          # blueprint primitives, nav, content
+│   ├── content/projects/    # case studies in Markdown (Zod-validated)
+│   ├── data/                # profile, experience, skills, projects, topology
+│   ├── styles/              # tokens, base, fonts, prose
+│   └── assets/resume/       # canonical resume PDF (content-hashed at build)
+├── public/                  # copied verbatim: og.png, docs, robots.txt
+├── dist/                    # build output — this is what is uploaded (gitignored)
+├── site-legacy/             # the previous hand-written site, retired 2026-08
 ├── lambda-edge/
 │   └── index.js             # Lambda@Edge handler (viewer-request + viewer-response)
 ├── terraform/               # Infrastructure as Code
 │   ├── versions.tf providers.tf variables.tf
 │   ├── s3.tf acm.tf lambda.tf cloudfront.tf outputs.tf
 │   └── terraform.tfvars.example
-├── deploy.sh                # sync site → S3 + invalidate CloudFront
+├── scripts/
+│   ├── verify-csp.mjs       # audits dist/ against the live CSP; fails the build
+│   └── emit-stable-assets.mjs  # stable /resume.pdf alongside the hashed copy
+├── deploy.sh                # build → sync dist/ → S3 + invalidate CloudFront
 └── README.md
 ```
 
@@ -144,8 +151,10 @@ Visit **https://omerdengiz.com** 🎉
 
 | Task                                    | Command                          |
 | --------------------------------------- | -------------------------------- |
-| Edit content                            | edit files in `site/`            |
-| Preview locally                         | `cd site && python -m http.server 8080` |
+| Edit project copy                       | edit `src/content/projects/*.md` |
+| Edit resume-derived data                | edit `src/data/*.ts`             |
+| Preview locally                         | `npm run dev`                    |
+| Build + verify CSP                      | `npm run build`                  |
 | Deploy changes                          | `./deploy.sh`                    |
 | Deploy a dry run (show changes only)    | `./deploy.sh --dry-run`          |
 | Update infrastructure                   | `cd terraform && terraform apply`|

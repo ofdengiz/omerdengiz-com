@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
+import sitemap from '@astrojs/sitemap';
+
 /**
  * omerdengiz.com — Astro configuration
  *
@@ -61,6 +63,21 @@ export default defineConfig({
       // inlines small author <script> blocks straight into the HTML, which
       // the `script-src 'self'` CSP in lambda-edge/index.js blocks outright.
       assetsInlineLimit: 0,
+
+      // One stylesheet instead of one per component. Code-splitting CSS is
+      // usually the right default, but here it produced 5-8 separate
+      // render-blocking requests per page for a total under 50 KB — the
+      // round trips cost far more than the bytes saved by splitting. A single
+      // file is also cached once across the whole site rather than
+      // re-fetched per route.
+      cssCodeSplit: false,
     },
   },
+
+  integrations: [
+    sitemap({
+      // The styleguide is an internal design-system reference, not content.
+      filter: (page) => !page.includes('/styleguide'),
+    }),
+  ],
 });

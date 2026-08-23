@@ -93,11 +93,24 @@ const { title, eyebrow, subtitle, cells = [], scale = 'display' } = Astro.props;
 
   /* Title-block cells: a real drawing divides these with ruled boxes.
      Hairline dividers only — no fills, no shadows. */
+  /*
+    Explicit column counts, not auto-fit.
+    `repeat(auto-fit, minmax(9rem, 1fr))` derives the column count from content
+    width, so when the webfont swapped in and text measured slightly
+    differently the grid could gain or lose a column — a full structural
+    reflow. It measured as CLS 0.15 on the case-study pages, and metric-matched
+    fallbacks could not fix it because the trigger is the column count
+    flipping, not the text nudging. Fixed counts make the swap a no-op.
+  */
   .title-block__cells {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-block-start: var(--s-8);
     border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  @media (min-width: 48rem) {
+    .title-block__cells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
   .title-block__cell {
@@ -121,7 +134,4 @@ const { title, eyebrow, subtitle, cells = [], scale = 'display' } = Astro.props;
 
   .title-block__value.-accent { color: var(--accent); }
 
-  @media (max-width: 34rem) {
-    .title-block__cells { grid-template-columns: repeat(2, 1fr); }
-  }
 </style>

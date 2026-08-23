@@ -88,7 +88,9 @@ const typeSpecimens = [
         {
           swatches.map((s) => (
             <div class="sg-swatch">
-              <div class="sg-swatch__chip" style={`background: var(${s.token})`}></div>
+              {/* data-attribute rather than an inline style, so the CSP can
+                  forbid 'unsafe-inline' for styles site-wide. */}
+              <div class="sg-swatch__chip" data-token={s.name}></div>
               <div>
                 <p class="label">{s.name}</p>
                 <p class="sg-swatch__note">{s.note}</p>
@@ -182,7 +184,7 @@ const typeSpecimens = [
       <div class="-wide">
         <PortMatrix groups={skillGroups} highlight={['Terraform', 'OSPF', 'BGP', 'Kubernetes']} />
       </div>
-      <p class="label" style="margin-top: var(--s-4)">
+      <p class="label sg-caption">
         Highlighted ports demonstrate the patched state used by project filters
       </p>
     </section>
@@ -284,10 +286,25 @@ const typeSpecimens = [
     gap: var(--s-4);
   }
   .sg-swatch { display: grid; gap: var(--s-2); }
+  .sg-caption { margin-block-start: var(--s-4); }
+
   .sg-swatch__chip {
     block-size: 3.5rem;
     border: var(--hairline) solid var(--rule);
   }
+
+  /* One rule per token. Verbose by design: it keeps every colour in the
+     stylesheet where the CSP can reach it, instead of in a style attribute. */
+  .sg-swatch__chip[data-token='paper']    { background: var(--paper); }
+  .sg-swatch__chip[data-token='paper-2']  { background: var(--paper-2); }
+  .sg-swatch__chip[data-token='paper-3']  { background: var(--paper-3); }
+  .sg-swatch__chip[data-token='ink']      { background: var(--ink); }
+  .sg-swatch__chip[data-token='ink-2']    { background: var(--ink-2); }
+  .sg-swatch__chip[data-token='ink-3']    { background: var(--ink-3); }
+  .sg-swatch__chip[data-token='rule']     { background: var(--rule); }
+  .sg-swatch__chip[data-token='rule-2']   { background: var(--rule-2); }
+  .sg-swatch__chip[data-token='accent']   { background: var(--accent); }
+  .sg-swatch__chip[data-token='annotate'] { background: var(--annotate); }
   .sg-swatch__note {
     font-family: var(--font-mono);
     font-size: var(--t-label);

@@ -1,146 +1,163 @@
 ---
 /**
- * ThemeToggle — light / dark override.
+ * ThemeToggle — a three-way theme selector.
  *
- * The palette resolves from the OS preference with zero JavaScript, because
- * every token is defined with light-dark() and the root declares
- * `color-scheme: light dark`. This control only writes an *override* for
- * people who want something other than their OS setting.
+ * Built as a radio group rather than a two-state button, for three reasons:
  *
- * On the flash-of-wrong-theme question: the usual fix is a blocking inline
- * script in <head>, which our `script-src 'self'` CSP forbids. Rather than
- * weaken the policy, we accept that only users who have explicitly chosen a
- * non-OS theme may see a brief correction on first paint — everyone else is
- * served correctly by CSS alone, with no render-blocking script at all.
- * Phase 6 can revisit this with a CSP hash if it proves annoying in practice.
+ *  1. WCAG 2.5.3 (Label in Name). The previous version was a <button> with
+ *     aria-label="Use dark theme" wrapping the visible text "LGT"/"DRK". The
+ *     accessible name did not contain the visible text, so a voice-control
+ *     user saying "click LGT" would hit nothing. Each radio now carries its
+ *     own visible label as its accessible name.
+ *  2. Semantics. These are mutually exclusive options, which is exactly what
+ *     a radio group is. Arrow-key navigation comes free.
+ *  3. A real gap: with a two-state toggle there was no way back to following
+ *     the OS preference once an override had been set. SYS restores it.
+ *
+ * The palette resolves from the OS with zero JavaScript, because every token
+ * is declared with light-dark() and the root sets `color-scheme: light dark`.
+ * This control only writes an override.
+ *
+ * On flash-of-wrong-theme: the usual fix is a blocking inline script, which
+ * `script-src 'self'` forbids. Rather than weaken the policy, only users who
+ * chose a non-OS theme may see a brief correction on first paint — everyone
+ * else is served correctly by CSS alone, with no render-blocking script.
  */
+const options = [
+  { value: 'system', label: 'Sys', title: 'Follow system setting' },
+  { value: 'light', label: 'Lgt', title: 'Light theme' },
+  { value: 'dark', label: 'Drk', title: 'Dark theme' },
+];
 ---
 
-<button
-  type="button"
-  class="theme-toggle"
-  data-theme-toggle
-  aria-pressed="false"
-  aria-label="Use dark theme"
->
-  <span class="theme-toggle__face" aria-hidden="true">
-    <span class="theme-toggle__mark -light">LGT</span>
-    <span class="theme-toggle__mark -dark">DRK</span>
-  </span>
-</button>
+<fieldset class="theme" data-theme-control>
+  <legend class="visually-hidden">Colour theme</legend>
+
+  {
+    options.map((o) => (
+      <label class="theme__cell">
+        <input
+          type="radio"
+          name="theme"
+          value={o.value}
+          class="theme__input"
+          checked={o.value === 'system'}
+        />
+        <span class="theme__label">{o.label}</span>
+        <span class="visually-hidden">{o.title}</span>
+      </label>
+    ))
+  }
+</fieldset>
 
 <script>
   const KEY = 'theme';
   const root = document.documentElement;
 
-  /** Resolve what the user is currently seeing. */
-  function current(): 'light' | 'dark' {
-    const stored = root.dataset.theme;
-    if (stored === 'light' || stored === 'dark') return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  type Choice = 'system' | 'light' | 'dark';
+
+  function paintMeta(choice: Choice) {
+    const dark =
+      choice === 'dark' ||
+      (choice === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]:not([media])')
+      ?? document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (meta) {
+      meta.removeAttribute('media');
+      meta.content = dark ? '#0A0D12' : '#F5F4F0';
+    }
   }
 
-  function apply(theme: 'light' | 'dark', persist: boolean) {
-    root.dataset.theme = theme;
-    if (persist) {
-      try {
-        localStorage.setItem(KEY, theme);
-      } catch {
-        /* Storage can be unavailable (private mode, blocked cookies). The
-           toggle still works for this page view; it just will not persist. */
+  function apply(choice: Choice, persist: boolean) {
+    if (choice === 'system') {
+      delete root.dataset.theme;
+      if (persist) {
+        try { localStorage.removeItem(KEY); } catch { /* storage may be blocked */ }
+      }
+    } else {
+      root.dataset.theme = choice;
+      if (persist) {
+        try { localStorage.setItem(KEY, choice); } catch { /* storage may be blocked */ }
       }
     }
-    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
-      btn.setAttribute('aria-pressed', String(theme === 'dark'));
-      btn.setAttribute('aria-label', theme === 'dark' ? 'Use light theme' : 'Use dark theme');
+
+    for (const group of document.querySelectorAll('[data-theme-control]')) {
+      const input = group.querySelector<HTMLInputElement>(`input[value="${choice}"]`);
+      if (input) input.checked = true;
     }
-    // Keep mobile browser chrome in step with the page.
-    for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
-      meta.media = '';
-    }
-    const active = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (active) active.content = theme === 'dark' ? '#0A0D12' : '#F5F4F0';
+    paintMeta(choice);
   }
 
-  // Restore a previously chosen override. Absent one, CSS already has it right.
+  // Restore a previous override. Without one, CSS already has it right.
   let stored: string | null = null;
-  try {
-    stored = localStorage.getItem(KEY);
-  } catch {
-    /* ignore */
-  }
-  if (stored === 'light' || stored === 'dark') apply(stored, false);
+  try { stored = localStorage.getItem(KEY); } catch { /* ignore */ }
+  const initial: Choice =
+    stored === 'light' || stored === 'dark' ? stored : 'system';
+  apply(initial, false);
 
-  for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
-    btn.addEventListener('click', () => {
-      apply(current() === 'dark' ? 'light' : 'dark', true);
+  for (const group of document.querySelectorAll('[data-theme-control]')) {
+    group.addEventListener('change', (e) => {
+      const t = e.target as HTMLInputElement;
+      if (t?.name === 'theme') apply(t.value as Choice, true);
     });
   }
+
+  // Keep the browser chrome in step if the OS flips while on "system".
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (!root.dataset.theme) paintMeta('system');
+  });
 </script>
 
 <style>
-  .theme-toggle {
-    --size: 2.25rem;
-    display: grid;
-    place-items: center;
-    inline-size: calc(var(--size) * 2);
-    block-size: var(--size);
+  .theme {
+    display: flex;
+    margin: 0;
     padding: 0;
-    background: transparent;
     border: var(--hairline) solid var(--rule-2);
-    color: var(--ink-2);
-    cursor: pointer;
-    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+    /* A fieldset ships with browser defaults that fight the drafting frame. */
+    min-inline-size: 0;
   }
 
-  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* A two-cell switch, drawn as a labelled selector rather than an icon —
-     the state is legible without relying on a sun/moon convention. */
-  .theme-toggle__face {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    inline-size: 100%;
-    block-size: 100%;
-  }
-
-  .theme-toggle__mark {
+  .theme__cell {
+    position: relative;
     display: grid;
     place-items: center;
-    font-family: var(--font-mono);
-    font-size: var(--t-label);
-    letter-spacing: 0.08em;
+    min-inline-size: 2.25rem;
+    block-size: 2.25rem;
+    cursor: pointer;
     transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
   }
 
-  .theme-toggle__mark.-dark { border-inline-start: var(--hairline) solid var(--rule); }
+  .theme__cell + .theme__cell { border-inline-start: var(--hairline) solid var(--rule); }
 
-  /* The active half is filled — the only filled element in the system,
-     justified because it encodes current state. */
-  :global(:root:not([data-theme='dark'])) .theme-toggle__mark.-light,
-  :global(:root[data-theme='light']) .theme-toggle__mark.-light {
-    background: var(--ink);
-    color: var(--paper);
+  /* The input stays in the accessibility tree and keeps native keyboard
+     behaviour; it is only removed from the visual layer. */
+  .theme__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
   }
 
-  :global(:root[data-theme='dark']) .theme-toggle__mark.-light {
-    background: transparent;
+  .theme__label {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--ink-3);
+    pointer-events: none;
   }
 
-  :global(:root[data-theme='dark']) .theme-toggle__mark.-dark {
-    background: var(--ink);
-    color: var(--paper);
-  }
+  .theme__cell:hover .theme__label { color: var(--accent); }
 
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme])) .theme-toggle__mark.-light {
-      background: transparent;
-      color: var(--ink-3);
-    }
-    :global(:root:not([data-theme])) .theme-toggle__mark.-dark {
-      background: var(--ink);
-      color: var(--paper);
-    }
+  /* Selected cell is filled — the one filled element in the system, justified
+     because it encodes current state. */
+  .theme__cell:has(.theme__input:checked) { background: var(--ink); }
+  .theme__cell:has(.theme__input:checked) .theme__label { color: var(--paper); }
+
+  .theme__cell:has(.theme__input:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 </style>

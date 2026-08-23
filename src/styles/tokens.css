@@ -55,9 +55,13 @@
      * display sizes, where its stencil quirk reads as intent. Plex Sans *
      * and Plex Mono are a designed pair.                                *
      * ---------------------------------------------------------------- */
-    --font-display: 'Space Grotesk Variable', 'Space Grotesk', system-ui, sans-serif;
-    --font-body:    'IBM Plex Sans Variable', 'IBM Plex Sans', system-ui, sans-serif;
-    --font-mono:    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    /* The *-Fallback entries are metric-matched aliases of Arial / Courier New
+       (see fonts.css) — they hold the exact box the real face will occupy, so
+       the swap on load causes no reflow. They must sit immediately after the
+       webfont and before any generic family. */
+    --font-display: 'Space Grotesk Variable', 'Space Grotesk Fallback', system-ui, sans-serif;
+    --font-body:    'IBM Plex Sans Variable', 'IBM Plex Sans Fallback', system-ui, sans-serif;
+    --font-mono:    'IBM Plex Mono', 'IBM Plex Mono Fallback', ui-monospace, SFMono-Regular, monospace;
 
     /* Fluid modular scale */
     --t-display: clamp(3rem, 1.5rem + 7.5vw, 6.5rem);
