@@ -40,3 +40,19 @@ Omer_Dengiz_Resume.docx
 New Text Document.txt
 AWS-DevOps/
 Job_Application/
+
+# Personal job-search files — NEVER commit to this public repo
+# Root-anchored so site/assets/resume/Omer_Dengiz_Resume.pdf stays tracked.
+/COMMS*.pdf
+/Job_Search_Tracker.xlsx
+/Omer_Dengiz_Cover_Letter_*
+/Omer_Dengiz_Resume*.docx
+/Omer_Dengiz_Resume*.pdf
+/Omer_Dengiz_Is_Ilanlari_*
+/Technical Report*.pdf
+
+# Node / Astro
+node_modules/
+dist/
+.astro/
+npm-debug.log*

@@ -22,7 +22,7 @@ Browser  ──►  Route 53 (domain account)       ──►  CloudFront (hosti
 │   └── assets/
 │       ├── css/ js/ img/
 │       ├── resume/Omer_Dengiz_Resume.pdf
-│       └── docs/Capstone_Technical_Report_Raspberry_Pioneers.pdf
+│       └── docs/Capstone_Technical_Report.pdf
 ├── lambda-edge/
 │   └── index.js             # Lambda@Edge handler (viewer-request + viewer-response)
 ├── terraform/               # Infrastructure as Code

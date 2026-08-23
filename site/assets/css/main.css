@@ -580,6 +580,13 @@ em { font-style: normal; color: var(--accent-1); }
 }
 .role { color: var(--text-muted); font-family: var(--font-mono); }
 .link-arrow { color: var(--accent-1); font-weight: 500; }
+.foot-links { display: inline-flex; gap: 14px; align-items: center; }
+.foot-links .link-arrow { white-space: nowrap; }
+.footer-link {
+  color: var(--accent-1);
+  border-bottom: 1px dashed rgba(76, 201, 240, 0.35);
+}
+.footer-link:hover { border-bottom-color: var(--accent-1); }
 
 /* ==========================================================================
    Skills grid
@@ -791,12 +798,15 @@ em { font-style: normal; color: var(--accent-1); }
   .tl-head { flex-direction: column; gap: 2px; }
   .btn { width: 100%; justify-content: center; }
   .hero-cta { flex-direction: column; }
+  .project-foot { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .foot-links { gap: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .001ms !important;
-    transition-duration: .001ms !important;
-  }
+  /* Only disable scroll-behaviour. Ambient decorative animations
+     (orbital rings, pulse dots, hero title entrance) keep running —
+     they're low-amplitude and don't compete for attention. The JS
+     layer (main.js) handles reduced motion for interactive animations
+     (particle mesh, reveal-on-scroll, text rotator). */
   html { scroll-behavior: auto; }
 }

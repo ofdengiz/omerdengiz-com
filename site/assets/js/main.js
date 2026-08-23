@@ -56,7 +56,10 @@
 
   // ---- Reveal on scroll ----------------------------------------------------
   const reveals = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    // Respect reduced-motion (and old browsers) — show everything up front.
+    reveals.forEach(el => el.classList.add('in'));
+  } else {
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
@@ -66,8 +69,6 @@
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
     reveals.forEach(el => io.observe(el));
-  } else {
-    reveals.forEach(el => el.classList.add('in'));
   }
 
   // ---- Animated stat counters ---------------------------------------------
@@ -109,8 +110,11 @@
   });
 
   // ---- Canvas: drifting gradient orbs + particle mesh ---------------------
+  // Ambient background — intentionally runs even under prefers-reduced-motion
+  // (it's low-amplitude and non-attention-grabbing). We do slow the particle
+  // velocity and skip the mouse-repel interaction in that case.
   const canvas = document.getElementById('bg-canvas');
-  if (!canvas || prefersReducedMotion) return;
+  if (!canvas) return;
 
   const ctx = canvas.getContext('2d');
   let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -134,13 +138,14 @@
     { x: 0.55, y: 0.80, r: 380, c: [247, 37, 133],  vx:  0.00016, vy: -0.00018 },
   ];
 
-  // Particle constellation
+  // Particle constellation — slower when reduced motion is requested.
+  const velocityScale = prefersReducedMotion ? 0.4 : 1;
   const particleCount = Math.min(70, Math.floor((w * h) / 22000));
   const particles = Array.from({ length: particleCount }, () => ({
     x: Math.random() * w,
     y: Math.random() * h,
-    vx: (Math.random() - 0.5) * 0.15,
-    vy: (Math.random() - 0.5) * 0.15,
+    vx: (Math.random() - 0.5) * 0.15 * velocityScale,
+    vy: (Math.random() - 0.5) * 0.15 * velocityScale,
     r: Math.random() * 1.4 + 0.4,
   }));
 
@@ -181,13 +186,15 @@
       if (p.x < 0 || p.x > w) p.vx *= -1;
       if (p.y < 0 || p.y > h) p.vy *= -1;
 
-      const dx = p.x - mouse.x;
-      const dy = p.y - mouse.y;
-      const d2 = dx * dx + dy * dy;
-      if (d2 < 18000) {
-        const f = (1 - d2 / 18000) * 0.04;
-        p.vx += (dx / Math.sqrt(d2 + 1)) * f;
-        p.vy += (dy / Math.sqrt(d2 + 1)) * f;
+      if (!prefersReducedMotion) {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < 18000) {
+          const f = (1 - d2 / 18000) * 0.04;
+          p.vx += (dx / Math.sqrt(d2 + 1)) * f;
+          p.vy += (dy / Math.sqrt(d2 + 1)) * f;
+        }
       }
       p.vx = Math.max(-0.6, Math.min(0.6, p.vx));
       p.vy = Math.max(-0.6, Math.min(0.6, p.vy));
