@@ -1,0 +1,76 @@
+---
+/**
+ * SheetRule — the section divider.
+ *
+ * A full-width hairline carrying a sheet number and title, the way a drawing
+ * set numbers its sheets. This replaces the legacy site's decorative
+ * "01 / 02 / 03" gradient headings: same wayfinding job, but the number now
+ * means something (it is the sheet index) rather than being ornament.
+ *
+ * Renders as a real <h2> so the document outline stays correct.
+ */
+
+interface Props {
+  /** Zero-padded sheet index, e.g. "03". */
+  sheet: string;
+  title: string;
+  /** Optional right-hand annotation, e.g. a count or a date range. */
+  note?: string;
+  /** Heading level — use 3 for subsections. */
+  as?: 2 | 3;
+  id?: string;
+}
+
+const { sheet, title, note, as = 2, id } = Astro.props;
+const Heading = `h${as}` as 'h2' | 'h3';
+---
+
+<div class="sheet-rule">
+  <p class="label sheet-rule__index">Sheet {sheet}</p>
+
+  <Heading class="sheet-rule__title" id={id}>{title}</Heading>
+
+  {note && <p class="label sheet-rule__note">{note}</p>}
+</div>
+
+<style>
+  .sheet-rule {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    column-gap: var(--s-4);
+    padding-block-end: var(--s-3);
+    border-block-end: var(--hairline) solid var(--rule-2);
+    margin-block-end: var(--s-8);
+  }
+
+  .sheet-rule__index {
+    /* Tabular figures keep the index column optically aligned between sheets. */
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-3);
+  }
+
+  .sheet-rule__title {
+    font-family: var(--font-display);
+    font-size: var(--t-h2);
+    font-weight: 500;
+    letter-spacing: var(--track-h);
+    /* Nudged to sit on the same optical baseline as the mono labels. */
+    line-height: 1.1;
+  }
+
+  .sheet-rule__note {
+    color: var(--ink-3);
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 34rem) {
+    .sheet-rule {
+      grid-template-columns: 1fr auto;
+    }
+    .sheet-rule__index { grid-column: 1; }
+    .sheet-rule__note  { grid-column: 2; }
+    .sheet-rule__title { grid-column: 1 / -1; margin-block-start: var(--s-2); }
+  }
+</style>

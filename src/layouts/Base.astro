@@ -2,9 +2,12 @@
 /**
  * Base.astro — the document shell every page inherits.
  *
- * Phase 1 scope: head, theme handling, skip link, grid underlay.
- * Nav, footer and the blueprint chrome arrive in Phase 2/3.
+ * Fonts are imported here rather than linked from Google. Fontsource ships the
+ * woff2 files as npm packages, so Vite fingerprints and self-hosts them. That
+ * removes a third-party origin from the critical path and lets Phase 6 delete
+ * fonts.googleapis.com and fonts.gstatic.com from the CSP entirely.
  */
+import '../styles/fonts.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
 
@@ -13,9 +16,11 @@ interface Props {
   description: string;
   /** Path-only canonical, e.g. "/projects/capstone". Defaults to the current URL. */
   canonical?: string;
+  /** Keep this page out of search results. */
+  noindex?: boolean;
 }
 
-const { title, description, canonical } = Astro.props;
+const { title, description, canonical, noindex = false } = Astro.props;
 const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
 ---
 
@@ -28,6 +33,7 @@ const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <meta name="author" content="Omer Dengiz" />
     <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="omerdengiz.com" />
@@ -37,10 +43,7 @@ const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    {/*
-      Theme colour must track the resolved theme, otherwise mobile browser
-      chrome fights the page background.
-    */}
+    {/* Updated by ThemeToggle when an explicit override is active. */}
     <meta name="theme-color" content="#F5F4F0" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0A0D12" media="(prefers-color-scheme: dark)" />
   </head>

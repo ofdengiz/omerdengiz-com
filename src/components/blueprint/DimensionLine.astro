@@ -1,0 +1,93 @@
+---
+/**
+ * DimensionLine — a measured quantity, drawn the way a drawing measures one.
+ *
+ * Replaces the legacy site's animated stat counters. A dimension line states a
+ * magnitude and what was measured; it does not perform. The arrowheads and
+ * extension lines are drawn in CSS so the component carries no image weight
+ * and inherits the theme automatically.
+ *
+ * Used for: VM counts, VLAN segments, AWS resource counts, date spans.
+ */
+
+interface Props {
+  /** The measured value, e.g. "17" or "122 pp". */
+  value: string;
+  /** What was measured. Kept short — this is a callout, not a sentence. */
+  label: string;
+  /** Optional qualifier rendered under the label. */
+  note?: string;
+  /** Draw the value in the accent colour. Use sparingly. */
+  accent?: boolean;
+}
+
+const { value, label, note, accent = false } = Astro.props;
+---
+
+<figure class:list={['dimension', accent && '-accent']}>
+  <div class="dimension__rule" aria-hidden="true">
+    <span class="dimension__tick"></span>
+    <span class="dimension__line"></span>
+    <span class="dimension__tick"></span>
+  </div>
+
+  <div class="dimension__value">{value}</div>
+
+  <figcaption class="dimension__caption">
+    <span class="label">{label}</span>
+    {note && <span class="dimension__note">{note}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .dimension {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  /* Extension lines + arrow ticks, drawn purely with borders. */
+  .dimension__rule {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    block-size: var(--s-2);
+  }
+
+  .dimension__tick {
+    inline-size: var(--hairline);
+    block-size: var(--s-2);
+    background: var(--rule-2);
+  }
+
+  .dimension__line {
+    block-size: var(--hairline);
+    background: var(--rule-2);
+  }
+
+  .dimension__value {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.4rem + 1.6vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: var(--track-h);
+    line-height: 1;
+    /* Tabular figures so a row of dimensions aligns on the decimal. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  .-accent .dimension__value { color: var(--accent); }
+  .-accent .dimension__tick,
+  .-accent .dimension__line { background: var(--accent); }
+
+  .dimension__caption {
+    display: grid;
+    gap: var(--s-1);
+  }
+
+  .dimension__note {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+</style>

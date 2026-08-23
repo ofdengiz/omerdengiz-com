@@ -1,0 +1,127 @@
+---
+/**
+ * TitleBlock — the drawing title block.
+ *
+ * On a real engineering drawing this sits bottom-right and carries the
+ * document's identity: who drew it, what it is, which sheet, which revision.
+ * Here it does the same job for the page, which is why the name lives inside
+ * it rather than floating as a decorative hero.
+ *
+ * Cells are declared as data so the block can carry different metadata on
+ * different pages without the markup changing shape.
+ */
+
+export interface TitleCell {
+  label: string;
+  value: string;
+  /** Renders the value in the accent colour — use for one cell at most. */
+  accent?: boolean;
+  href?: string;
+}
+
+interface Props {
+  /** Large primary line — usually the name or the drawing title. */
+  title: string;
+  /** Small line above the title. */
+  eyebrow?: string;
+  /** Sub-line under the title. */
+  subtitle?: string;
+  cells?: TitleCell[];
+  /** `display` renders the title at hero scale; `sheet` is the smaller subpage variant. */
+  scale?: 'display' | 'sheet';
+}
+
+const { title, eyebrow, subtitle, cells = [], scale = 'display' } = Astro.props;
+---
+
+<section class:list={['title-block', `-${scale}`]}>
+  {eyebrow && <p class="label title-block__eyebrow">{eyebrow}</p>}
+
+  <h1 class="title-block__title">{title}</h1>
+
+  {subtitle && <p class="title-block__subtitle">{subtitle}</p>}
+
+  {
+    cells.length > 0 && (
+      <dl class="title-block__cells">
+        {cells.map((cell) => (
+          <div class="title-block__cell">
+            <dt class="label">{cell.label}</dt>
+            <dd class:list={['title-block__value', cell.accent && '-accent']}>
+              {cell.href ? (
+                <a class="u" href={cell.href}>{cell.value}</a>
+              ) : (
+                cell.value
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+</section>
+
+<style>
+  .title-block {
+    /* The block is bounded like a drawing frame: heavy rule top and bottom,
+       nothing on the sides, so it reads as part of the sheet rather than a card. */
+    border-block: var(--hairline) solid var(--rule-2);
+    padding-block: var(--s-8);
+  }
+
+  .title-block__eyebrow {
+    margin-block-end: var(--s-4);
+  }
+
+  .title-block__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: var(--track-display);
+    line-height: var(--leading-display);
+  }
+
+  .-display .title-block__title { font-size: var(--t-display); }
+  .-sheet   .title-block__title { font-size: var(--t-h1); font-weight: 500; }
+
+  .title-block__subtitle {
+    margin-block-start: var(--s-4);
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    letter-spacing: 0.02em;
+  }
+
+  /* Title-block cells: a real drawing divides these with ruled boxes.
+     Hairline dividers only — no fills, no shadows. */
+  .title-block__cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    margin-block-start: var(--s-8);
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  .title-block__cell {
+    padding-block: var(--s-3);
+    padding-inline-end: var(--s-4);
+    border-inline-start: var(--hairline) solid var(--rule);
+    padding-inline-start: var(--s-3);
+  }
+
+  /* The first cell in each visual row should not carry a left rule, but CSS
+     cannot know where rows break in an auto-fit grid. Negative margin on the
+     container plus a left rule on every cell gives a clean, even result. */
+  .title-block__cells { margin-inline-start: calc(var(--s-3) * -1); }
+
+  .title-block__value {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--ink);
+    margin-block-start: var(--s-1);
+  }
+
+  .title-block__value.-accent { color: var(--accent); }
+
+  @media (max-width: 34rem) {
+    .title-block__cells { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

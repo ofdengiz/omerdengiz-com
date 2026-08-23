@@ -1,0 +1,323 @@
+---
+/**
+ * Topology — the capstone network, drawn.
+ *
+ * PHASE 2 SCOPE: structure and static rendering only. The layout is computed
+ * from src/data/topology.ts rather than hand-drawn, so Phase 4 can add
+ * hover/focus interactivity by attaching behaviour to the emitted `data-*`
+ * hooks without touching geometry.
+ *
+ * Drawing conventions, all load-bearing:
+ *   - Orthogonal routing only. Connections turn at 90°, like a real diagram.
+ *   - Routed segments connect with solid lines to the gateway.
+ *   - Storage bridges connect with dashed lines and sit visually detached,
+ *     because they genuinely bypass the routed path.
+ *   - The tunnel is dashed and leaves the frame, because Site 1 is elsewhere.
+ */
+import { segments, gateway, natPublications, site1Link, tenants } from '../../data/topology';
+
+interface Props {
+  /** Render without the legend — used in tight contexts. */
+  bare?: boolean;
+}
+const { bare = false } = Astro.props;
+
+/* -- Layout ---------------------------------------------------------------
+   A deterministic three-column arrangement:
+     column 0  MSP (shared)      column 1  Lumora      column 2  ClearRoots
+   The gateway spans the top; WAN sits above it; SAN bridges hang off the
+   bottom of their tenant column, offset to signal detachment.
+-------------------------------------------------------------------------- */
+
+const W = 960;
+const COL_W = 260;
+const COL_GAP = 40;
+const COLS_X = [80, 80 + COL_W + COL_GAP, 80 + (COL_W + COL_GAP) * 2];
+
+const Y_WAN = 40;
+const Y_GW = 120;
+const Y_BUS = 210;   // horizontal distribution bus under the gateway
+const Y_SEG = 250;   // top of the segment boxes
+
+const routed = segments.filter((s) => s.routed && s.owner !== 'wan');
+const isolated = segments.filter((s) => !s.routed);
+
+/** Assign each routed segment to a column by owner, stacking within it. */
+const columnOf = (owner: string) => (owner === 'msp' ? 0 : owner === 'c1' ? 1 : 2);
+
+const placed = (() => {
+  const yCursor = [Y_SEG, Y_SEG, Y_SEG];
+  return routed.map((seg) => {
+    const col = columnOf(seg.owner);
+    const x = COLS_X[col];
+    const y = yCursor[col];
+    const h = 56 + seg.nodes.length * 22 + (seg.nodes.length ? 10 : 0);
+    yCursor[col] = y + h + 28;
+    return { seg, x, y, w: COL_W, h, col };
+  });
+})();
+
+const maxY = Math.max(...placed.map((p) => p.y + p.h));
+
+/** SAN bridges hang below their tenant column, offset right to read as detached. */
+const placedIsolated = isolated.map((seg) => {
+  const col = columnOf(seg.owner);
+  return { seg, x: COLS_X[col] + 40, y: maxY + 48, w: COL_W - 40, h: 52, col };
+});
+
+const H = maxY + 48 + 52 + 56;
+const gwX = COLS_X[1] + COL_W / 2;
+---
+
+<figure class="topo" data-topology>
+  <figcaption class="topo__caption">
+    <span class="label">Fig. 01</span>
+    <span class="topo__title">Site 2 — MSP boundary, tenant segmentation, and storage isolation</span>
+  </figcaption>
+
+  <div class="topo__frame">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      role="img"
+      aria-labelledby="topo-title topo-desc"
+      class="topo__svg"
+    >
+      <title id="topo-title">Capstone Site 2 network topology</title>
+      <desc id="topo-desc">
+        An OPNsense gateway routes six segments: a shared MSP management
+        segment containing two bastions and a backup server, and LAN plus DMZ
+        segments for each of the two tenants. Two isolated storage bridges sit
+        outside the routed path. A site-to-site VPN tunnel connects to Site 1.
+        Full detail is listed in the table beneath this diagram.
+      </desc>
+
+      <defs>
+        <marker id="tick" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <circle cx="3" cy="3" r="1.6" class="topo__marker" />
+        </marker>
+      </defs>
+
+      {/* -- WAN terminator -- */}
+      <g class="topo__wan">
+        <rect x={gwX - 70} y={Y_WAN} width="140" height="34" class="topo__box -wan" />
+        <text x={gwX} y={Y_WAN + 22} class="topo__label -center">WAN</text>
+        <line x1={gwX} y1={Y_WAN + 34} x2={gwX} y2={Y_GW} class="topo__line" marker-end="url(#tick)" />
+      </g>
+
+      {/* -- Gateway -- */}
+      <g class="topo__gw" data-node="gw">
+        <rect x={gwX - 130} y={Y_GW} width="260" height="46" class="topo__box -gw" />
+        <text x={gwX} y={Y_GW + 20} class="topo__label -center -strong">{gateway.label}</text>
+        <text x={gwX} y={Y_GW + 35} class="topo__sub -center">OPNsense · routing · policy · NAT</text>
+      </g>
+
+      {/* -- Distribution bus -- */}
+      <line x1={gwX} y1={Y_GW + 46} x2={gwX} y2={Y_BUS} class="topo__line" />
+      <line
+        x1={COLS_X[0] + COL_W / 2}
+        y1={Y_BUS}
+        x2={COLS_X[2] + COL_W / 2}
+        y2={Y_BUS}
+        class="topo__line"
+      />
+
+      {/* -- Routed segments -- */}
+      {
+        placed.map(({ seg, x, y, w, h }) => {
+          const cx = x + w / 2;
+          return (
+            <g class="topo__seg" data-segment={seg.id} data-owner={seg.owner}>
+              {/* drop from the bus, orthogonal */}
+              <line x1={cx} y1={Y_BUS} x2={cx} y2={y} class="topo__line" marker-end="url(#tick)" />
+
+              <rect x={x} y={y} width={w} height={h} class="topo__box" />
+
+              <text x={x + 12} y={y + 20} class="topo__label -strong">{seg.label}</text>
+              <text x={x + w - 12} y={y + 20} class="topo__sub -end">{seg.cidr}</text>
+              <line x1={x} y1={y + 30} x2={x + w} y2={y + 30} class="topo__rule" />
+
+              {seg.nodes.map((node, i) => (
+                <g data-node={node.id}>
+                  <text x={x + 12} y={y + 50 + i * 22} class="topo__node">{node.label}</text>
+                  <text x={x + w - 12} y={y + 50 + i * 22} class="topo__sub -end">{node.addr}</text>
+                </g>
+              ))}
+
+              {seg.nodes.length === 0 && (
+                <text x={x + 12} y={y + 50} class="topo__sub">{seg.purpose}</text>
+              )}
+            </g>
+          );
+        })
+      }
+
+      {/* -- Isolated storage bridges: dashed, detached -- */}
+      {
+        placedIsolated.map(({ seg, x, y, w, h }) => (
+          <g class="topo__seg -isolated" data-segment={seg.id} data-owner={seg.owner}>
+            <rect x={x} y={y} width={w} height={h} class="topo__box -dashed" />
+            <text x={x + 12} y={y + 22} class="topo__label -strong">{seg.label}</text>
+            <text x={x + w - 12} y={y + 22} class="topo__sub -end">{seg.cidr}</text>
+            <text x={x + 12} y={y + 40} class="topo__sub">outside routed path · iSCSI</text>
+          </g>
+        ))
+      }
+
+      {/* -- Cross-site tunnel, leaving the frame -- */}
+      <g class="topo__tunnel">
+        <line x1={gwX - 130} y1={Y_GW + 23} x2={60} y2={Y_GW + 23} class="topo__line -dashed" />
+        <line x1={60} y1={Y_GW + 23} x2={60} y2={Y_GW - 20} class="topo__line -dashed" />
+        <text x={60} y={Y_GW - 28} class="topo__sub">SITE1_OVPN → {site1Link.label}</text>
+      </g>
+    </svg>
+  </div>
+
+  {
+    !bare && (
+      <div class="topo__legend">
+        <div class="topo__legend-group">
+          <span class="label">Key</span>
+          <ul class="topo__keys" role="list">
+            <li><span class="topo__swatch -solid" aria-hidden="true"></span>Routed via OPNsense</li>
+            <li><span class="topo__swatch -dash" aria-hidden="true"></span>Isolated / tunnelled</li>
+          </ul>
+        </div>
+        <div class="topo__legend-group">
+          <span class="label">Tenants</span>
+          <ul class="topo__keys" role="list">
+            <li>{tenants.c1.label} — {tenants.c1.full.replace('Company 1 — ', '')}</li>
+            <li>{tenants.c2.label} — {tenants.c2.full.replace('Company 2 — ', '')}</li>
+          </ul>
+        </div>
+        <div class="topo__legend-group">
+          <span class="label">Published at edge</span>
+          <ul class="topo__keys" role="list">
+            {natPublications.map((n) => (
+              <li>{n.proto} :{n.external} → {n.internal}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+</figure>
+
+<style>
+  .topo {
+    display: grid;
+    gap: var(--s-4);
+    margin: 0;
+  }
+
+  .topo__caption {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+    padding-block-end: var(--s-3);
+    border-block-end: var(--hairline) solid var(--rule-2);
+  }
+
+  .topo__title {
+    font-family: var(--font-body);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+
+  /* Horizontal scroll is contained here, never on the page body. */
+  .topo__frame {
+    overflow-x: auto;
+    border: var(--hairline) solid var(--rule);
+    background: var(--paper-2);
+  }
+
+  .topo__svg {
+    display: block;
+    min-inline-size: 46rem;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* -- SVG primitives ------------------------------------------------- */
+
+  .topo__box {
+    fill: var(--paper);
+    stroke: var(--rule-2);
+    stroke-width: 1;
+  }
+  .topo__box.-gw  { stroke: var(--accent); }
+  .topo__box.-wan { fill: var(--paper-3); }
+  .topo__box.-dashed { stroke-dasharray: 3 3; fill: none; }
+
+  .topo__line {
+    stroke: var(--rule-2);
+    stroke-width: 1;
+    fill: none;
+  }
+  .topo__line.-dashed { stroke-dasharray: 4 4; }
+
+  .topo__rule { stroke: var(--rule); stroke-width: 1; }
+  .topo__marker { fill: var(--rule-2); }
+
+  .topo__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    fill: var(--ink-2);
+    text-transform: uppercase;
+  }
+  .topo__label.-strong { fill: var(--ink); }
+  .topo__label.-center { text-anchor: middle; }
+
+  .topo__sub {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    fill: var(--ink-3);
+  }
+  .topo__sub.-center { text-anchor: middle; }
+  .topo__sub.-end { text-anchor: end; }
+
+  .topo__node {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    fill: var(--ink-2);
+  }
+
+  /* Tenant tinting is carried by the segment label only — the drawing stays
+     monochrome so the accent means "selected", not "decorated". */
+  .topo__seg[data-owner='msp'] .topo__label.-strong { fill: var(--accent); }
+
+  /* -- Legend --------------------------------------------------------- */
+
+  .topo__legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--s-6);
+    padding-block-start: var(--s-2);
+  }
+
+  .topo__legend-group { display: grid; gap: var(--s-2); align-content: start; }
+
+  .topo__keys {
+    display: grid;
+    gap: var(--s-1);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-2);
+    line-height: 1.6;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .topo__keys li { display: flex; align-items: center; gap: var(--s-2); }
+
+  .topo__swatch {
+    inline-size: 1.5rem;
+    block-size: 0;
+    border-block-start: 1px solid var(--rule-2);
+    flex: none;
+  }
+  .topo__swatch.-dash { border-block-start-style: dashed; }
+</style>

@@ -1,0 +1,146 @@
+---
+/**
+ * ThemeToggle — light / dark override.
+ *
+ * The palette resolves from the OS preference with zero JavaScript, because
+ * every token is defined with light-dark() and the root declares
+ * `color-scheme: light dark`. This control only writes an *override* for
+ * people who want something other than their OS setting.
+ *
+ * On the flash-of-wrong-theme question: the usual fix is a blocking inline
+ * script in <head>, which our `script-src 'self'` CSP forbids. Rather than
+ * weaken the policy, we accept that only users who have explicitly chosen a
+ * non-OS theme may see a brief correction on first paint — everyone else is
+ * served correctly by CSS alone, with no render-blocking script at all.
+ * Phase 6 can revisit this with a CSP hash if it proves annoying in practice.
+ */
+---
+
+<button
+  type="button"
+  class="theme-toggle"
+  data-theme-toggle
+  aria-pressed="false"
+  aria-label="Use dark theme"
+>
+  <span class="theme-toggle__face" aria-hidden="true">
+    <span class="theme-toggle__mark -light">LGT</span>
+    <span class="theme-toggle__mark -dark">DRK</span>
+  </span>
+</button>
+
+<script>
+  const KEY = 'theme';
+  const root = document.documentElement;
+
+  /** Resolve what the user is currently seeing. */
+  function current(): 'light' | 'dark' {
+    const stored = root.dataset.theme;
+    if (stored === 'light' || stored === 'dark') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function apply(theme: 'light' | 'dark', persist: boolean) {
+    root.dataset.theme = theme;
+    if (persist) {
+      try {
+        localStorage.setItem(KEY, theme);
+      } catch {
+        /* Storage can be unavailable (private mode, blocked cookies). The
+           toggle still works for this page view; it just will not persist. */
+      }
+    }
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+      btn.setAttribute('aria-pressed', String(theme === 'dark'));
+      btn.setAttribute('aria-label', theme === 'dark' ? 'Use light theme' : 'Use dark theme');
+    }
+    // Keep mobile browser chrome in step with the page.
+    for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+      meta.media = '';
+    }
+    const active = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (active) active.content = theme === 'dark' ? '#0A0D12' : '#F5F4F0';
+  }
+
+  // Restore a previously chosen override. Absent one, CSS already has it right.
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(KEY);
+  } catch {
+    /* ignore */
+  }
+  if (stored === 'light' || stored === 'dark') apply(stored, false);
+
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+    btn.addEventListener('click', () => {
+      apply(current() === 'dark' ? 'light' : 'dark', true);
+    });
+  }
+</script>
+
+<style>
+  .theme-toggle {
+    --size: 2.25rem;
+    display: grid;
+    place-items: center;
+    inline-size: calc(var(--size) * 2);
+    block-size: var(--size);
+    padding: 0;
+    background: transparent;
+    border: var(--hairline) solid var(--rule-2);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* A two-cell switch, drawn as a labelled selector rather than an icon —
+     the state is legible without relying on a sun/moon convention. */
+  .theme-toggle__face {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .theme-toggle__mark {
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.08em;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  .theme-toggle__mark.-dark { border-inline-start: var(--hairline) solid var(--rule); }
+
+  /* The active half is filled — the only filled element in the system,
+     justified because it encodes current state. */
+  :global(:root:not([data-theme='dark'])) .theme-toggle__mark.-light,
+  :global(:root[data-theme='light']) .theme-toggle__mark.-light {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  :global(:root[data-theme='dark']) .theme-toggle__mark.-light {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  :global(:root[data-theme='dark']) .theme-toggle__mark.-dark {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .theme-toggle__mark.-light {
+      background: transparent;
+      color: var(--ink-3);
+    }
+    :global(:root:not([data-theme])) .theme-toggle__mark.-dark {
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+</style>

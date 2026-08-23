@@ -1,0 +1,98 @@
+---
+/**
+ * ResumeLink — the one place the resume is linked from.
+ *
+ * Every resume link on the site renders through this component, so the URL,
+ * the download filename and the accessible label are defined once. The href
+ * comes from src/data/resume.ts, which imports the PDF through Vite and
+ * therefore carries a content hash: a new resume produces a new URL with no
+ * manual cache-busting anywhere.
+ *
+ * `mode` controls the two legitimate behaviours:
+ *   view     — opens in the browser's PDF viewer (default; recruiters skim
+ *              before they save)
+ *   download — saves immediately as Omer_Dengiz_Resume.pdf. The `download`
+ *              attribute is what keeps the human-readable filename on disk
+ *              rather than the hashed one.
+ */
+import { resume } from '../../data/resume';
+
+interface Props {
+  mode?: 'view' | 'download';
+  /** Visible text. Defaults to something sensible for the mode. */
+  label?: string;
+  /** Visual treatment. */
+  variant?: 'button' | 'inline';
+  class?: string;
+}
+
+const {
+  mode = 'view',
+  label,
+  variant = 'button',
+  class: className,
+} = Astro.props;
+
+const text = label ?? (mode === 'download' ? 'Download resume' : 'Resume');
+const isDownload = mode === 'download';
+---
+
+<a
+  href={resume.href}
+  class:list={['resume-link', `-${variant}`, className]}
+  download={isDownload ? resume.filename : undefined}
+  target={isDownload ? undefined : '_blank'}
+  rel={isDownload ? undefined : 'noopener'}
+  data-resume-link
+>
+  <span class="resume-link__text">{text}</span>
+  <span class="resume-link__meta label" aria-hidden="true">
+    {resume.format}{isDownload ? '' : ' ↗'}
+  </span>
+  <span class="visually-hidden">
+    {isDownload
+      ? `${resume.format}, downloads as ${resume.filename}`
+      : `${resume.format}, opens in a new tab`}
+  </span>
+</a>
+
+<style>
+  .resume-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--ink);
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  .resume-link.-button {
+    padding: var(--s-3) var(--s-4);
+    border: var(--hairline) solid var(--rule-2);
+    /* Heavier bottom rule: the drawing-frame convention, and it reads as
+       affordance without resorting to a fill or a shadow. */
+    border-block-end-width: 2px;
+  }
+
+  .resume-link.-button:hover,
+  .resume-link.-button:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .resume-link.-inline {
+    gap: var(--s-2);
+    border-block-end: var(--hairline) solid var(--rule-2);
+    padding-block-end: 0.15em;
+  }
+
+  .resume-link.-inline:hover,
+  .resume-link.-inline:focus-visible {
+    border-block-end-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .resume-link__meta { color: var(--ink-3); }
+  .resume-link:hover .resume-link__meta { color: var(--accent); }
+</style>

@@ -1,0 +1,125 @@
+---
+/**
+ * PortMatrix — skills rendered as a patch panel.
+ *
+ * The legacy site showed four identical bordered boxes of bullet lists, which
+ * is the most generic possible treatment and gave every skill equal weight.
+ * A patch panel is the honest metaphor for this content: labelled rows of
+ * discrete ports, dense, scannable, and native to the subject matter.
+ *
+ * Each row carries a two-letter stencil code, the way a real panel labels its
+ * rows. Ports are plain text, not badges — no pills, no fills.
+ */
+import type { SkillGroup } from '../../data/skills';
+
+interface Props {
+  groups: SkillGroup[];
+  /** Highlight ports matching these strings (case-insensitive exact match). */
+  highlight?: string[];
+}
+
+const { groups, highlight = [] } = Astro.props;
+const hi = new Set(highlight.map((h) => h.toLowerCase()));
+---
+
+<div class="matrix">
+  {
+    groups.map((group) => (
+      <section class="matrix__row">
+        <header class="matrix__head">
+          <span class="matrix__code" aria-hidden="true">{group.code}</span>
+          <h3 class="matrix__name">{group.name}</h3>
+          <span class="label matrix__count">{group.items.length}</span>
+        </header>
+
+        <ul class="matrix__ports" role="list">
+          {group.items.map((item) => (
+            <li
+              class:list={['matrix__port', hi.has(item.toLowerCase()) && '-on']}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .matrix {
+    border-block-start: var(--hairline) solid var(--rule-2);
+  }
+
+  .matrix__row {
+    padding-block: var(--s-6);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .matrix__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s-3);
+    margin-block-end: var(--s-4);
+  }
+
+  /* Stencilled row code — boxed, mono, the panel's identifier. */
+  .matrix__code {
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border: var(--hairline) solid var(--rule-2);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+  }
+
+  .matrix__name {
+    font-family: var(--font-body);
+    font-size: var(--t-body);
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .matrix__count {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-3);
+  }
+
+  /* Ports: dense inline flow separated by hairline dividers, not gaps. */
+  .matrix__ports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .matrix__port {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    padding-inline: var(--s-3);
+    padding-block: var(--s-1);
+    border-inline-start: var(--hairline) solid var(--rule);
+    /* Rows of ports read as one continuous panel. */
+    line-height: 1.5;
+  }
+
+  .matrix__port:first-child { padding-inline-start: 0; border-inline-start: 0; }
+
+  .matrix__port.-on {
+    color: var(--accent);
+    /* A patched port is lit, not filled. */
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  @media (max-width: 34rem) {
+    .matrix__port { padding-inline: var(--s-2); }
+  }
+</style>
