@@ -161,6 +161,43 @@ Visit **https://omerdengiz.com** 🎉
 | Update Lambda@Edge                      | edit `lambda-edge/index.js` → `terraform apply` |
 | Tear everything down                    | `cd terraform && terraform destroy` *(see note below)* |
 
+---
+
+## Updating the resume
+
+The resume exists in two places that must never disagree: the PDF a recruiter
+downloads, and the experience/skills text rendered on the site. Both are
+derived from one source file.
+
+```bash
+# 1. Regenerate Omer_Dengiz_Resume.pdf from the .docx, then:
+cp Omer_Dengiz_Resume.pdf src/assets/resume/
+
+# 2. If any bullet or skill changed, mirror the exact wording into:
+#      src/data/experience.ts   roles[].bullets, education
+#      src/data/skills.ts       skillGroups[].items
+#      src/data/profile.ts      summary
+
+# 3. Build and deploy — this publishes all three URLs at once.
+bash deploy.sh
+```
+
+That single deploy publishes:
+
+| URL | Cache | Purpose |
+| --- | --- | --- |
+| `/assets/_/Omer_Dengiz_Resume.<hash>.pdf` | 1 year, immutable | what the site links to |
+| `/resume.pdf` | 5 minutes | the stable URL to put in applications |
+| `/assets/resume/Omer_Dengiz_Resume.pdf` | 5 minutes | legacy path, kept for links already sent |
+
+The hash changes automatically when the file does, so there is no cache-bust
+query to maintain. Verify the site and the PDF agree by extracting the text:
+
+```bash
+python -c "from pypdf import PdfReader; print('
+'.join(p.extract_text() for p in PdfReader('Omer_Dengiz_Resume.pdf').pages))"
+```
+
 > **Lambda@Edge destroy caveat:** replicated Lambda@Edge functions take 1–3 hours to fully delete from CloudFront edge locations. `terraform destroy` may fail the first time on the Lambda — wait an hour and re-run.
 
 ---

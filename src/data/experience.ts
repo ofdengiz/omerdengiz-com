@@ -1,17 +1,15 @@
 /**
  * experience.ts — professional history and education.
  *
- * BASELINE: Omer_Dengiz_Resume.pdf (revision 2026-07-12).
+ * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-08-22), transcribed
+ * verbatim — including the Interac bullets, which were reworded for the
+ * Canadian market and then carried back into the PDF so both surfaces read
+ * identically. Verified by extracting the PDF text and diffing it against
+ * this file.
  *
- * ⚠ PENDING RESUME SYNC (2026-08-22)
- * The two Interac bullets below have been strengthened for the Canadian market
- * and now read more actively than the PDF currently deployed at
- * /assets/resume/Omer_Dengiz_Resume.pdf. Omer is updating the source document
- * to match. Until that lands, the site and the resume state the same facts in
- * different words — see PENDING_RESUME_SYNC.md at the repo root.
- *
- * Everything else on this page is the resume's own wording. The rule stands:
- * the site and the resume must never make different *claims*.
+ * The rule: the site and the resume must never make different claims, and
+ * should not even use different words. If you edit a bullet here, regenerate
+ * the PDF in the same sitting — see the resume workflow in README.md.
  *
  * Shape notes:
  *   - `start` / `end` are display strings because the resume shows "Sep 2025",
@@ -73,7 +71,7 @@ export const roles: Role[] = [
     endISO: '2025-12',
     bullets: [
       'Developed a Python-based Proof of Concept to automate device inventory extraction from vendor APIs, establishing a validation schema that paved the way for replacing manual tracking.',
-      'Collaborated with senior network engineers to manage ServiceNow incident and change tickets, and rewrote internal wiki runbooks with step-by-step procedures that accelerated onboarding for new team members.',
+      'Collaborated with senior engineers to manage ServiceNow incidents and updated internal wiki runbooks, accelerating onboarding for new team members.',
     ],
     stack: ['Python', 'REST APIs', 'ServiceNow', 'Runbooks'],
   },
