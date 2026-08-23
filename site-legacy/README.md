@@ -5,6 +5,12 @@ kept for one release cycle as a rollback path, then deleted.
 
 **Nothing here is deployed.** `deploy.sh` builds `dist/` from `src/`.
 
+Binary assets (the technical report, the OG image, the resume PDF) have been
+removed from this directory. They were byte-identical duplicates of files that
+still live in `public/` and `src/assets/`, and carrying a second copy of an
+8.7 MB PDF in a public repo is noise. `git checkout v1-legacy -- site` restores
+them along with everything else.
+
 ## Rolling back
 
 The tag `v1-legacy` marks the last commit where this tree was live.
