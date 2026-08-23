@@ -1,0 +1,66 @@
+// @ts-check
+import { defineConfig } from 'astro/config';
+
+/**
+ * omerdengiz.com — Astro configuration
+ *
+ * Target: static files synced to S3, served through CloudFront, with a
+ * Lambda@Edge viewer-request handler rewriting pretty URLs and a
+ * viewer-response handler injecting a strict CSP.
+ *
+ * Three settings below are load-bearing for that deployment. See notes.
+ */
+export default defineConfig({
+  site: 'https://omerdengiz.com',
+
+  // Fully static output — no SSR adapter, no server runtime.
+  output: 'static',
+
+  build: {
+    // `directory` emits /meta/index.html rather than /meta.html.
+    // This matches the Lambda@Edge viewer-request rewrites exactly:
+    //   /meta   → /meta/index.html   (extensionless branch)
+    //   /meta/  → /meta/index.html   (trailing-slash branch)
+    // Switching to 'file' would break every subpage URL at the edge.
+    format: 'directory',
+
+    // Never inline <style> into the document. Two reasons:
+    //   1. CSP hygiene — we want to drop 'unsafe-inline' from style-src later.
+    //   2. Cache economics — external CSS is content-hashed and lands under
+    //      the 1-year immutable rule in deploy.sh; inlined CSS would be
+    //      re-downloaded with every HTML revalidation.
+    inlineStylesheets: 'never',
+
+    // Hashed bundles live under assets/_ so the existing deploy.sh rule
+    //   aws s3 sync site/assets/ --cache-control "max-age=31536000, immutable"
+    // covers them without modification. Content hashing also retires the
+    // manual ?v=20260423d cache-bust hack permanently.
+    assets: 'assets/_',
+  },
+
+  // Emit <link rel="canonical">-friendly URLs without a trailing slash
+  // ambiguity. Lambda@Edge normalizes both forms, so 'ignore' is safe and
+  // avoids Astro generating redirects a static origin cannot serve.
+  trailingSlash: 'ignore',
+
+  // Astro's dev toolbar injects inline scripts. Harmless locally (no CSP in
+  // dev), but disabling keeps dev output closer to what ships.
+  devToolbar: {
+    enabled: false,
+  },
+
+  prefetch: {
+    // Prefetch on hover only — no eager prefetching of every link.
+    prefetchAll: false,
+    defaultStrategy: 'hover',
+  },
+
+  vite: {
+    build: {
+      // Force every bundled script to a separate file. Without this, Astro
+      // inlines small author <script> blocks straight into the HTML, which
+      // the `script-src 'self'` CSP in lambda-edge/index.js blocks outright.
+      assetsInlineLimit: 0,
+    },
+  },
+});

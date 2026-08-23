@@ -1,0 +1,22 @@
+{
+  "name": "omerdengiz-com",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "description": "omerdengiz.com — static portfolio on AWS S3 + CloudFront + Lambda@Edge, provisioned with Terraform",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/verify-csp.mjs",
+    "build:only": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "verify:csp": "node scripts/verify-csp.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^7.2.4"
+  }
+}

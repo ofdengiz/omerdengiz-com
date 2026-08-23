@@ -1,0 +1,52 @@
+---
+/**
+ * Base.astro — the document shell every page inherits.
+ *
+ * Phase 1 scope: head, theme handling, skip link, grid underlay.
+ * Nav, footer and the blueprint chrome arrive in Phase 2/3.
+ */
+import '../styles/tokens.css';
+import '../styles/base.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path-only canonical, e.g. "/projects/capstone". Defaults to the current URL. */
+  canonical?: string;
+}
+
+const { title, description, canonical } = Astro.props;
+const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Omer Dengiz" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="omerdengiz.com" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {/*
+      Theme colour must track the resolved theme, otherwise mobile browser
+      chrome fights the page background.
+    */}
+    <meta name="theme-color" content="#F5F4F0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0A0D12" media="(prefers-color-scheme: dark)" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,45 @@
+/* ==========================================================================
+   tokens.css — Blueprint × Editorial design tokens
+   --------------------------------------------------------------------------
+   Phase 1 subset: colour + the cascade-layer order only. The full type scale,
+   spatial system and blueprint primitives land in Phase 2.
+
+   Colour strategy: every token is defined once with light-dark(). The page
+   declares `color-scheme: light dark`, so the browser resolves each pair from
+   the user's OS preference, and an explicit [data-theme] override on <html>
+   flips it deterministically. No duplicated palette blocks, no media-query
+   drift between the two themes.
+   ========================================================================== */
+
+@layer reset, tokens, base, layout, components, utilities;
+
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    /* -- Surfaces ------------------------------------------------------- */
+    --paper:    light-dark(#F5F4F0, #0A0D12);
+    --paper-2:  light-dark(#EDEBE5, #11151C);
+
+    /* -- Ink ------------------------------------------------------------ */
+    --ink:      light-dark(#16181D, #E4E7EC);
+    --ink-2:    light-dark(#4A4F5A, #9AA3B0);
+    --ink-3:    light-dark(#8A9099, #656D7A);
+
+    /* -- Rules: hairlines are the only separator in this system ---------- */
+    --rule:     light-dark(#D6D3CA, #232932);
+    --rule-2:   light-dark(#B4B0A4, #333A45);
+
+    /* -- Two hues, total ------------------------------------------------ */
+    --accent:   light-dark(#0B5C8A, #4EA8DE);  /* drafting blue */
+    --annotate: light-dark(#B33A2B, #E4715C);  /* redline — annotation only */
+
+    /* -- 8px grid underlay ---------------------------------------------- */
+    --grid:     light-dark(rgba(22, 24, 29, 0.035), rgba(228, 231, 236, 0.045));
+    --grid-size: 8px;
+  }
+
+  /* Explicit user choice wins over the OS preference in both directions. */
+  :root[data-theme='light'] { color-scheme: light; }
+  :root[data-theme='dark']  { color-scheme: dark; }
+}

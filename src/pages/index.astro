@@ -1,0 +1,85 @@
+---
+/**
+ * Phase 1 placeholder. Proves the pipeline end to end: layout → tokens →
+ * light/dark resolution → grid underlay → CSP-clean build.
+ * Replaced entirely in Phase 3.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Omer Dengiz — Cloud · Systems · Networking"
+  description="Portfolio of Omer Dengiz — cloud infrastructure, systems administration, and enterprise networking. Ottawa, ON."
+>
+  <main id="main">
+    <div class="sheet">
+      <p class="label">Sheet 00 · Scaffold</p>
+      <h1>omerdengiz.com</h1>
+      <p class="lede">
+        Astro pipeline online. Design system lands in Phase&nbsp;2.
+      </p>
+
+      <dl class="status">
+        <div><dt>Branch</dt><dd>redesign/blueprint</dd></div>
+        <div><dt>Restore point</dt><dd>v1-legacy</dd></div>
+        <div><dt>Output</dt><dd>static → dist/</dd></div>
+        <div><dt>CSP</dt><dd>verified on build</dd></div>
+      </dl>
+    </div>
+  </main>
+</Base>
+
+<style>
+  /* Phase 1 only — these rules are throwaway, not the design system. */
+  .sheet {
+    max-width: 68ch;
+    margin-inline: auto;
+    padding: clamp(3rem, 12vh, 9rem) 1.5rem;
+  }
+
+  .label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-block-end: 0.75rem;
+    border-block-end: 1px solid var(--rule);
+    margin-block-end: 2rem;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .lede {
+    color: var(--ink-2);
+    margin-block-start: 1rem;
+    font-size: 1.125rem;
+  }
+
+  .status {
+    margin-block-start: 3rem;
+    border-block-start: 1px solid var(--rule);
+  }
+
+  .status > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.625rem;
+    border-block-end: 1px solid var(--rule);
+  }
+
+  dt,
+  dd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+  }
+
+  dt { color: var(--ink-3); }
+  dd { color: var(--accent); }
+</style>

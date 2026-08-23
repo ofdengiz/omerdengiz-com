@@ -1,0 +1,99 @@
+/* ==========================================================================
+   base.css — reset + document defaults
+   Phase 1 subset. Typography scale arrives in Phase 2.
+   ========================================================================== */
+
+@layer reset {
+  *,
+  *::before,
+  *::after { box-sizing: border-box; }
+
+  * { margin: 0; }
+
+  html {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+  }
+
+  /* Smooth scrolling, but never for people who asked us not to move things. */
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  body {
+    min-height: 100svh;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img,
+  picture,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select { font: inherit; color: inherit; }
+
+  p,
+  h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+
+  ul[role='list'],
+  ol[role='list'] { list-style: none; padding: 0; }
+}
+
+@layer base {
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    /* 8px drafting grid. Sits under everything; every element aligns to it. */
+    background-image:
+      linear-gradient(to right,  var(--grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+  }
+
+  /* A drawing has square corners. Enforced globally; opt out deliberately. */
+  :where(a) {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  /* Visible, high-contrast focus for keyboard users — the current site has
+     none at all, which is its most serious accessibility gap. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Skip link: present in the DOM from the very first page. */
+  .skip-link {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 999;
+    padding: 0.75rem 1.25rem;
+    background: var(--paper);
+    border: 1px solid var(--rule-2);
+    border-block-end-width: 2px;
+    transform: translateY(-120%);
+    transition: transform 120ms ease-out;
+  }
+  .skip-link:focus-visible { transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
