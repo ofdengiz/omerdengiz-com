@@ -1,0 +1,195 @@
+---
+/**
+ * ProjectIndex — projects as a drawing index, not a card grid.
+ *
+ * The legacy site rendered every project as an identical bordered card with an
+ * emoji, which gave a 17-VM capstone the same visual weight as a small Flask
+ * lab. An index solves that: rows are scannable at a glance, the sheet number
+ * replaces the icon, and prominence comes from position and the featured row's
+ * extra detail rather than from decoration.
+ *
+ * Rows are <details> elements, so expansion works with zero JavaScript and is
+ * keyboard- and screen-reader-accessible by default.
+ */
+import type { Project } from '../../data/projects';
+
+interface Props {
+  projects: Project[];
+}
+const { projects } = Astro.props;
+---
+
+<div class="index">
+  {
+    projects.map((p) => (
+      <details class:list={['row', p.featured && '-featured']} open={p.featured}>
+        <summary class="row__summary">
+          <span class="row__sheet label" aria-hidden="true">{p.sheet}</span>
+
+          <span class="row__main">
+            <span class="row__title">{p.title}</span>
+            <span class="row__blurb">{p.summary}</span>
+          </span>
+
+          <span class="row__meta">
+            <span class="label row__context">{p.context}</span>
+            {p.period && <span class="label row__period">{p.period}</span>}
+          </span>
+
+          <span class="row__chev" aria-hidden="true"></span>
+        </summary>
+
+        <div class="row__body">
+          <p class="row__detail">{p.detail}</p>
+
+          <ul class="row__stack" role="list">
+            {p.stack.map((t) => <li>{t}</li>)}
+          </ul>
+
+          <p class="row__links">
+            {p.caseStudy && (
+              <a class="u row__link" href={p.caseStudy}>Case study</a>
+            )}
+            {p.source && (
+              <a class="u row__link" href={p.source} target="_blank" rel="noopener">
+                Source <span aria-hidden="true">↗</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            )}
+            {p.live && (
+              <a class="u row__link" href={p.live} target="_blank" rel="noopener">
+                Live <span aria-hidden="true">↗</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            )}
+          </p>
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .index { border-block-start: var(--hairline) solid var(--rule-2); }
+
+  .row { border-block-end: var(--hairline) solid var(--rule); }
+
+  .row__summary {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto 1.5rem;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-block: var(--s-6);
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--dur) var(--ease);
+  }
+  .row__summary::-webkit-details-marker { display: none; }
+  .row__summary:hover { color: var(--accent); }
+  .row__summary:hover .row__sheet { color: var(--accent); }
+
+  /* Focus ring belongs on the row, not just the text node. */
+  .row__summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .row__sheet {
+    font-variant-numeric: tabular-nums;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .row__main { display: grid; gap: var(--s-2); }
+
+  .row__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: var(--track-h);
+    line-height: 1.2;
+  }
+
+  /* The featured row states its case in the index itself. */
+  .-featured .row__title { font-size: clamp(1.375rem, 1.1rem + 1.2vw, 2rem); }
+
+  .row__blurb {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    max-inline-size: 54ch;
+    text-wrap: pretty;
+  }
+
+  .row__meta {
+    display: grid;
+    gap: var(--s-1);
+    justify-items: end;
+    text-align: end;
+  }
+  .row__period { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+  /* Chevron drawn as a rotating rule pair — no icon font, no SVG. */
+  .row__chev {
+    justify-self: end;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-inline-end: var(--hairline) solid var(--ink-3);
+    border-block-end: var(--hairline) solid var(--ink-3);
+    transform: rotate(45deg);
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+    align-self: center;
+  }
+  .row[open] .row__chev { transform: rotate(-135deg); }
+  .row__summary:hover .row__chev { border-color: var(--accent); }
+
+  .row__body {
+    display: grid;
+    gap: var(--s-4);
+    padding-block-end: var(--s-6);
+    /* Align with the title column, past the sheet number. */
+    padding-inline-start: calc(2.5rem + var(--s-4));
+    max-inline-size: 68ch;
+  }
+
+  .row__detail { color: var(--ink-2); font-size: var(--t-small); }
+
+  /* Stack listed as ports, matching the PortMatrix convention. */
+  .row__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .row__stack li {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+    padding-inline: var(--s-3);
+    padding-block: var(--s-1);
+    border-inline-start: var(--hairline) solid var(--rule);
+    line-height: 1.6;
+  }
+  .row__stack li:first-child { padding-inline-start: 0; border-inline-start: 0; }
+
+  .row__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-6);
+    margin: 0;
+  }
+  .row__link { font-family: var(--font-mono); font-size: var(--t-small); }
+
+  @media (max-width: 46rem) {
+    .row__summary {
+      grid-template-columns: 2rem 1fr 1rem;
+      row-gap: var(--s-3);
+    }
+    .row__meta {
+      grid-column: 2 / -1;
+      justify-items: start;
+      text-align: start;
+    }
+    .row__body { padding-inline-start: calc(2rem + var(--s-4)); }
+  }
+</style>

@@ -1,0 +1,146 @@
+---
+/**
+ * Timeline — experience with dates hanging in the margin.
+ *
+ * Editorial convention rather than the usual dotted-vertical-line-with-blobs:
+ * the date sits in its own column so the eye can scan chronology without
+ * reading a single job title, and the rule between entries does the
+ * separating. Bullets are the resume's, verbatim.
+ */
+import type { Role } from '../../data/experience';
+
+interface Props {
+  roles: Role[];
+}
+const { roles } = Astro.props;
+---
+
+<div class="timeline">
+  {
+    roles.map((role) => (
+      <article class="entry">
+        <div class="entry__when">
+          <p class="label">
+            <time datetime={role.startISO}>{role.start}</time>
+            {' – '}
+            {role.end ? (
+              <time datetime={role.endISO!}>{role.end}</time>
+            ) : (
+              <span>Present</span>
+            )}
+          </p>
+          <p class="label entry__where">{role.location}</p>
+        </div>
+
+        <div class="entry__what">
+          <h3 class="entry__title">{role.title}</h3>
+          <p class="entry__org">{role.org}</p>
+
+          <ul class="entry__bullets" role="list">
+            {role.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+
+          {role.stack && (
+            <ul class="entry__stack" role="list">
+              {role.stack.map((t) => <li>{t}</li>)}
+            </ul>
+          )}
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .timeline { border-block-start: var(--hairline) solid var(--rule-2); }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: var(--s-8);
+    padding-block: var(--s-8);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .entry__when {
+    display: grid;
+    gap: var(--s-1);
+    align-content: start;
+    /* Optical alignment with the title's cap height. */
+    padding-block-start: 0.25rem;
+  }
+  .entry__where { color: var(--ink-3); }
+
+  .entry__title {
+    font-family: var(--font-display);
+    font-size: var(--t-h3);
+    font-weight: 500;
+    letter-spacing: var(--track-h);
+  }
+
+  .entry__org {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--accent);
+    margin-block-start: var(--s-1);
+  }
+
+  .entry__bullets {
+    display: grid;
+    gap: var(--s-3);
+    margin-block-start: var(--s-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .entry__bullets li {
+    position: relative;
+    padding-inline-start: var(--s-6);
+    color: var(--ink-2);
+    font-size: var(--t-small);
+    text-wrap: pretty;
+  }
+
+  /* Leader dash rather than a bullet glyph — quieter, and it echoes the
+     dimension lines used elsewhere. */
+  .entry__bullets li::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.7em;
+    inline-size: var(--s-4);
+    block-size: var(--hairline);
+    background: var(--rule-2);
+  }
+
+  .entry__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-block-start: var(--s-4);
+    padding: 0;
+    list-style: none;
+  }
+  .entry__stack li {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+    padding-inline: var(--s-3);
+    padding-block: var(--s-1);
+    border-inline-start: var(--hairline) solid var(--rule);
+    line-height: 1.6;
+  }
+  .entry__stack li:first-child { padding-inline-start: 0; border-inline-start: 0; }
+
+  @media (max-width: 46rem) {
+    .entry {
+      grid-template-columns: 1fr;
+      gap: var(--s-3);
+    }
+    .entry__when {
+      display: flex;
+      gap: var(--s-4);
+      padding-block-start: 0;
+    }
+  }
+</style>

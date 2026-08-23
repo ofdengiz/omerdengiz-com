@@ -1,0 +1,146 @@
+---
+/**
+ * Nav — the sheet index.
+ *
+ * Framed as a drawing's sheet list rather than a conventional nav bar: each
+ * entry carries its sheet number, so the navigation and the page headings use
+ * one shared numbering system. Sticky, hairline-bounded, no blur theatrics
+ * beyond what keeps text legible over content.
+ *
+ * No JavaScript. On narrow viewports the list becomes horizontally scrollable
+ * instead of collapsing behind a hamburger — one fewer state to manage, and
+ * the destinations stay visible.
+ */
+import ThemeToggle from './ThemeToggle.astro';
+import ResumeLink from '../content/ResumeLink.astro';
+
+interface Props {
+  /** Sheet entries. Omit on subpages to render a back link instead. */
+  sections?: { sheet: string; label: string; href: string }[];
+  /** Shown instead of the sheet list, e.g. on case studies. */
+  back?: { label: string; href: string };
+}
+
+const { sections = [], back } = Astro.props;
+---
+
+<nav class="nav" aria-label="Primary">
+  <a href="/" class="nav__mark" aria-label="Home">
+    <span class="nav__initials">OD</span>
+  </a>
+
+  {
+    back ? (
+      <a href={back.href} class="nav__back label">← {back.label}</a>
+    ) : (
+      <ul class="nav__list" role="list">
+        {sections.map((s) => (
+          <li>
+            <a href={s.href} class="nav__link">
+              <span class="nav__sheet" aria-hidden="true">{s.sheet}</span>
+              <span class="nav__label">{s.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <div class="nav__controls">
+    <ResumeLink variant="inline" label="Resume" class="nav__resume" />
+    <ThemeToggle />
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s-6);
+    padding-inline: var(--gutter);
+    padding-block: var(--s-3);
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+    backdrop-filter: blur(10px);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  /* Monogram, boxed like a drawing stamp. */
+  .nav__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border: var(--hairline) solid var(--rule-2);
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .nav__mark:hover { border-color: var(--accent); color: var(--accent); }
+
+  .nav__initials {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .nav__list {
+    display: flex;
+    align-items: center;
+    gap: var(--s-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav__list::-webkit-scrollbar { display: none; }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    white-space: nowrap;
+    color: var(--ink-2);
+    transition: color var(--dur) var(--ease);
+  }
+  .nav__link:hover,
+  .nav__link:focus-visible { color: var(--accent); }
+
+  .nav__sheet {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .nav__link:hover .nav__sheet { color: var(--accent); }
+
+  .nav__label {
+    font-family: var(--font-body);
+    font-size: var(--t-small);
+  }
+
+  .nav__back { color: var(--ink-2); }
+  .nav__back:hover { color: var(--accent); }
+
+  .nav__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+  }
+
+  /* The resume link is the one action in the bar; below the sheet list's
+     breakpoint it would crowd the toggle, so it drops out and the contact
+     sheet carries it instead. */
+  @media (max-width: 52rem) {
+    .nav { gap: var(--s-4); }
+    .nav__label { display: none; }
+    .nav__sheet { font-size: var(--t-small); }
+  }
+
+  @media (max-width: 36rem) {
+    .nav__resume { display: none; }
+  }
+</style>

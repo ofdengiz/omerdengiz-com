@@ -65,7 +65,26 @@ function htmlFiles(dir, acc = []) {
 
 /* -- 3. Audit rules -------------------------------------------------------- */
 
-const HOST_ATTR = /(?:src|href)\s*=\s*["'](https?:\/\/[^"'/]+)/gi;
+/**
+ * Only elements that actually FETCH a subresource are governed by CSP fetch
+ * directives. An <a href> is navigation — CSP does not restrict where a link
+ * points, and flagging one is a false positive. <base href> is governed by
+ * base-uri and <form action> by form-action, both checked separately.
+ */
+const SUBRESOURCE_TAGS = [
+  ['script', 'src'],
+  ['link', 'href'],
+  ['img', 'src'],
+  ['iframe', 'src'],
+  ['frame', 'src'],
+  ['embed', 'src'],
+  ['object', 'data'],
+  ['source', 'src'],
+  ['track', 'src'],
+  ['video', 'src'],
+  ['audio', 'src'],
+  ['use', 'href'],
+];
 
 function audit(file, html, policy) {
   const findings = [];
@@ -119,16 +138,31 @@ function audit(file, html, policy) {
     });
   }
 
-  // Third-party hosts referenced by src/href must appear in some directive.
+  // Third-party origins loaded as subresources must appear in some directive.
   // Our own origin counts as 'self'.
   const permitted = new Set(Object.values(policy).flat().filter((v) => v.startsWith('http')));
   if (SELF_ORIGIN) permitted.add(SELF_ORIGIN);
-  for (const m of html.matchAll(HOST_ATTR)) {
-    const origin = m[1];
-    if (![...permitted].some((p) => origin.startsWith(p))) {
+
+  for (const [tag, attr] of SUBRESOURCE_TAGS) {
+    const re = new RegExp(`<${tag}\\b[^>]*?\\b${attr}\\s*=\\s*["'](https?://[^"'/]+)`, 'gi');
+    for (const m of html.matchAll(re)) {
+      const origin = m[1];
+      if (![...permitted].some((p) => origin.startsWith(p))) {
+        findings.push({
+          rule: 'external-host',
+          detail: `<${tag} ${attr}> loads from ${origin}, not allowed by any directive`,
+          sample: m[0].slice(0, 70),
+        });
+      }
+    }
+  }
+
+  // <form action> is governed by form-action.
+  for (const m of html.matchAll(/<form\b[^>]*?\baction\s*=\s*["'](https?:\/\/[^"'/]+)/gi)) {
+    if (![...permitted].some((p) => m[1].startsWith(p))) {
       findings.push({
-        rule: 'external-host',
-        detail: `${origin} is not allowed by any directive`,
+        rule: 'form-action',
+        detail: `form submits to ${m[1]}, not allowed by form-action`,
         sample: m[0].slice(0, 70),
       });
     }

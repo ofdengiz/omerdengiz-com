@@ -1,0 +1,79 @@
+---
+/**
+ * ContactGrid — contact details as title-block cells.
+ *
+ * Reuses the drawing title-block grammar rather than inventing a new card
+ * treatment: labelled cells divided by hairlines. The resume link is included
+ * because that is the action most visitors are here to take.
+ */
+import { profile } from '../../data/profile';
+import ResumeLink from './ResumeLink.astro';
+---
+
+<div class="contact">
+  <a class="cell" href={`mailto:${profile.email}`}>
+    <span class="label">Email</span>
+    <span class="cell__value">{profile.email}</span>
+  </a>
+
+  <a class="cell" href={profile.phone.href}>
+    <span class="label">Phone</span>
+    <span class="cell__value">{profile.phone.display}</span>
+  </a>
+
+  {
+    profile.links.map((link) => (
+      <a class="cell" href={link.href} target="_blank" rel={`noopener ${link.rel ?? ''}`.trim()}>
+        <span class="label">{link.label}</span>
+        <span class="cell__value">
+          {link.display} <span aria-hidden="true">↗</span>
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </span>
+      </a>
+    ))
+  }
+
+  <div class="cell cell--location">
+    <span class="label">Based in</span>
+    <span class="cell__value">{profile.location.short}</span>
+  </div>
+
+  <div class="cell cell--action">
+    <span class="label">Resume</span>
+    <ResumeLink variant="inline" label="Omer_Dengiz_Resume.pdf" />
+  </div>
+</div>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    border-block-start: var(--hairline) solid var(--rule-2);
+    border-inline-start: var(--hairline) solid var(--rule);
+  }
+
+  .cell {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    padding: var(--s-6) var(--s-4);
+    border-inline-end: var(--hairline) solid var(--rule);
+    border-block-end: var(--hairline) solid var(--rule);
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  a.cell:hover,
+  a.cell:focus-visible {
+    background: var(--paper-2);
+    color: var(--accent);
+  }
+  a.cell:hover .label { color: var(--accent); }
+
+  .cell__value {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    word-break: break-word;
+  }
+
+  .cell--action { align-content: start; }
+</style>

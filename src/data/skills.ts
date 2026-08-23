@@ -1,13 +1,12 @@
 /**
  * skills.ts — the source for the PortMatrix (patch-panel) component.
  *
- * Ordering is deliberate: groups appear in the order declared, and within a
- * group the strongest, most defensible items come first. A recruiter scans
- * the first three entries of each row.
+ * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-07-12), TECHNICAL
+ * SKILLS block, transcribed verbatim and in the same order.
  *
- * These lists must stay in lockstep with the resume's TECHNICAL SKILLS block.
- * If a tool is here but not on the resume (or vice versa) the two surfaces
- * have drifted and one of them is lying.
+ * If a tool appears here but not on the resume — or the reverse — the two
+ * surfaces have drifted and one of them is lying to a recruiter. Treat any
+ * edit here as an edit to the resume too.
  */
 
 export interface SkillGroup {
@@ -33,7 +32,7 @@ export const skillGroups: SkillGroup[] = [
     name: 'Systems & Platforms',
     code: 'SP',
     items: [
-      'Linux (RHEL, Ubuntu, SUSE)', 'Windows 10/11',
+      'Linux (Red Hat, Ubuntu, SUSE/openSUSE)', 'Windows 10/11',
       'Windows Server 2019/2022', 'Active Directory', 'Group Policy',
       'Samba AD', 'VMware', 'Proxmox VE', 'OPNsense', 'Microsoft 365',
       'ServiceNow', 'Veeam Backup',
@@ -43,10 +42,9 @@ export const skillGroups: SkillGroup[] = [
     name: 'Networking & Security',
     code: 'NS',
     items: [
-      'Cisco IOS', 'TCP/IP', 'OSPF', 'BGP', 'QoS', 'VLANs', 'DHCP', 'DNS',
-      '802.11 a/b/g/n/ac', '802.1X EAP-PEAP', 'ArubaOS', 'OpenVPN',
-      'Site-to-site VPN', 'Firewalls', 'Wireshark', 'iSCSI', 'PKI',
-      'TLS/SSH', 'IDS/IPS', 'CVSS',
+      'Cisco IOS', 'TCP/IP', 'OSPF', 'Routing and switching', 'VLANs',
+      'DHCP', 'DNS', 'OpenVPN', 'Site-to-site VPN', 'Firewalls', 'IAM',
+      'Security Groups', 'Wireshark', 'Cisco Packet Tracer', 'iSCSI',
     ],
   },
   {
