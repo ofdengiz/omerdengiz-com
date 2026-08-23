@@ -1,0 +1,243 @@
+---
+/**
+ * CaseStudy — the shared sheet layout for every project page.
+ *
+ * Both /projects/[slug] and the standalone /meta route render through this,
+ * so a change to case-study presentation happens in exactly one place.
+ *
+ * Order is fixed by the drawing metaphor rather than by taste: title block,
+ * dimensions, the drawing itself, the specification prose, then the numbered
+ * notes the prose refers back to, then the revision list.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+
+import '../styles/prose.css';
+
+import Base from './Base.astro';
+import Nav from '../components/nav/Nav.astro';
+import Footer from '../components/content/Footer.astro';
+import TitleBlock from '../components/blueprint/TitleBlock.astro';
+import SheetRule from '../components/blueprint/SheetRule.astro';
+import DimensionLine from '../components/blueprint/DimensionLine.astro';
+import Callout from '../components/blueprint/Callout.astro';
+import Topology from '../components/blueprint/Topology.astro';
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+}
+
+const { entry } = Astro.props;
+const p = entry.data;
+const { Content } = await render(entry);
+
+const cells = [
+  ...p.cells.map((c) => ({ label: c.label, value: c.value, accent: c.accent })),
+  ...(p.period ? [{ label: 'Period', value: p.period }] : []),
+];
+---
+
+<Base title={`${p.title} — omerdengiz.com`} description={p.summary}>
+  <Nav back={{ label: 'All work', href: '/#work' }} />
+
+  <main id="main" class="sheet">
+    {/* ---- Title block --------------------------------------------- */}
+    <div class="section -head">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a class="u" href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a class="u" href="/#work">Work</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Sheet {p.sheet}</span>
+      </nav>
+
+      <TitleBlock
+        scale="sheet"
+        eyebrow={p.context}
+        title={p.title}
+        subtitle={p.summary}
+        cells={cells}
+      />
+
+      <ul class="head__stack" role="list">
+        {p.stack.map((t) => <li>{t}</li>)}
+      </ul>
+
+      {
+        (p.source || p.live || p.document) && (
+          <p class="head__links">
+            {p.live && (
+              <a class="u head__link" href={p.live} target="_blank" rel="noopener">
+                Live <span aria-hidden="true">↗</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            )}
+            {p.source && (
+              <a class="u head__link" href={p.source} target="_blank" rel="noopener">
+                Source <span aria-hidden="true">↗</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+            )}
+            {p.document && (
+              <a class="u head__link" href={p.document.href} target="_blank" rel="noopener">
+                {p.document.label} <span aria-hidden="true">↗</span>
+                {p.document.note && <span class="head__note">{p.document.note}</span>}
+                <span class="visually-hidden">(PDF, opens in a new tab)</span>
+              </a>
+            )}
+          </p>
+        )
+      }
+    </div>
+
+    {/* ---- Dimensions ---------------------------------------------- */}
+    {
+      p.metrics.length > 0 && (
+        <section class="section">
+          <div class="-wide dims">
+            {p.metrics.map((m) => (
+              <DimensionLine value={m.value} label={m.label} note={m.note} accent={m.accent} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {/* ---- The drawing --------------------------------------------- */}
+    {
+      p.topology && (
+        <section id="drawing" class="section">
+          <SheetRule sheet="A" title="Architecture" note="Site 2 · as built" />
+          <div class="-full topo-stage">
+            <Topology />
+          </div>
+        </section>
+      )
+    }
+
+    {/* ---- Specification ------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="B" title="Specification" />
+      <div class="prose">
+        <Content />
+      </div>
+    </section>
+
+    {/* ---- Notes ---------------------------------------------------- */}
+    {
+      p.notes.length > 0 && (
+        <section class="section">
+          <SheetRule sheet="C" title="Notes" note={`${p.notes.length} items`} />
+          <div class="notes stack-6">
+            {p.notes.map((n, i) => (
+              <Callout n={i + 1} title={n.title} tone={n.tone}>
+                <p>{n.body}</p>
+              </Callout>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {/* ---- Revisions ------------------------------------------------ */}
+    {
+      p.revisions.length > 0 && (
+        <section class="section">
+          <SheetRule sheet="D" title="Revisions" note="What I would change" />
+          <ol class="revisions" role="list">
+            {p.revisions.map((r, i) => (
+              <li>
+                <span class="label revisions__n">{String(i + 1).padStart(2, '0')}</span>
+                <span class="revisions__body">{r}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    <section class="section">
+      <p class="tail">
+        <a class="u" href="/#work">← All work</a>
+      </p>
+    </section>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  .section > * + * { margin-block-start: var(--s-6); }
+  .-head { padding-block-start: var(--s-8); }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-block-end: var(--s-6);
+  }
+
+  .head__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .head__stack li {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+    padding-inline: var(--s-3);
+    padding-block: var(--s-1);
+    border-inline-start: var(--hairline) solid var(--rule);
+    line-height: 1.6;
+  }
+  .head__stack li:first-child { padding-inline-start: 0; border-inline-start: 0; }
+
+  .head__links { display: flex; flex-wrap: wrap; gap: var(--s-6); margin: 0; }
+  .head__link { font-family: var(--font-mono); font-size: var(--t-small); }
+  .head__note { color: var(--ink-3); margin-inline-start: var(--s-2); }
+
+  .dims {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--s-8);
+  }
+
+  /* The drawing gets the full sheet width — it is the reason this page exists. */
+  .topo-stage { margin-block-start: var(--s-6); }
+
+  .notes { margin-block-start: var(--s-2); }
+
+  .revisions {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: var(--hairline) solid var(--rule-2);
+  }
+  .revisions li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--s-4);
+    padding-block: var(--s-4);
+    border-block-end: var(--hairline) solid var(--rule);
+    align-items: baseline;
+  }
+  .revisions__n { font-variant-numeric: tabular-nums; }
+  .revisions__body { color: var(--ink-2); font-size: var(--t-small); text-wrap: pretty; }
+
+  .tail { font-family: var(--font-mono); font-size: var(--t-small); }
+
+  @media (max-width: 40rem) {
+    .revisions li { grid-template-columns: 1fr; gap: var(--s-1); }
+  }
+</style>

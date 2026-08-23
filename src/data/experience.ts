@@ -72,7 +72,7 @@ export const roles: Role[] = [
     startISO: '2025-09',
     endISO: '2025-12',
     bullets: [
-      'Automated device inventory data extraction from vendor APIs using Python, establishing a validation harness for API credentials and response schema that eliminated manual tracking effort.',
+      'Developed a Python-based Proof of Concept to automate device inventory extraction from vendor APIs, establishing a validation schema that paved the way for replacing manual tracking.',
       'Collaborated with senior network engineers to manage ServiceNow incident and change tickets, and rewrote internal wiki runbooks with step-by-step procedures that accelerated onboarding for new team members.',
     ],
     stack: ['Python', 'REST APIs', 'ServiceNow', 'Runbooks'],

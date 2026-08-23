@@ -1,0 +1,16 @@
+---
+/**
+ * /meta — the colophon.
+ *
+ * Kept on its own route rather than under /projects/ because the legacy site
+ * published it at /meta/ and the footer links there. Content comes from the
+ * same collection entry, so it is authored and validated identically.
+ */
+import { getEntry } from 'astro:content';
+import CaseStudy from '../layouts/CaseStudy.astro';
+
+const entry = await getEntry('projects', 'meta');
+if (!entry) throw new Error('Missing content collection entry: projects/meta');
+---
+
+<CaseStudy entry={entry} />

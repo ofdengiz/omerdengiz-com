@@ -1,0 +1,118 @@
+/* ==========================================================================
+   prose.css — Markdown body styling for case studies
+   --------------------------------------------------------------------------
+   Applied to the rendered <Content /> of a content-collection entry.
+
+   Editorial discipline: the measure stays at 68ch, headings use the display
+   face only from h2 up, and separation is done with space and hairlines
+   rather than boxes. Nothing here introduces a colour or a shape the design
+   system does not already have.
+   ========================================================================== */
+
+@layer components {
+  .prose {
+    max-inline-size: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .prose > * + * { margin-block-start: var(--s-4); }
+
+  /* Section headings sit on a hairline, echoing the SheetRule divider that
+     separates the page's own sections. */
+  .prose h2 {
+    margin-block-start: var(--s-12);
+    padding-block-end: var(--s-2);
+    border-block-end: var(--hairline) solid var(--rule);
+    font-family: var(--font-display);
+    font-size: var(--t-h3);
+    font-weight: 500;
+    letter-spacing: var(--track-h);
+    color: var(--ink);
+  }
+
+  .prose h3 {
+    margin-block-start: var(--s-8);
+    font-family: var(--font-body);
+    font-size: var(--t-body);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .prose p { text-wrap: pretty; }
+
+  .prose strong { color: var(--ink); font-weight: 600; }
+
+  .prose em { font-style: italic; }
+
+  .prose ul,
+  .prose ol {
+    display: grid;
+    gap: var(--s-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .prose li {
+    position: relative;
+    padding-inline-start: var(--s-6);
+  }
+
+  /* Leader dash rather than a bullet glyph, matching the timeline. */
+  .prose ul > li::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.75em;
+    inline-size: var(--s-4);
+    block-size: var(--hairline);
+    background: var(--rule-2);
+  }
+
+  .prose ol { counter-reset: prose-ol; }
+  .prose ol > li { counter-increment: prose-ol; }
+  .prose ol > li::before {
+    content: counter(prose-ol, decimal-leading-zero);
+    position: absolute;
+    inset-inline-start: 0;
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--ink);
+    background: var(--paper-2);
+    padding: 0.1em 0.35em;
+    border: var(--hairline) solid var(--rule);
+  }
+
+  .prose pre {
+    overflow-x: auto;
+    padding: var(--s-4);
+    background: var(--paper-2);
+    border: var(--hairline) solid var(--rule);
+  }
+  .prose pre code { background: none; border: 0; padding: 0; }
+
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: var(--hairline);
+    text-underline-offset: 0.2em;
+  }
+
+  .prose blockquote {
+    padding-inline-start: var(--s-4);
+    border-inline-start: var(--hairline) solid var(--rule-2);
+    color: var(--ink-3);
+  }
+
+  .prose hr {
+    border: 0;
+    border-block-start: var(--hairline) solid var(--rule);
+    margin-block: var(--s-8);
+  }
+}
