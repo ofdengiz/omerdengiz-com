@@ -1,0 +1,45 @@
+---
+/**
+ * Footer — the drawing's bottom border.
+ *
+ * Carries the same metadata a real title block repeats at the foot of a sheet:
+ * what this is, how it was made, and the revision. The build stack is stated
+ * because on this particular site it is part of the subject matter.
+ */
+import { profile } from '../../data/profile';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__inner sheet">
+    <div class="footer__row">
+      <p class="label">© {year} {profile.name}</p>
+      <p class="label footer__note">
+        Astro · AWS S3 + CloudFront + Lambda@Edge · Terraform
+      </p>
+      <p class="label footer__rev">Rev {profile.sheet.revision}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-block-start: var(--hairline) solid var(--rule-2);
+    margin-block-start: var(--s-16);
+  }
+
+  .footer__inner { padding-block: var(--s-8); }
+
+  .footer__row {
+    grid-column: content;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-4);
+  }
+
+  .footer__note { color: var(--ink-3); }
+  .footer__rev { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+</style>

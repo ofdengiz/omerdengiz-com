@@ -1,0 +1,95 @@
+---
+/**
+ * 404 — served by CloudFront for both 404 and 403 responses.
+ *
+ * The 403 mapping matters: S3 returns 403 rather than 404 for a missing key
+ * when the bucket policy does not grant s3:ListBucket, so without this page a
+ * mistyped URL would surface as an access-denied error. See terraform/
+ * cloudfront.tf custom_error_response.
+ */
+import Base from '../layouts/Base.astro';
+import Nav from '../components/nav/Nav.astro';
+import Footer from '../components/content/Footer.astro';
+import TitleBlock from '../components/blueprint/TitleBlock.astro';
+
+const routes = [
+  { sheet: '00', label: 'Home', href: '/' },
+  { sheet: '01', label: 'Selected work', href: '/#work' },
+  { sheet: '02', label: 'Experience', href: '/#experience' },
+  { sheet: '03', label: 'Tooling', href: '/#tooling' },
+  { sheet: '05', label: 'Contact', href: '/#contact' },
+];
+---
+
+<Base
+  title="Sheet not found — omerdengiz.com"
+  description="That page does not exist on omerdengiz.com."
+  noindex
+>
+  <Nav back={{ label: 'Home', href: '/' }} />
+
+  <main id="main" class="sheet">
+    <div class="section">
+      <TitleBlock
+        scale="sheet"
+        eyebrow="Error 404"
+        title="Sheet not found"
+        subtitle="This drawing is not in the set. The sheets below are."
+        cells={[
+          { label: 'Status', value: '404', accent: true },
+          { label: 'Requested', value: 'Unknown path' },
+        ]}
+      />
+
+      <ul class="routes" role="list">
+        {
+          routes.map((r) => (
+            <li>
+              <a class="routes__link" href={r.href}>
+                <span class="label routes__sheet">{r.sheet}</span>
+                <span class="routes__label">{r.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  .section > * + * { margin-block-start: var(--s-8); }
+
+  .routes {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: var(--hairline) solid var(--rule-2);
+  }
+
+  .routes__link {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: var(--s-4);
+    align-items: baseline;
+    padding-block: var(--s-4);
+    border-block-end: var(--hairline) solid var(--rule);
+    transition: color var(--dur) var(--ease);
+  }
+  .routes__link:hover,
+  .routes__link:focus-visible { color: var(--accent); }
+
+  .routes__sheet { font-variant-numeric: tabular-nums; }
+  .routes__link:hover .routes__sheet { color: var(--accent); }
+
+  .routes__label {
+    font-family: var(--font-display);
+    font-size: var(--t-h3);
+    font-weight: 500;
+    letter-spacing: var(--track-h);
+  }
+</style>

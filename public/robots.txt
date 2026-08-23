@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Internal design-system reference — not content.
+Disallow: /styleguide
+
+Sitemap: https://omerdengiz.com/sitemap-index.xml

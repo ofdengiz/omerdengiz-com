@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="React + TypeScript streaming-app demo with a full Jenkins DevSecOps pipeline — SonarQube, OWASP Dependency-Check, Trivy, Docker, and Kubernetes rollout.">
+  <meta name="author" content="Omer Dengiz">
+  <meta name="theme-color" content="#0b1020">
+  <link rel="canonical" href="https://omerdengiz.com/projects/filmapp/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="omerdengiz.com">
+  <meta property="og:url" content="https://omerdengiz.com/projects/filmapp/">
+  <meta property="og:title" content="filmapp — DevSecOps pipeline case study">
+  <meta property="og:description" content="React + TypeScript app with a Jenkins pipeline that gates on SonarQube, OWASP Dependency-Check, Trivy filesystem + image scans, then rolls out to Kubernetes.">
+  <meta property="og:image" content="https://omerdengiz.com/assets/og.png">
+
+  <title>filmapp — DevSecOps pipeline · omerdengiz.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/subpage.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <nav class="nav">
+    <a href="/#top" class="nav-logo"><span class="logo-mark">OD</span><span class="logo-dot"></span></a>
+    <div class="nav-links">
+      <a href="/#about">About</a>
+      <a href="/#capstone">Capstone</a>
+      <a href="/#projects">Projects</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#education">Education</a>
+      <a href="/#contact">Contact</a>
+      <a href="/assets/resume/Omer_Dengiz_Resume.pdf?v=20260822" class="nav-cta" target="_blank" rel="noopener">Resume ↗</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main class="subpage">
+    <div class="container">
+
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span>›</span>
+        <a href="/#projects">Projects</a>
+        <span>›</span>
+        <span aria-current="page">filmapp — DevSecOps pipeline</span>
+      </nav>
+
+      <header class="subpage-hero">
+        <p class="eyebrow">DevSecOps · Self-directed · Jenkins shared-pipeline demo</p>
+        <h1><span class="accent">filmapp</span> — a DevSecOps pipeline, not just a React app</h1>
+        <p class="lede">
+          A React + TypeScript streaming-app demo whose interesting part is the
+          Jenkins pipeline around it. Static analysis with SonarQube, dependency
+          CVE scanning with OWASP Dependency-Check, filesystem + image scanning
+          with Trivy, and a final rollout to Kubernetes — every gate enforced
+          before an image reaches the registry.
+        </p>
+        <div class="meta-chips">
+          <span class="chip-static">React</span>
+          <span class="chip-static">TypeScript</span>
+          <span class="chip-static">Jenkins</span>
+          <span class="chip-static">SonarQube</span>
+          <span class="chip-static">OWASP DC</span>
+          <span class="chip-static">Trivy</span>
+          <span class="chip-static">Docker</span>
+          <span class="chip-static">Kubernetes</span>
+          <span class="chip-static">DockerHub</span>
+        </div>
+        <div class="subpage-cta">
+          <a href="https://github.com/ofdengiz/filmapp" target="_blank" rel="noopener" class="btn btn-primary">Code on GitHub ↗</a>
+          <a href="/" class="btn btn-ghost">← Back to portfolio</a>
+        </div>
+      </header>
+
+      <!-- Why -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">01</span>The point of this project</h2>
+        <p>
+          The app itself is a thin React + TypeScript frontend that pulls movie
+          metadata from the TMDB API. It's a vehicle — the real deliverable is
+          a Jenkinsfile that demonstrates a full "shift-left" security posture
+          on every commit.
+        </p>
+        <p>
+          Most CI pipelines I see stop at "unit tests pass, push image." This
+          one asks four more questions before it promotes anything:
+        </p>
+        <ul class="tick-list">
+          <li><strong>Is the code clean?</strong> → SonarQube quality gate.</li>
+          <li><strong>Are the dependencies safe?</strong> → OWASP Dependency-Check.</li>
+          <li><strong>Is the filesystem clean of known CVEs?</strong> → Trivy FS scan.</li>
+          <li><strong>Is the image we just built clean?</strong> → Trivy image scan.</li>
+        </ul>
+      </section>
+
+      <!-- Pipeline -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">02</span>Pipeline stages</h2>
+        <div class="pipeline-stages">
+          <div class="stage"><strong>01 · Clean workspace</strong>Fresh agent workspace — no carry-over from previous runs.</div>
+          <div class="stage"><strong>02 · Checkout</strong>Pull the repo from <code>main</code>.</div>
+          <div class="stage"><strong>03 · SonarQube</strong>Full project scan — bugs, code smells, coverage, duplication.</div>
+          <div class="stage"><strong>04 · Quality gate</strong>Wait for SonarQube's server-side verdict before continuing.</div>
+          <div class="stage"><strong>05 · npm install</strong>Deterministic install from the lockfile.</div>
+          <div class="stage"><strong>06 · OWASP DC</strong>Dependency CVE scan with an XML report published to Jenkins.</div>
+          <div class="stage"><strong>07 · Trivy FS scan</strong>Filesystem-level CVE scan of the checked-out code.</div>
+          <div class="stage"><strong>08 · Docker build &amp; push</strong>Build with TMDB API key injected from Jenkins credentials; push to DockerHub.</div>
+          <div class="stage"><strong>09 · Trivy image scan</strong>Re-scan the just-published image — catches anything the base image brought in.</div>
+          <div class="stage"><strong>10 · Deploy</strong>Container rollout — locally via <code>docker run</code> for the demo; Kubernetes manifests for the real deploy.</div>
+        </div>
+      </section>
+
+      <!-- Jenkinsfile -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">03</span>Secrets stay in Jenkins</h2>
+        <p>
+          The original version of this Jenkinsfile had the TMDB API key baked
+          straight into <code>docker build --build-arg</code>. After GitHub's
+          secret scanner (rightly) caught it, the key moved into Jenkins
+          credentials and is injected as an environment variable only at build
+          time:
+        </p>
+<pre class="code-block"><code><span class="k">environment</span> {
+  SCANNER_HOME    = tool <span class="s">'sonar-scanner'</span>
+  <span class="c">// Injected from Jenkins credentials — never hardcoded.</span>
+  TMDB_V3_API_KEY = credentials(<span class="s">'tmdb-v3-api-key'</span>)
+}
+
+<span class="k">stage</span>(<span class="s">'Docker Build &amp; Push'</span>) {
+  <span class="k">steps</span> {
+    <span class="k">script</span> {
+      withDockerRegistry(credentialsId: <span class="s">'docker'</span>, toolName: <span class="s">'docker'</span>) {
+        sh <span class="s">'docker build --build-arg TMDB_V3_API_KEY=$TMDB_V3_API_KEY -t filmapp .'</span>
+        sh <span class="s">'docker tag filmapp ofdengiz/filmapp:latest'</span>
+        sh <span class="s">'docker push ofdengiz/filmapp:latest'</span>
+      }
+    }
+  }
+}</code></pre>
+      </section>
+
+      <!-- Kubernetes -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">04</span>Kubernetes rollout</h2>
+        <p>
+          The same image that passed all four gates deploys into Kubernetes via
+          a plain Deployment + Service pair. Replicas=2 for demo purposes; the
+          selector/label pair matches the Deployment and Service so one can't
+          drift from the other.
+        </p>
+<pre class="code-block"><code><span class="k">apiVersion</span>: apps/v1
+<span class="k">kind</span>: Deployment
+<span class="k">metadata</span>:
+  <span class="k">name</span>: filmapp
+  <span class="k">labels</span>:
+    <span class="k">app</span>: filmapp
+<span class="k">spec</span>:
+  <span class="k">replicas</span>: 2
+  <span class="k">selector</span>:
+    <span class="k">matchLabels</span>:
+      <span class="k">app</span>: filmapp
+  <span class="k">template</span>:
+    <span class="k">metadata</span>:
+      <span class="k">labels</span>:
+        <span class="k">app</span>: filmapp
+    <span class="k">spec</span>:
+      <span class="k">containers</span>:
+        - <span class="k">name</span>: filmapp
+          <span class="k">image</span>: ofdengiz/filmapp:latest
+          <span class="k">ports</span>:
+            - <span class="k">containerPort</span>: 80</code></pre>
+      </section>
+
+      <!-- Decisions -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">05</span>Decisions I'd defend</h2>
+        <div class="decision-grid">
+          <article class="decision">
+            <h4>Gate on quality, fail loudly</h4>
+            <p>
+              <code>waitForQualityGate</code> on the SonarQube step means if
+              the gate is red, the pipeline stops. Not a warning — a stop. If
+              the gate is not doing that, it is decoration, not enforcement.
+            </p>
+          </article>
+          <article class="decision">
+            <h4>Scan twice — FS and image</h4>
+            <p>
+              Filesystem scan catches CVEs in the repo; image scan catches
+              CVEs the base image pulled in. They overlap but are not
+              redundant, and Trivy is cheap enough to run both.
+            </p>
+          </article>
+          <article class="decision">
+            <h4>Secrets via <code>credentials()</code>, not env vars</h4>
+            <p>
+              The original TMDB key was hardcoded — after a secret-scanner
+              ping, it moved into Jenkins credentials with a Groovy helper so
+              the value is never written into the Jenkinsfile or the job log.
+            </p>
+          </article>
+          <article class="decision">
+            <h4>node 20, not node 16</h4>
+            <p>
+              Node 16 went EOL in September 2023. Pipelines that still pin to
+              it on a demo repo are a signal that the repo isn't maintained —
+              so this one runs on node 20 (LTS).
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="subpage-section subpage-footer-cta">
+        <h2>Full Jenkinsfile + Kubernetes manifests on GitHub</h2>
+        <p>
+          The Jenkinsfile is the headline artifact; the React app and
+          Kubernetes manifests are supporting cast.
+        </p>
+        <div class="subpage-cta">
+          <a href="https://github.com/ofdengiz/filmapp" target="_blank" rel="noopener" class="btn btn-primary">ofdengiz/filmapp ↗</a>
+          <a href="/#projects" class="btn btn-ghost">See other projects</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        © <span id="year"></span> Omer Dengiz ·
+        Built with HTML, CSS, and a touch of canvas ·
+        Hosted on AWS S3 + CloudFront + Lambda@Edge ·
+        Provisioned with Terraform
+      </p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

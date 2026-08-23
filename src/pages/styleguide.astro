@@ -1,0 +1,374 @@
+---
+/**
+ * /styleguide — the Phase 2 alignment gate.
+ *
+ * Every token and primitive rendered in isolation so the visual language can
+ * be judged before any page is built on top of it. noindex'd; whether it ships
+ * publicly is a separate call (a visible design system is arguably a good
+ * signal on an engineer's portfolio).
+ */
+import Base from '../layouts/Base.astro';
+import ThemeToggle from '../components/nav/ThemeToggle.astro';
+import TitleBlock from '../components/blueprint/TitleBlock.astro';
+import SheetRule from '../components/blueprint/SheetRule.astro';
+import DimensionLine from '../components/blueprint/DimensionLine.astro';
+import Callout from '../components/blueprint/Callout.astro';
+import PortMatrix from '../components/blueprint/PortMatrix.astro';
+import Topology from '../components/blueprint/Topology.astro';
+import ResumeLink from '../components/content/ResumeLink.astro';
+
+import { profile } from '../data/profile';
+import { skillGroups } from '../data/skills';
+import { roles } from '../data/experience';
+import { resume } from '../data/resume';
+
+const swatches = [
+  { name: 'paper', token: '--paper', note: 'page ground' },
+  { name: 'paper-2', token: '--paper-2', note: 'recessed' },
+  { name: 'paper-3', token: '--paper-3', note: 'terminator' },
+  { name: 'ink', token: '--ink', note: 'primary text' },
+  { name: 'ink-2', token: '--ink-2', note: 'secondary' },
+  { name: 'ink-3', token: '--ink-3', note: 'annotation' },
+  { name: 'rule', token: '--rule', note: 'hairline' },
+  { name: 'rule-2', token: '--rule-2', note: 'emphasis rule' },
+  { name: 'accent', token: '--accent', note: 'drafting blue' },
+  { name: 'annotate', token: '--annotate', note: 'redline only' },
+];
+
+const typeSpecimens = [
+  { token: '--t-display', family: 'Space Grotesk 700', sample: 'Omer Dengiz', cls: 'sp-display' },
+  { token: '--t-h1', family: 'Space Grotesk 500', sample: 'Hybrid MSP Infrastructure', cls: 'sp-h1' },
+  { token: '--t-h2', family: 'Space Grotesk 500', sample: 'Selected projects', cls: 'sp-h2' },
+  { token: '--t-h3', family: 'IBM Plex Sans 600', sample: 'Systems Engineering Intern', cls: 'sp-h3' },
+  { token: '--t-body', family: 'IBM Plex Sans 400', sample: 'Two Proxmox VE hosts, one per site, carrying all client and management VMs across segmented VLANs.', cls: 'sp-body' },
+  { token: '--t-small', family: 'IBM Plex Sans 400', sample: 'Supporting detail and case-study prose.', cls: 'sp-small' },
+  { token: '--t-label', family: 'IBM Plex Mono 500', sample: 'Sheet 04 · Networking & Security', cls: 'sp-label' },
+];
+---
+
+<Base
+  title="Style guide — omerdengiz.com"
+  description="Design system reference: tokens, type scale, and blueprint primitives."
+  noindex
+>
+  <div class="sg-bar">
+    <span class="label">Style guide · Blueprint × Editorial</span>
+    <div class="sg-bar__controls">
+      <button type="button" class="sg-btn" data-grid-toggle aria-pressed="true">Grid</button>
+      <ThemeToggle />
+    </div>
+  </div>
+
+  <main id="main" class="sheet">
+    <div class="section">
+      <TitleBlock
+        eyebrow="Design system · Revision 2026.05"
+        title="Blueprint × Editorial"
+        subtitle="Every visual element encodes information. The grid encodes alignment, a rule encodes separation, colour encodes state."
+        cells={[
+          { label: 'Project', value: profile.sheet.project },
+          { label: 'Sheets', value: '07' },
+          { label: 'Revision', value: profile.sheet.revision },
+          { label: 'Location', value: profile.location.short, accent: true },
+        ]}
+      />
+    </div>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="01" title="Colour" note="10 tokens · 2 hues" />
+
+      <p class="lede">
+        Each token is declared once with <code>light-dark()</code>. Switch the
+        selector above, or change your OS preference, and every value resolves
+        from the same declaration — there is no second palette to drift.
+      </p>
+
+      <div class="sg-swatches -wide">
+        {
+          swatches.map((s) => (
+            <div class="sg-swatch">
+              {/* data-attribute rather than an inline style, so the CSP can
+                  forbid 'unsafe-inline' for styles site-wide. */}
+              <div class="sg-swatch__chip" data-token={s.name}></div>
+              <div>
+                <p class="label">{s.name}</p>
+                <p class="sg-swatch__note">{s.note}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="02" title="Typography" note="3 families · 5 weights" />
+
+      <div class="sg-type">
+        {
+          typeSpecimens.map((t) => (
+            <div class="sg-type__row">
+              <div class="sg-type__meta">
+                <p class="label">{t.token}</p>
+                <p class="sg-swatch__note">{t.family}</p>
+              </div>
+              <p class={`sg-type__sample ${t.cls}`}>{t.sample}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="03" title="Sheet rule" note="Primitive 2 of 6" />
+      <p class="lede">
+        The section divider, shown above and throughout this page. The number is
+        the sheet index, not ornament — which is the difference between this and
+        the gradient <span class="mono">01 / 02 / 03</span> headings it replaces.
+      </p>
+      <div class="sg-demo">
+        <SheetRule sheet="12" title="With a note" note="Jan – Apr 2026" as={3} />
+        <SheetRule sheet="13" title="Without a note" as={3} />
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="04" title="Dimension line" note="Primitive 3 of 6" />
+      <p class="lede">
+        Replaces animated stat counters. States a magnitude and what was
+        measured; it does not perform.
+      </p>
+      <div class="sg-dims -wide">
+        <DimensionLine value="17" label="Virtual machines" note="Site 2" />
+        <DimensionLine value="8" label="VLAN segments" note="MSP · LAN · DMZ · SAN" />
+        <DimensionLine value="9" label="AWS resources" note="Terraform" accent />
+        <DimensionLine value="2" label="Client tenants" note="Lumora · ClearRoots" />
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="05" title="Callout" note="Primitive 4 of 6" />
+      <p class="lede">
+        A numbered leader pointing at a detail. Callouts are referenceable —
+        &ldquo;see 2&rdquo; — which a generic aside is not.
+      </p>
+      <div class="sg-demo stack-6">
+        <Callout n={1} title="Storage stays off the routed path">
+          <p>
+            <code>C1SAN</code> and <code>C2SAN</code> are not carried through
+            OPNsense, so storage failure analysis starts at the consumer rather
+            than the firewall.
+          </p>
+        </Callout>
+        <Callout n={2} title="Only bastions are published" tone="annotate">
+          <p>
+            No tenant server is reachable from the edge. The redline tone is
+            reserved for genuine risks and corrections — never for emphasis.
+          </p>
+        </Callout>
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="06" title="Port matrix" note="Primitive 5 of 6" />
+      <p class="lede">
+        Skills as a patch panel. Dense and scannable, and native to the subject
+        matter — four identical bullet-list boxes were the most generic
+        treatment available.
+      </p>
+      <div class="-wide">
+        <PortMatrix groups={skillGroups} highlight={['Terraform', 'OSPF', 'BGP', 'Kubernetes']} />
+      </div>
+      <p class="label sg-caption">
+        Highlighted ports demonstrate the patched state used by project filters
+      </p>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="07" title="Topology" note="Primitive 6 of 6 · structure only" />
+      <p class="lede">
+        Generated from <code>src/data/topology.ts</code>, not hand-drawn.
+        Interactivity lands in Phase 4; the geometry and data hooks are in place
+        now so that phase adds behaviour without redrawing anything.
+      </p>
+      <div class="-wide">
+        <Topology />
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="08" title="Resume link" note="Cache-bust retired" />
+      <p class="lede">
+        Both variants resolve the same content-hashed URL from
+        <code>src/data/resume.ts</code>.
+      </p>
+      <div class="sg-demo sg-row">
+        <ResumeLink />
+        <ResumeLink mode="download" />
+        <ResumeLink variant="inline" label="View resume" />
+      </div>
+      <dl class="sg-kv">
+        <div><dt class="label">Resolved href</dt><dd class="mono">{resume.href}</dd></div>
+        <div><dt class="label">Saves as</dt><dd class="mono">{resume.filename}</dd></div>
+      </dl>
+    </section>
+
+    {/* ---------------------------------------------------------------- */}
+    <section class="section">
+      <SheetRule sheet="09" title="Data layer" note="Typed, single-source" />
+      <p class="lede">
+        Content lives in <code>src/data/</code>, not in markup. Nothing about
+        Omer is hard-coded into a template.
+      </p>
+      <dl class="sg-kv">
+        <div><dt class="label">profile.name</dt><dd class="mono">{profile.name}</dd></div>
+        <div><dt class="label">profile.location.short</dt><dd class="mono">{profile.location.short}</dd></div>
+        <div><dt class="label">roles</dt><dd class="mono">{roles.length} entries · {roles.map((r) => r.org).join(', ')}</dd></div>
+        <div><dt class="label">skillGroups</dt><dd class="mono">{skillGroups.length} groups · {skillGroups.reduce((n, g) => n + g.items.length, 0)} items</dd></div>
+      </dl>
+    </section>
+  </main>
+</Base>
+
+<script>
+  // Grid underlay toggle — review aid only, not shipped behaviour.
+  const btn = document.querySelector<HTMLButtonElement>('[data-grid-toggle]');
+  btn?.addEventListener('click', () => {
+    const off = document.body.dataset.grid === 'off';
+    document.body.dataset.grid = off ? 'on' : 'off';
+    btn.setAttribute('aria-pressed', String(off));
+  });
+</script>
+
+<style>
+  .sg-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--gutter);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .sg-bar__controls { display: flex; align-items: center; gap: var(--s-3); }
+
+  .sg-btn {
+    padding: var(--s-2) var(--s-3);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    background: transparent;
+    border: var(--hairline) solid var(--rule-2);
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .sg-btn[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .section > * + * { margin-block-start: var(--s-6); }
+
+  /* -- Swatches -- */
+  .sg-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--s-4);
+  }
+  .sg-swatch { display: grid; gap: var(--s-2); }
+  .sg-caption { margin-block-start: var(--s-4); }
+
+  .sg-swatch__chip {
+    block-size: 3.5rem;
+    border: var(--hairline) solid var(--rule);
+  }
+
+  /* One rule per token. Verbose by design: it keeps every colour in the
+     stylesheet where the CSP can reach it, instead of in a style attribute. */
+  .sg-swatch__chip[data-token='paper']    { background: var(--paper); }
+  .sg-swatch__chip[data-token='paper-2']  { background: var(--paper-2); }
+  .sg-swatch__chip[data-token='paper-3']  { background: var(--paper-3); }
+  .sg-swatch__chip[data-token='ink']      { background: var(--ink); }
+  .sg-swatch__chip[data-token='ink-2']    { background: var(--ink-2); }
+  .sg-swatch__chip[data-token='ink-3']    { background: var(--ink-3); }
+  .sg-swatch__chip[data-token='rule']     { background: var(--rule); }
+  .sg-swatch__chip[data-token='rule-2']   { background: var(--rule-2); }
+  .sg-swatch__chip[data-token='accent']   { background: var(--accent); }
+  .sg-swatch__chip[data-token='annotate'] { background: var(--annotate); }
+  .sg-swatch__note {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+  }
+
+  /* -- Type specimens -- */
+  .sg-type { border-block-start: var(--hairline) solid var(--rule-2); }
+  .sg-type__row {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: var(--s-6);
+    padding-block: var(--s-6);
+    border-block-end: var(--hairline) solid var(--rule);
+    align-items: baseline;
+  }
+  .sg-type__meta { align-self: start; }
+  .sg-type__sample { margin: 0; }
+
+  .sp-display { font-family: var(--font-display); font-size: var(--t-display); font-weight: 700; letter-spacing: var(--track-display); line-height: var(--leading-display); }
+  .sp-h1 { font-family: var(--font-display); font-size: var(--t-h1); font-weight: 500; letter-spacing: var(--track-h); }
+  .sp-h2 { font-family: var(--font-display); font-size: var(--t-h2); font-weight: 500; letter-spacing: var(--track-h); }
+  .sp-h3 { font-family: var(--font-body); font-size: var(--t-h3); font-weight: 600; }
+  .sp-body { font-family: var(--font-body); font-size: var(--t-body); }
+  .sp-small { font-family: var(--font-body); font-size: var(--t-small); color: var(--ink-2); }
+  .sp-label { font-family: var(--font-mono); font-size: var(--t-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--ink-3); }
+
+  @media (max-width: 40rem) {
+    .sg-type__row { grid-template-columns: 1fr; gap: var(--s-3); }
+  }
+
+  /* -- Demos -- */
+  .sg-demo { padding-block: var(--s-2); }
+  .sg-row { display: flex; flex-wrap: wrap; gap: var(--s-4); align-items: center; }
+
+  .sg-dims {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--s-8);
+  }
+
+  .sg-kv {
+    display: grid;
+    gap: 0;
+    border-block-start: var(--hairline) solid var(--rule-2);
+    margin-block-start: var(--s-4);
+  }
+  .sg-kv > div {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+  .sg-kv dd { font-size: var(--t-small); color: var(--accent); word-break: break-all; }
+
+  @media (max-width: 40rem) {
+    .sg-kv > div { grid-template-columns: 1fr; gap: var(--s-1); }
+  }
+
+  code {
+    font-size: 0.9em;
+    background: var(--paper-2);
+    padding: 0.1em 0.35em;
+    border: var(--hairline) solid var(--rule);
+  }
+</style>

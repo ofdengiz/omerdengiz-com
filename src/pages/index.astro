@@ -1,0 +1,388 @@
+---
+/**
+ * Home — the drawing set's first sheet.
+ *
+ * Structure follows how a recruiter actually reads: who and where (title
+ * block), what the work is (index), where it happened (timeline), what the
+ * tooling is (port matrix), how to make contact. Summary and bullets are the
+ * resume's own words, pulled from src/data, so the two surfaces cannot drift.
+ */
+import Base from '../layouts/Base.astro';
+import Nav from '../components/nav/Nav.astro';
+import Footer from '../components/content/Footer.astro';
+
+import TitleBlock from '../components/blueprint/TitleBlock.astro';
+import SheetRule from '../components/blueprint/SheetRule.astro';
+import DimensionLine from '../components/blueprint/DimensionLine.astro';
+import PortMatrix from '../components/blueprint/PortMatrix.astro';
+
+import ProjectIndex from '../components/content/ProjectIndex.astro';
+import Timeline from '../components/content/Timeline.astro';
+import ContactGrid from '../components/content/ContactGrid.astro';
+import ResumeLink from '../components/content/ResumeLink.astro';
+
+import { profile } from '../data/profile';
+import { projects, additional } from '../data/projects';
+import { roles, education, certifications, languages } from '../data/experience';
+import { skillGroups } from '../data/skills';
+
+const sections = [
+  { sheet: '01', label: 'Work', href: '#work' },
+  { sheet: '02', label: 'Experience', href: '#experience' },
+  { sheet: '03', label: 'Tooling', href: '#tooling' },
+  { sheet: '04', label: 'Education', href: '#education' },
+  { sheet: '05', label: 'Contact', href: '#contact' },
+];
+---
+
+<Base
+  title={`${profile.name} — ${profile.roleShort}`}
+  description={`Portfolio of ${profile.name} — AWS Certified Solutions Architect. Cloud infrastructure, systems administration, and enterprise networking. ${profile.location.short}.`}
+>
+  <Nav sections={sections} />
+
+  <main id="main" class="sheet">
+    {/* ---- Title block ------------------------------------------------- */}
+    <div class="section -hero">
+      <TitleBlock
+        eyebrow={profile.availability}
+        title={profile.name}
+        subtitle={profile.role}
+        cells={[
+          { label: 'Location', value: profile.location.short },
+          { label: 'Certification', value: 'AWS SAA · CCP', accent: true },
+          { label: 'Discipline', value: 'Cloud · Systems · Network' },
+          { label: 'Revision', value: profile.sheet.revision },
+        ]}
+      />
+
+      <p class="lede hero__summary">{profile.summary}</p>
+
+      <div class="hero__actions">
+        <ResumeLink mode="download" label="Download resume" />
+        <a class="u hero__jump" href="#work">See the work ↓</a>
+      </div>
+    </div>
+
+    {/* ---- 01 Work ----------------------------------------------------- */}
+    <section id="work" class="section">
+      <SheetRule sheet="01" title="Selected work" note={`${projects.length} sheets`} />
+
+      <p class="lede">
+        Five projects, ordered by weight. Expand a row for the detail, or open
+        the case study where one exists.
+      </p>
+
+      <div class="-wide work__index">
+        <ProjectIndex projects={projects} />
+      </div>
+
+      <div class="-wide work__dims">
+        <DimensionLine value="17" label="Virtual machines" note="Capstone Site 2" />
+        <DimensionLine value="8" label="VLAN segments" note="MSP · LAN · DMZ · SAN" />
+        <DimensionLine value="9" label="AWS resources" note="Terraform-provisioned" accent />
+        <DimensionLine value="2" label="Client tenants" note="Lumora · ClearRoots" />
+      </div>
+
+      <details class="more">
+        <summary class="more__summary">
+          <span class="label">Additional work</span>
+          <span class="label more__count">{additional.length}</span>
+        </summary>
+        <ul class="more__list" role="list">
+          {
+            additional.map((a) => (
+              <li class="more__item">
+                <a class="u more__title" href={a.source} target="_blank" rel="noopener">
+                  {a.title} <span aria-hidden="true">↗</span>
+                  <span class="visually-hidden">(opens in a new tab)</span>
+                </a>
+                <span class="more__blurb">{a.summary}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+    </section>
+
+    {/* ---- 02 Experience ----------------------------------------------- */}
+    <section id="experience" class="section">
+      <SheetRule sheet="02" title="Experience" note="2022 – 2025" />
+      <div class="-wide">
+        <Timeline roles={roles} />
+      </div>
+    </section>
+
+    {/* ---- 03 Tooling -------------------------------------------------- */}
+    <section id="tooling" class="section">
+      <SheetRule
+        sheet="03"
+        title="Tooling"
+        note={`${skillGroups.reduce((n, g) => n + g.items.length, 0)} ports`}
+      />
+      <p class="lede">
+        Everything listed here also appears on the resume. If the two ever
+        disagree, one of them is wrong.
+      </p>
+      <div class="-wide">
+        <PortMatrix groups={skillGroups} />
+      </div>
+    </section>
+
+    {/* ---- 04 Education ------------------------------------------------ */}
+    <section id="education" class="section">
+      <SheetRule sheet="04" title="Education & certification" />
+
+      <div class="-wide edu">
+        {
+          education.map((e) => (
+            <article class="edu__item">
+              <div class="edu__when">
+                <p class="label">
+                  {e.conferred && <span class="edu__conferred">Graduated </span>}
+                  <time datetime={e.endISO}>{e.end}</time>
+                </p>
+                <p class="label edu__where">{e.location}</p>
+              </div>
+
+              <div class="edu__what">
+                <h3 class="edu__credential">{e.credential}</h3>
+                <p class="edu__org">{e.institution}</p>
+
+                {e.marks && (
+                  <ul class="edu__marks" role="list">
+                    {e.marks.map((m) => <li>{m}</li>)}
+                  </ul>
+                )}
+
+                {e.description && <p class="edu__desc">{e.description}</p>}
+
+                {e.areas && (
+                  <ul class="edu__areas" role="list">
+                    {e.areas.map((a) => <li>{a}</li>)}
+                  </ul>
+                )}
+              </div>
+            </article>
+          ))
+        }
+
+        <article class="edu__item">
+          <div class="edu__when"><p class="label">Certification</p></div>
+          <div class="edu__what">
+            <ul class="edu__certs" role="list">
+              {
+                certifications.map((c) => (
+                  <li>
+                    {c.href ? (
+                      <a class="u" href={c.href} target="_blank" rel="noopener">{c.name}</a>
+                    ) : (
+                      c.name
+                    )}
+                    <span class="edu__issuer">{c.issuer}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </article>
+
+        <article class="edu__item">
+          <div class="edu__when"><p class="label">Languages</p></div>
+          <div class="edu__what">
+            <ul class="edu__certs" role="list">
+              {
+                languages.map((l) => (
+                  <li>
+                    {l.name}
+                    <span class="edu__issuer">{l.level}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    {/* ---- 05 Contact -------------------------------------------------- */}
+    <section id="contact" class="section">
+      <SheetRule sheet="05" title="Contact" note={profile.location.short} />
+      <p class="lede">{profile.availability}. Based in {profile.location.metro}.</p>
+      <div class="-wide">
+        <ContactGrid />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  .section > * + * { margin-block-start: var(--s-6); }
+
+  /* -- Hero ----------------------------------------------------------- */
+  .-hero { padding-block-start: var(--s-12); }
+
+  .hero__summary { max-inline-size: 62ch; }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-6);
+  }
+
+  .hero__jump {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+
+  /* -- Work ----------------------------------------------------------- */
+  .work__index { margin-block-start: var(--s-8); }
+
+  .work__dims {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--s-8);
+    margin-block-start: var(--s-12);
+    padding-block-start: var(--s-8);
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  /* Secondary work, deliberately quieter than the index above it. */
+  .more { margin-block-start: var(--s-8); }
+
+  .more__summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    cursor: pointer;
+    list-style: none;
+    padding-block: var(--s-2);
+    color: var(--ink-3);
+    transition: color var(--dur) var(--ease);
+  }
+  .more__summary::-webkit-details-marker { display: none; }
+  .more__summary:hover { color: var(--accent); }
+  .more__summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .more__summary::after {
+    content: '+';
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+  }
+  .more[open] .more__summary::after { content: '−'; }
+
+  .more__count { font-variant-numeric: tabular-nums; }
+
+  .more__list {
+    display: grid;
+    gap: 0;
+    margin-block-start: var(--s-3);
+    padding: 0;
+    list-style: none;
+    border-block-start: var(--hairline) solid var(--rule);
+  }
+
+  .more__item {
+    display: grid;
+    grid-template-columns: minmax(12rem, 18rem) 1fr;
+    gap: var(--s-4);
+    padding-block: var(--s-3);
+    border-block-end: var(--hairline) solid var(--rule);
+    align-items: baseline;
+  }
+
+  .more__title { font-family: var(--font-mono); font-size: var(--t-small); }
+  .more__blurb { font-size: var(--t-small); color: var(--ink-3); }
+
+  /* -- Education ------------------------------------------------------ */
+  .edu { border-block-start: var(--hairline) solid var(--rule-2); }
+
+  .edu__item {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: var(--s-8);
+    padding-block: var(--s-6);
+    border-block-end: var(--hairline) solid var(--rule);
+  }
+
+  .edu__when { display: grid; gap: var(--s-1); align-content: start; padding-block-start: 0.25rem; }
+  .edu__where { color: var(--ink-3); }
+  .edu__conferred { color: var(--ink-3); }
+
+  .edu__credential {
+    font-family: var(--font-display);
+    font-size: var(--t-h3);
+    font-weight: 500;
+    letter-spacing: var(--track-h);
+  }
+
+  .edu__org {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--accent);
+    margin-block-start: var(--s-1);
+  }
+
+  .edu__marks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    margin-block-start: var(--s-3);
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .edu__desc {
+    margin-block-start: var(--s-3);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    max-inline-size: 62ch;
+  }
+
+  .edu__areas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-block-start: var(--s-4);
+    padding: 0;
+    list-style: none;
+  }
+  .edu__areas li {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    color: var(--ink-3);
+    padding-inline: var(--s-3);
+    padding-block: var(--s-1);
+    border-inline-start: var(--hairline) solid var(--rule);
+    line-height: 1.6;
+  }
+  .edu__areas li:first-child { padding-inline-start: 0; border-inline-start: 0; }
+
+  .edu__certs { display: grid; gap: var(--s-3); padding: 0; list-style: none; }
+  .edu__certs li {
+    display: grid;
+    gap: var(--s-1);
+    font-size: var(--t-small);
+  }
+  .edu__issuer {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 46rem) {
+    .edu__item { grid-template-columns: 1fr; gap: var(--s-3); }
+    .edu__when { display: flex; gap: var(--s-4); padding-block-start: 0; }
+    .more__item { grid-template-columns: 1fr; gap: var(--s-1); }
+  }
+</style>

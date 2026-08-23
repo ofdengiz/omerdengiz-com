@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="End-to-end Jenkins CI/CD for Spring PetClinic microservices on AWS EKS — dev / QA / prod promotion flow with ECR, Rancher, Selenium, Prometheus, and Grafana.">
+  <meta name="author" content="Omer Dengiz">
+  <meta name="theme-color" content="#0b1020">
+  <link rel="canonical" href="https://omerdengiz.com/projects/petclinic/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="omerdengiz.com">
+  <meta property="og:url" content="https://omerdengiz.com/projects/petclinic/">
+  <meta property="og:title" content="PetClinic on EKS — Jenkins CI/CD case study">
+  <meta property="og:description" content="Full Jenkins delivery pipeline for a Spring microservices app on AWS EKS. Dev → QA → Prod with ECR, Rancher, Selenium, Prometheus + Grafana.">
+  <meta property="og:image" content="https://omerdengiz.com/assets/og.png">
+
+  <title>PetClinic on EKS — Jenkins CI/CD · omerdengiz.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/subpage.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <nav class="nav">
+    <a href="/#top" class="nav-logo"><span class="logo-mark">OD</span><span class="logo-dot"></span></a>
+    <div class="nav-links">
+      <a href="/#about">About</a>
+      <a href="/#capstone">Capstone</a>
+      <a href="/#projects">Projects</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#education">Education</a>
+      <a href="/#contact">Contact</a>
+      <a href="/assets/resume/Omer_Dengiz_Resume.pdf?v=20260822" class="nav-cta" target="_blank" rel="noopener">Resume ↗</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main class="subpage">
+    <div class="container">
+
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span>›</span>
+        <a href="/#projects">Projects</a>
+        <span>›</span>
+        <span aria-current="page">PetClinic on EKS — Jenkins CI/CD</span>
+      </nav>
+
+      <header class="subpage-hero">
+        <p class="eyebrow">DevOps · CI/CD · Kubernetes · Self-directed</p>
+        <h1>Spring <span class="accent">PetClinic</span> on AWS EKS — end-to-end Jenkins delivery</h1>
+        <p class="lede">
+          A full Jenkins pipeline that takes the Spring Boot PetClinic microservices app
+          from a git push to a running deployment on AWS EKS, with a dev → QA → prod
+          promotion flow, ECR image management, Selenium smoke tests, Rancher cluster
+          operations, and Prometheus + Grafana observability.
+        </p>
+        <div class="meta-chips">
+          <span class="chip-static">Jenkins</span>
+          <span class="chip-static">AWS EKS</span>
+          <span class="chip-static">ECR</span>
+          <span class="chip-static">Rancher</span>
+          <span class="chip-static">Nexus</span>
+          <span class="chip-static">Maven</span>
+          <span class="chip-static">Docker</span>
+          <span class="chip-static">Kubernetes</span>
+          <span class="chip-static">Selenium</span>
+          <span class="chip-static">Prometheus</span>
+          <span class="chip-static">Grafana</span>
+          <span class="chip-static">Spring Boot</span>
+        </div>
+        <div class="subpage-cta">
+          <a href="https://github.com/ofdengiz/petclinic-microservices-with-db" target="_blank" rel="noopener" class="btn btn-primary">Code on GitHub ↗</a>
+          <a href="/" class="btn btn-ghost">← Back to portfolio</a>
+        </div>
+      </header>
+
+      <!-- Architecture -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">01</span>What it delivers</h2>
+        <p>
+          The Spring PetClinic reference app is split into a handful of services
+          (customers, vets, visits, api-gateway, admin, config, discovery). Each
+          one has its own Dockerfile and its own Jenkins pipeline stage — the
+          unit of delivery is a service, not the whole app.
+        </p>
+        <ul class="tick-list">
+          <li>Three environments — <code>dev</code>, <code>qa</code>, <code>prod</code> — each an EKS namespace with its own config and secrets.</li>
+          <li>Image promotion via ECR tags: every build publishes a <code>:&lt;git-sha&gt;</code> tag, and promotion is a retag, not a rebuild.</li>
+          <li>Smoke tests with Selenium against the deployed environment before promotion to the next stage is allowed.</li>
+          <li>Rancher-managed cluster for day-2 operations — kubectl context, RBAC, and dashboards in one place.</li>
+          <li>Prometheus + Grafana wired to the cluster and the app's Micrometer endpoints.</li>
+        </ul>
+      </section>
+
+      <!-- Pipeline -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">02</span>The Jenkins pipeline</h2>
+        <p>
+          The Jenkinsfile is declarative, parameterized on target environment,
+          and runs each stage only for services whose code changed in the
+          current commit. That way a one-line fix to <code>customers-service</code>
+          doesn't rebuild every image in the repo.
+        </p>
+        <div class="pipeline-stages">
+          <div class="stage"><strong>01 · Checkout</strong>Pull the monorepo, compute which services changed.</div>
+          <div class="stage"><strong>02 · Build</strong>Maven build per changed service — unit tests gate the stage.</div>
+          <div class="stage"><strong>03 · Package</strong><code>docker build</code> per service, tagged with the git SHA.</div>
+          <div class="stage"><strong>04 · Publish</strong>Push to AWS ECR; Nexus acts as the backup maven-central mirror.</div>
+          <div class="stage"><strong>05 · Deploy dev</strong>Apply Kubernetes manifests into the <code>petclinic-dev</code> namespace on EKS.</div>
+          <div class="stage"><strong>06 · Smoke test</strong>Selenium hits the gateway and verifies the happy path — owners, vets, visits.</div>
+          <div class="stage"><strong>07 · Promote QA</strong>Manual approval, then retag ECR image and apply <code>petclinic-qa</code> manifests.</div>
+          <div class="stage"><strong>08 · Promote prod</strong>Second approval gate. Same retag + apply into <code>petclinic-prod</code>.</div>
+          <div class="stage"><strong>09 · Observability</strong>Grafana dashboards light up on the new pods via Prometheus discovery.</div>
+        </div>
+      </section>
+
+      <!-- Infrastructure -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">03</span>Supporting infrastructure</h2>
+        <p>
+          Everything outside the app itself runs on AWS — the EKS cluster, the
+          ECR registries, the Jenkins controller + agents, Nexus, and the
+          monitoring stack. Cluster is 3 worker nodes by default; Rancher
+          overlays multi-cluster management.
+        </p>
+
+<pre class="code-block"><code><span class="c"># Namespaces — one per environment, with RBAC + network policies</span>
+kubectl create namespace petclinic-dev
+kubectl create namespace petclinic-qa
+kubectl create namespace petclinic-prod
+
+<span class="c"># ECR login for Jenkins agent (via IRSA / instance role in the real pipeline)</span>
+aws ecr get-login-password --region us-east-1 \
+  | docker login --username AWS --password-stdin \
+      <span class="s">&lt;account&gt;</span>.dkr.ecr.us-east-1.amazonaws.com
+
+<span class="c"># Rollout to the target namespace</span>
+kubectl -n petclinic-<span class="s">$ENV</span> apply -f k8s/
+kubectl -n petclinic-<span class="s">$ENV</span> rollout status deploy/customers-service</code></pre>
+      </section>
+
+      <!-- Observability -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">04</span>Observability</h2>
+        <p>
+          Each Spring Boot service exposes Micrometer metrics at <code>/actuator/prometheus</code>.
+          Prometheus scrapes via the Kubernetes service-discovery SD config;
+          Grafana dashboards show JVM health, HTTP latency percentiles, and
+          per-pod resource usage side by side with the rollout timeline.
+        </p>
+        <ul class="tick-list">
+          <li>One Grafana dashboard per service with p50 / p95 / p99 latency panels.</li>
+          <li>Cluster-level dashboard for node CPU, memory, and pod count per namespace.</li>
+          <li>Alerts on elevated 5xx rate after a deploy — deliberately cheap and cheerful, not PagerDuty.</li>
+        </ul>
+      </section>
+
+      <!-- What I learned -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">05</span>What this project taught me</h2>
+        <div class="decision-grid">
+          <article class="decision">
+            <h4>Promotion by retag, not rebuild</h4>
+            <p>
+              The thing that runs in prod must be byte-identical to what was
+              smoke-tested in QA. Rebuilding on promotion re-introduces
+              supply-chain risk for no benefit.
+            </p>
+          </article>
+          <article class="decision">
+            <h4>Pipelines per service, not per app</h4>
+            <p>
+              Monolithic pipelines optimize for the case where you change
+              everything at once. In reality you almost never do. Per-service
+              pipelines cut feedback time dramatically.
+            </p>
+          </article>
+          <article class="decision">
+            <h4>Rancher over raw kubectl</h4>
+            <p>
+              When multiple clusters and multiple namespaces enter the picture,
+              Rancher's RBAC and context switching are worth the overhead of
+              running the control plane.
+            </p>
+          </article>
+          <article class="decision">
+            <h4>Smoke tests gate promotion — not unit tests</h4>
+            <p>
+              Unit tests gate the build; Selenium against the real deployed URL
+              gates promotion. Different questions, different tools.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="subpage-section subpage-footer-cta">
+        <h2>Full source on GitHub</h2>
+        <p>
+          Jenkinsfile, Kubernetes manifests, Dockerfiles, and Terraform for the
+          supporting infrastructure.
+        </p>
+        <div class="subpage-cta">
+          <a href="https://github.com/ofdengiz/petclinic-microservices-with-db" target="_blank" rel="noopener" class="btn btn-primary">ofdengiz/petclinic-microservices-with-db ↗</a>
+          <a href="/#projects" class="btn btn-ghost">See other projects</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        © <span id="year"></span> Omer Dengiz ·
+        Built with HTML, CSS, and a touch of canvas ·
+        Hosted on AWS S3 + CloudFront + Lambda@Edge ·
+        Provisioned with Terraform
+      </p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

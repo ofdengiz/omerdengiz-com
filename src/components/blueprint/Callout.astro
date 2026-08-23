@@ -1,0 +1,93 @@
+---
+/**
+ * Callout — a numbered leader pointing at a detail.
+ *
+ * On a drawing, a callout marks a specific feature and refers the reader to a
+ * note. Here it annotates a decision, a constraint, or a caveat inside a case
+ * study. The number is the point of the component: callouts are referenceable
+ * ("see 3"), which a generic aside is not.
+ *
+ * `tone="annotate"` uses the redline colour and is reserved for genuine
+ * corrections, risks, or things that went wrong — never for emphasis.
+ */
+
+interface Props {
+  /** Reference number shown in the marker. */
+  n: number | string;
+  /** Short heading for the note. */
+  title?: string;
+  tone?: 'default' | 'annotate';
+}
+
+const { n, title, tone = 'default' } = Astro.props;
+---
+
+<aside class:list={['callout', tone === 'annotate' && '-annotate']}>
+  <span class="callout__marker" aria-hidden="true">{n}</span>
+
+  <div class="callout__body">
+    {title && <p class="callout__title">{title}</p>}
+    <div class="callout__text"><slot /></div>
+  </div>
+</aside>
+
+<style>
+  .callout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-4);
+    align-items: start;
+    padding-block: var(--s-4);
+    /* The leader: a vertical rule connecting marker to note. */
+    border-inline-start: var(--hairline) solid var(--rule-2);
+    padding-inline-start: var(--s-4);
+  }
+
+  .-annotate { border-inline-start-color: var(--annotate); }
+
+  /* Circled number, the way a drawing balloons a callout. */
+  .callout__marker {
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border: var(--hairline) solid var(--rule-2);
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 500;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+    /* Optical alignment with the first line of body text. */
+    margin-block-start: 0.1rem;
+  }
+
+  .-annotate .callout__marker {
+    border-color: var(--annotate);
+    color: var(--annotate);
+  }
+
+  .callout__title {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--t-body);
+    margin-block-end: var(--s-1);
+  }
+
+  .-annotate .callout__title { color: var(--annotate); }
+
+  .callout__text {
+    color: var(--ink-2);
+    font-size: var(--t-small);
+  }
+
+  .callout__text :global(p + p) { margin-block-start: var(--s-3); }
+
+  .callout__text :global(code) {
+    font-size: 0.9em;
+    color: var(--ink);
+    background: var(--paper-2);
+    padding: 0.1em 0.35em;
+    border: var(--hairline) solid var(--rule);
+  }
+</style>

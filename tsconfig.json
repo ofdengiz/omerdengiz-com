@@ -1,0 +1,19 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "allowJs": true
+  },
+  "include": [".astro/types.d.ts", "src/**/*", "*.mjs", "*.ts"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    // Legacy hand-written site — superseded by src/, removed at Phase 7 cutover.
+    "site",
+    // Old bootcamp material and Lambda@Edge (CommonJS, checked separately).
+    "AWS-DevOps",
+    "Job_Application",
+    "lambda-edge",
+    "terraform"
+  ]
+}

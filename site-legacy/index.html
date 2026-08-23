@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Omer Dengiz — AWS Certified Solutions Architect. Cloud, DevOps, Systems, Networking, and Automation. Toolkit: AWS, Terraform, Kubernetes, Jenkins, Ansible, Linux, Cisco, Python.">
+  <meta name="author" content="Omer Dengiz">
+  <meta name="theme-color" content="#0b1020">
+  <link rel="canonical" href="https://omerdengiz.com/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="omerdengiz.com">
+  <meta property="og:url" content="https://omerdengiz.com/">
+  <meta property="og:title" content="Omer Dengiz — Cloud · DevOps · Systems · Networking">
+  <meta property="og:description" content="AWS · Terraform · Kubernetes · Jenkins · Ansible · Linux · Cisco · Python. AWS Certified Solutions Architect · Kanata, ON.">
+  <meta property="og:image" content="https://omerdengiz.com/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Omer Dengiz — Cloud, DevOps, Systems, Networking. AWS Certified Solutions Architect.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Omer Dengiz — Cloud · DevOps · Systems · Networking">
+  <meta name="twitter:description" content="AWS · Terraform · Kubernetes · Jenkins · Ansible · Linux · Cisco · Python.">
+  <meta name="twitter:image" content="https://omerdengiz.com/assets/og.png">
+
+  <title>Omer Dengiz — Cloud · DevOps · Systems · Networking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <nav class="nav">
+    <a href="#top" class="nav-logo"><span class="logo-mark">OD</span><span class="logo-dot"></span></a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#capstone">Capstone</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+      <a href="/assets/resume/Omer_Dengiz_Resume.pdf?v=20260822" class="nav-cta" target="_blank" rel="noopener">Resume ↗</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <header id="top" class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow"><span class="pulse-dot"></span> Open to Cloud, DevOps, Systems &amp; Networking roles</p>
+      <h1 class="hero-title">
+        <span class="word">Omer</span>
+        <span class="word">Dengiz</span>
+      </h1>
+      <p class="hero-subtitle">
+        <span class="rotator" aria-live="polite">
+          <span class="rotator-item">Cloud Infrastructure</span>
+          <span class="rotator-item">DevOps Engineering</span>
+          <span class="rotator-item">Systems Administration</span>
+          <span class="rotator-item">Enterprise Networking</span>
+        </span>
+      </p>
+      <p class="hero-desc">
+        AWS Certified Solutions Architect · Computer Systems Technician — Networking
+        from Algonquin College. Toolkit spans
+        <em>Terraform</em>, <em>Kubernetes</em>, <em>Jenkins</em>, <em>Ansible</em>,
+        Linux, and Cisco.
+      </p>
+      <div class="hero-cta">
+        <a href="#capstone" class="btn btn-primary">View Capstone</a>
+        <a href="#projects" class="btn btn-ghost">Explore Projects</a>
+        <a href="/assets/resume/Omer_Dengiz_Resume.pdf?v=20260822" class="btn btn-ghost" target="_blank" rel="noopener">Download Resume</a>
+      </div>
+      <div class="hero-badges">
+        <span class="badge"><span class="badge-dot aws"></span>AWS SAA</span>
+        <span class="badge"><span class="badge-dot aws"></span>AWS CCP</span>
+      </div>
+    </div>
+    <a href="#about" class="hero-scroll" aria-label="Scroll to next section">
+      <span class="mouse"><span class="wheel"></span></span>
+    </a>
+  </header>
+
+  <main>
+
+    <section id="about" class="section reveal">
+      <div class="container two-col">
+        <div>
+          <h2 class="section-title"><span class="section-num">01</span>About</h2>
+          <p class="lead">
+            I design and operate cloud and hybrid infrastructure. Production experience at
+            <strong>Interac Corp.</strong> (systems engineering on distributed financial-services
+            systems) and <strong>Nioyatech LLC</strong> (AWS, Terraform, Ansible, and CI/CD),
+            plus deep classroom and lab work across Linux, Windows Server, Cisco networking,
+            virtualization, and security.
+          </p>
+          <p>
+            My focus: infrastructure that's <em>automated</em>, <em>observable</em>, and <em>documented</em> — whether that
+            means a Terraform-provisioned VPC, an Ansible-managed fleet, or a Jenkins pipeline pushing
+            microservices to EKS. This very site is a small AWS demo: S3 + CloudFront + ACM +
+            Lambda@Edge, provisioned with Terraform, fronted by Route 53 across two AWS accounts.
+          </p>
+          <div class="about-stats">
+            <div class="stat"><span class="stat-num" data-count="3">0</span><span class="stat-label">AWS environments provisioned</span></div>
+            <div class="stat"><span class="stat-num" data-count="30">0</span><span class="stat-label">Linux servers configured with Ansible</span></div>
+            <div class="stat"><span class="stat-num" data-count="20">0</span><span class="stat-label">CI/CD pipelines delivered</span></div>
+            <div class="stat"><span class="stat-num" data-count="17">0</span><span class="stat-label">VMs in capstone MSP environment</span></div>
+          </div>
+        </div>
+        <aside class="about-card">
+          <div class="card-header">
+            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="card-title">~/profile.yaml</span>
+          </div>
+<pre class="code"><span class="k">name</span>: Omer Dengiz
+<span class="k">role</span>: Cloud &amp; DevOps Engineer
+<span class="k">location</span>: Kanata, ON <span class="c"># Ottawa metro</span>
+<span class="k">graduated</span>: 2026-04
+<span class="k">gpa</span>: 3.75 / 4.0
+<span class="k">certifications</span>:
+  - AWS Solutions Architect – Associate
+  - AWS Cloud Practitioner
+<span class="k">languages</span>:
+  - English   <span class="c"># Professional</span>
+  - Turkish   <span class="c"># Native</span>
+  - Mandarin  <span class="c"># HSK Level 6</span>
+<span class="k">latest</span>: &gt; Hybrid MSP + AWS Kubernetes
+           capstone, delivered Apr 2026.
+<span class="k">status</span>: available</pre>
+        </aside>
+      </div>
+    </section>
+
+    <section id="capstone" class="section section-capstone reveal">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">02</span>Featured Capstone</h2>
+        <div class="capstone-card">
+          <div class="capstone-body">
+            <p class="capstone-label">ALGONQUIN COLLEGE · EMERGING TECHNOLOGIES · JAN – APR 2026</p>
+            <h3 class="capstone-title">Hybrid MSP Infrastructure &amp; AWS Kubernetes Service</h3>
+            <p class="capstone-lede">
+              A 17-VM, two-site managed service environment for two client tenants, extended
+              with a public HTTPS web service running on a kubeadm Kubernetes cluster
+              provisioned in AWS with Terraform — the cloud side built and operated end to end.
+            </p>
+            <div class="capstone-grid">
+              <div>
+                <h4>On-Prem MSP Environment</h4>
+                <ul class="tick-list">
+                  <li>Proxmox VE virtualization across two sites</li>
+                  <li>OPNsense firewalls with site-to-site OpenVPN tunnel</li>
+                  <li>Windows Server 2022 AD DS + Samba AD</li>
+                  <li>Segmented VLANs, iSCSI SAN, Veeam Backup</li>
+                </ul>
+              </div>
+              <div>
+                <h4>AWS Kubernetes Extension</h4>
+                <ul class="tick-list">
+                  <li>9 AWS resources in Terraform (EC2, Route 53, S3 state, IAM)</li>
+                  <li>2-node kubeadm cluster, Flannel CNI</li>
+                  <li>Dockerized nginx behind Caddy + Let's Encrypt TLS</li>
+                  <li>Verified end-to-end with HTTP/2 200</li>
+                </ul>
+              </div>
+            </div>
+            <div class="tech-badges">
+              <span class="tech">Proxmox VE</span>
+              <span class="tech">OPNsense</span>
+              <span class="tech">Windows Server 2022</span>
+              <span class="tech">Samba AD</span>
+              <span class="tech">iSCSI</span>
+              <span class="tech">Veeam</span>
+              <span class="tech">OpenVPN</span>
+              <span class="tech">Terraform</span>
+              <span class="tech">AWS EC2</span>
+              <span class="tech">Route 53</span>
+              <span class="tech">kubeadm</span>
+              <span class="tech">Flannel</span>
+              <span class="tech">Docker</span>
+              <span class="tech">Caddy</span>
+              <span class="tech">Let's Encrypt</span>
+            </div>
+            <div class="capstone-cta">
+              <a href="/projects/capstone/" class="btn btn-primary">
+                Read Case Study →
+              </a>
+              <a href="/assets/docs/Capstone_Technical_Report.pdf"
+                 class="btn btn-ghost" target="_blank" rel="noopener">
+                 Technical Report (PDF)
+              </a>
+              <span class="capstone-meta">122 pages · 8.7 MB</span>
+            </div>
+          </div>
+          <div class="capstone-diagram" aria-hidden="true">
+            <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#4cc9f0"/>
+                  <stop offset="100%" stop-color="#7b2cbf"/>
+                </linearGradient>
+              </defs>
+              <circle cx="160" cy="160" r="150" fill="none" stroke="url(#g1)" stroke-width="1" opacity="0.5"/>
+              <circle cx="160" cy="160" r="110" fill="none" stroke="url(#g1)" stroke-width="1" opacity="0.3"/>
+              <circle cx="160" cy="160" r="70"  fill="none" stroke="url(#g1)" stroke-width="1" opacity="0.2"/>
+              <g class="orbit orbit-1">
+                <circle cx="310" cy="160" r="6" fill="#4cc9f0"/>
+              </g>
+              <g class="orbit orbit-2">
+                <circle cx="270" cy="160" r="5" fill="#7b2cbf"/>
+              </g>
+              <g class="orbit orbit-3">
+                <circle cx="230" cy="160" r="4" fill="#f72585"/>
+              </g>
+              <g transform="translate(160,160)">
+                <rect x="-34" y="-24" width="68" height="48" rx="8" fill="rgba(76,201,240,0.1)" stroke="#4cc9f0"/>
+                <text x="0" y="5" text-anchor="middle" fill="#e7ecff" font-size="12" font-family="JetBrains Mono">k8s</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="section reveal">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">03</span>Selected Projects</h2>
+        <p class="section-sub">Production-style labs and self-directed builds. Filter by category:</p>
+
+        <div class="filter">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="aws">AWS</button>
+          <button class="chip" data-filter="iac">IaC</button>
+          <button class="chip" data-filter="k8s">Kubernetes</button>
+          <button class="chip" data-filter="cicd">CI/CD</button>
+        </div>
+
+        <div class="projects-grid">
+
+          <article class="project" data-cat="aws iac cicd">
+            <div class="project-top">
+              <span class="project-icon">🚀</span>
+              <h3>Microservices CI/CD Pipeline</h3>
+              <p class="project-sub">Spring PetClinic on AWS EKS · End-to-end Jenkins delivery</p>
+            </div>
+            <p>
+              End-to-end Jenkins pipeline deploying a Java Spring microservices app to AWS EKS. Built
+              dev / staging / production promotion flow with Maven, containerization, Selenium automation,
+              Rancher-managed clusters, and Prometheus + Grafana observability.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">Jenkins</span><span class="tech">AWS EKS</span>
+              <span class="tech">ECR</span><span class="tech">Rancher</span>
+              <span class="tech">Nexus</span><span class="tech">Maven</span>
+              <span class="tech">Docker</span><span class="tech">Selenium</span>
+              <span class="tech">Prometheus</span><span class="tech">Grafana</span>
+            </div>
+            <div class="project-foot">
+              <span class="role">DevOps · self-directed</span>
+              <span class="foot-links">
+                <a href="/projects/petclinic/" class="link-arrow">Case Study →</a>
+                <a href="https://github.com/ofdengiz/petclinic-microservices-with-db" target="_blank" rel="noopener" class="link-arrow">GitHub ↗</a>
+              </span>
+            </div>
+          </article>
+
+          <article class="project" data-cat="aws iac">
+            <div class="project-top">
+              <span class="project-icon">🌐</span>
+              <h3>Blog App on AWS — HA Architecture</h3>
+              <p class="project-sub">Django · ALB · Auto Scaling · RDS · CloudFront · Route 53</p>
+            </div>
+            <p>
+              Deployed a Django blog application on a production-grade AWS architecture: multi-AZ VPC with
+              public/private subnets, Application Load Balancer fronting an Auto Scaling Group of EC2
+              instances, RDS MySQL in private subnets, S3 + DynamoDB for media, and CloudFront for edge
+              delivery — terminated with ACM-issued TLS.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">AWS VPC</span><span class="tech">ALB</span>
+              <span class="tech">Auto Scaling</span><span class="tech">EC2</span>
+              <span class="tech">RDS MySQL</span><span class="tech">S3</span>
+              <span class="tech">DynamoDB</span><span class="tech">Lambda</span>
+              <span class="tech">CloudFront</span><span class="tech">Route 53</span>
+              <span class="tech">ACM</span>
+            </div>
+            <div class="project-foot">
+              <span class="role">AWS Cloud Architect</span>
+              <a href="https://github.com/ofdengiz" target="_blank" rel="noopener" class="link-arrow">GitHub ↗</a>
+            </div>
+          </article>
+
+          <article class="project" data-cat="aws iac">
+            <div class="project-top">
+              <span class="project-icon">🧱</span>
+              <h3>Phonebook Application — Terraform on AWS</h3>
+              <p class="project-sub">Flask · ALB · Auto Scaling Group · RDS</p>
+            </div>
+            <p>
+              Fully Terraform-provisioned Python Flask web app on AWS. HCL modules wire an ALB, Launch
+              Template, Auto Scaling Group, and RDS MySQL together — the same stack a team would take
+              from dev to prod via variable files and remote state.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">Terraform</span><span class="tech">AWS</span>
+              <span class="tech">ALB</span><span class="tech">ASG</span>
+              <span class="tech">RDS</span><span class="tech">Flask</span>
+            </div>
+            <div class="project-foot">
+              <span class="role">Infrastructure as Code</span>
+              <a href="https://github.com/ofdengiz" target="_blank" rel="noopener" class="link-arrow">GitHub ↗</a>
+            </div>
+          </article>
+
+          <article class="project" data-cat="k8s">
+            <div class="project-top">
+              <span class="project-icon">☸️</span>
+              <h3>Kubernetes Microservice — Phonebook</h3>
+              <p class="project-sub">Multi-tier app on Kubernetes</p>
+            </div>
+            <p>
+              Packaged a multi-tier Flask + MySQL app as a Kubernetes workload with Deployments,
+              Services, ConfigMaps, Secrets, and persistent volumes — demonstrating the mapping from
+              classic VM architectures to cloud-native primitives.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">Kubernetes</span><span class="tech">Docker</span>
+              <span class="tech">Flask</span><span class="tech">MySQL</span>
+              <span class="tech">YAML Manifests</span>
+            </div>
+            <div class="project-foot">
+              <span class="role">Container Orchestration</span>
+              <a href="https://github.com/ofdengiz" target="_blank" rel="noopener" class="link-arrow">GitHub ↗</a>
+            </div>
+          </article>
+
+          <article class="project" data-cat="iac cicd">
+            <div class="project-top">
+              <span class="project-icon">⚙️</span>
+              <h3>Ansible Multi-Tier Deployment</h3>
+              <p class="project-sub">PostgreSQL · Node.js · React fleet automation</p>
+            </div>
+            <p>
+              Idempotent Ansible playbooks and roles deploying a three-tier PostgreSQL / Node.js / React
+              application across a fleet, with separate inventories for dev and prod and role-based
+              variable overrides for environment drift control.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">Ansible</span><span class="tech">PostgreSQL</span>
+              <span class="tech">Node.js</span><span class="tech">React</span>
+              <span class="tech">Linux</span>
+            </div>
+            <div class="project-foot">
+              <span class="role">Configuration Management</span>
+              <a href="https://github.com/ofdengiz" target="_blank" rel="noopener" class="link-arrow">GitHub ↗</a>
+            </div>
+          </article>
+
+          <article class="project featured" data-cat="aws iac">
+            <div class="project-top">
+              <span class="project-icon">☁️</span>
+              <h3>This Website — omerdengiz.com</h3>
+              <p class="project-sub">S3 · CloudFront · ACM · Lambda@Edge · Terraform · Cross-Account Route 53</p>
+            </div>
+            <p>
+              You're looking at it. Static site hosted on S3 behind CloudFront with an ACM certificate,
+              pretty URLs and security headers injected at the edge via Lambda@Edge. Fully provisioned in
+              Terraform and published through a Route 53 hosted zone that lives in a <em>separate</em> AWS
+              account from the hosting infrastructure.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">AWS S3</span><span class="tech">CloudFront</span>
+              <span class="tech">ACM</span><span class="tech">Lambda@Edge</span>
+              <span class="tech">Route 53</span><span class="tech">Terraform</span>
+              <span class="tech">HTML / CSS / JS</span>
+            </div>
+            <div class="project-foot">
+              <span class="role">Architect + Build + Deploy</span>
+              <span class="foot-links">
+                <a href="/meta/" class="link-arrow">Case Study →</a>
+                <a href="https://github.com/ofdengiz/omerdengiz-com" target="_blank" rel="noopener" class="link-arrow">Source ↗</a>
+              </span>
+            </div>
+          </article>
+
+          <article class="project featured" data-cat="cicd k8s">
+            <div class="project-top">
+              <span class="project-icon">🎬</span>
+              <h3>filmapp — DevSecOps Pipeline</h3>
+              <p class="project-sub">React / TS · Jenkins + SonarQube + OWASP + Trivy · Kubernetes rollout</p>
+            </div>
+            <p>
+              A React + TypeScript streaming-app demo whose headline artifact is its Jenkins
+              pipeline — SonarQube quality gate, OWASP Dependency-Check, Trivy filesystem and
+              image scans, then a Kubernetes rollout. Every gate enforced before any image
+              reaches the registry.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">React</span><span class="tech">TypeScript</span>
+              <span class="tech">Jenkins</span><span class="tech">SonarQube</span>
+              <span class="tech">OWASP DC</span><span class="tech">Trivy</span>
+              <span class="tech">Docker</span><span class="tech">Kubernetes</span>
+            </div>
+            <div class="project-foot">
+              <span class="role">DevSecOps · self-directed</span>
+              <span class="foot-links">
+                <a href="/projects/filmapp/" class="link-arrow">Case Study →</a>
+                <a href="https://github.com/ofdengiz/filmapp" target="_blank" rel="noopener" class="link-arrow">GitHub ↗</a>
+              </span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="section reveal">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">04</span>Skills &amp; Tooling</h2>
+        <div class="skills-grid">
+
+          <div class="skill-group">
+            <h4>Cloud &amp; DevOps</h4>
+            <ul>
+              <li>AWS EC2, S3, RDS, Lambda, VPC, Route 53</li>
+              <li>IAM, EKS, ALB, Auto Scaling, CloudFormation</li>
+              <li>CloudWatch, ECR, CloudFront</li>
+              <li>Terraform, Ansible, Helm</li>
+              <li>Docker, Kubernetes, Jenkins</li>
+              <li>Prometheus, Grafana, Git / GitHub</li>
+            </ul>
+          </div>
+
+          <div class="skill-group">
+            <h4>Systems &amp; Platforms</h4>
+            <ul>
+              <li>Linux: Red Hat, Ubuntu, SUSE / openSUSE</li>
+              <li>Windows 10 / 11 &amp; Server 2019 / 2022</li>
+              <li>Active Directory, Group Policy, Samba AD</li>
+              <li>VMware, Proxmox VE, OPNsense</li>
+              <li>Microsoft 365, ServiceNow, Veeam Backup</li>
+            </ul>
+          </div>
+
+          <div class="skill-group">
+            <h4>Networking &amp; Security</h4>
+            <ul>
+              <li>Cisco IOS, TCP/IP, OSPF, BGP, QoS</li>
+              <li>VLANs, DHCP, DNS, routing &amp; switching</li>
+              <li>802.11 a/b/g/n/ac, 802.1X EAP-PEAP, ArubaOS</li>
+              <li>OpenVPN, site-to-site VPN, firewalls, IDS/IPS</li>
+              <li>PKI, TLS/SSH, CVSS, Wireshark, iSCSI</li>
+            </ul>
+          </div>
+
+          <div class="skill-group">
+            <h4>Scripting &amp; Automation</h4>
+            <ul>
+              <li>Python, Bash, PowerShell</li>
+              <li>SQL, YAML, HCL (Terraform)</li>
+              <li>CI/CD pipeline design</li>
+              <li>Infrastructure as Code patterns</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="section reveal">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">05</span>Experience</h2>
+        <div class="timeline">
+
+          <div class="tl-item">
+            <div class="tl-marker"></div>
+            <div class="tl-body">
+              <div class="tl-head">
+                <h3>System Engineering Intern</h3>
+                <span class="tl-date">Sep 2025 – Dec 2025</span>
+              </div>
+              <p class="tl-org">Interac Corp. · Toronto, ON</p>
+              <ul>
+                <li>Consolidated monitoring data, investigated incidents, and updated runbooks supporting reliable payment infrastructure.</li>
+                <li>Supported automation and deployment workflows with engineering, operations, and security through ServiceNow change and incident processes — improving release readiness and audit traceability.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-marker"></div>
+            <div class="tl-body">
+              <div class="tl-head">
+                <h3>DevOps Engineer</h3>
+                <span class="tl-date">Nov 2022 – May 2024</span>
+              </div>
+              <p class="tl-org">Nioyatech LLC · Remote</p>
+              <ul>
+                <li>Automated provisioning for 3 multi-tier AWS environments (EC2, S3, RDS, Lambda, IAM, VPC, EKS) with Terraform and CloudFormation.</li>
+                <li>Improved reliability across 30+ Linux servers with Ansible playbooks for configuration, patching, and compliance baselines.</li>
+                <li>Accelerated delivery for 20+ applications via Jenkins and Git CI/CD pipelines with Docker and Kubernetes — enabling zero-downtime microservices releases.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="education" class="section reveal">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">06</span>Education</h2>
+        <div class="edu-grid">
+
+          <article class="edu-card">
+            <div class="edu-top">
+              <div>
+                <h3>Computer Systems Technician — Networking</h3>
+                <p class="edu-org">Algonquin College · Ottawa, ON</p>
+              </div>
+              <span class="edu-date">Apr 2026</span>
+            </div>
+            <div class="edu-badges">
+              <span class="badge">GPA 3.75 / 4.0</span>
+              <span class="badge">Dean's Honour List</span>
+            </div>
+            <p class="edu-desc">
+              Two-year diploma covering enterprise networking, systems and server
+              administration, virtualization and storage, cloud infrastructure, scripting
+              and automation, and information security. Capstone — Hybrid MSP + AWS
+              Kubernetes Service — featured above.
+            </p>
+            <div class="tech-badges">
+              <span class="tech">Routing &amp; Switching</span>
+              <span class="tech">Wireless</span>
+              <span class="tech">Network Security</span>
+              <span class="tech">Windows &amp; Linux Admin</span>
+              <span class="tech">Virtualization</span>
+              <span class="tech">Cloud Infrastructure</span>
+              <span class="tech">Scripting &amp; Automation</span>
+              <span class="tech">Databases</span>
+            </div>
+          </article>
+
+          <article class="edu-card">
+            <div class="edu-top">
+              <div>
+                <h3>Bachelor of Arts, Chinese Language</h3>
+                <p class="edu-org">Nanjing University · Nanjing, China</p>
+              </div>
+              <span class="edu-date">Jun 2016</span>
+            </div>
+            <div class="edu-badges">
+              <span class="badge">HSK Level 6 — Advanced</span>
+            </div>
+            <p class="edu-desc">
+              Four-year immersive program in Mandarin Chinese language, literature, and
+              culture — building the communication skills that support work across
+              multicultural engineering and operations teams.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section section-contact reveal">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">07</span>Let's Talk</h2>
+        <p class="lead">
+          Open to full-time Cloud, DevOps, or Systems Engineering roles.
+          Based in Ottawa metro (Kanata, ON).
+        </p>
+        <div class="contact-grid">
+          <a href="mailto:omerdengiz368@gmail.com" class="contact-card">
+            <span class="c-label">Email</span>
+            <span class="c-value">omerdengiz368@gmail.com</span>
+          </a>
+          <a href="tel:+16474469905" class="contact-card">
+            <span class="c-label">Phone</span>
+            <span class="c-value">(647) 446-9905</span>
+          </a>
+          <a href="https://linkedin.com/in/omer-faruk-dengiz" target="_blank" rel="noopener" class="contact-card">
+            <span class="c-label">LinkedIn</span>
+            <span class="c-value">/in/omer-faruk-dengiz</span>
+          </a>
+          <a href="https://github.com/ofdengiz" target="_blank" rel="noopener" class="contact-card">
+            <span class="c-label">GitHub</span>
+            <span class="c-value">github.com/ofdengiz</span>
+          </a>
+          <a href="/assets/resume/Omer_Dengiz_Resume.pdf?v=20260822" target="_blank" rel="noopener" class="contact-card contact-cta">
+            <span class="c-label">Resume</span>
+            <span class="c-value">Omer_Dengiz_Resume.pdf ↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        © <span id="year"></span> Omer Dengiz ·
+        Built with HTML, CSS, and a touch of canvas ·
+        Hosted on AWS S3 + CloudFront + Lambda@Edge ·
+        Provisioned with Terraform ·
+        <a href="/meta/" class="footer-link">How this site is built →</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

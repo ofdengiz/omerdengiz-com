@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hybrid MSP Infrastructure & AWS Kubernetes Service — 17-VM two-site MSP environment extended with a Terraform-provisioned kubeadm cluster on AWS. Algonquin College capstone, Apr 2026.">
+  <meta name="author" content="Omer Dengiz">
+  <meta name="theme-color" content="#0b1020">
+  <link rel="canonical" href="https://omerdengiz.com/projects/capstone/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="omerdengiz.com">
+  <meta property="og:url" content="https://omerdengiz.com/projects/capstone/">
+  <meta property="og:title" content="Hybrid MSP + AWS Kubernetes — Capstone case study">
+  <meta property="og:description" content="17-VM two-site MSP environment extended with a kubeadm cluster on AWS. Proxmox · OPNsense · Windows Server · Terraform · kubeadm.">
+  <meta property="og:image" content="https://omerdengiz.com/assets/og.png">
+
+  <title>Capstone — Hybrid MSP + AWS Kubernetes · omerdengiz.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/subpage.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%81%EF%B8%8F%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <nav class="nav">
+    <a href="/#top" class="nav-logo"><span class="logo-mark">OD</span><span class="logo-dot"></span></a>
+    <div class="nav-links">
+      <a href="/#about">About</a>
+      <a href="/#capstone">Capstone</a>
+      <a href="/#projects">Projects</a>
+      <a href="/#skills">Skills</a>
+      <a href="/#education">Education</a>
+      <a href="/#contact">Contact</a>
+      <a href="/assets/resume/Omer_Dengiz_Resume.pdf?v=20260822" class="nav-cta" target="_blank" rel="noopener">Resume ↗</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main class="subpage">
+    <div class="container">
+
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span>›</span>
+        <a href="/#projects">Projects</a>
+        <span>›</span>
+        <span aria-current="page">Capstone — Hybrid MSP + AWS Kubernetes</span>
+      </nav>
+
+      <header class="subpage-hero">
+        <p class="eyebrow">Algonquin College · Emerging Technologies · Jan – Apr 2026</p>
+        <h1><span class="accent">Hybrid MSP</span> Infrastructure &amp; AWS Kubernetes Service</h1>
+        <p class="lede">
+          A 17-VM, two-site managed-service environment for two client tenants,
+          delivered on Proxmox with OPNsense firewalls, Windows Server 2022 AD
+          and Samba AD — then extended with a public HTTPS web service running
+          on a kubeadm Kubernetes cluster provisioned in AWS with Terraform.
+        </p>
+        <div class="meta-chips">
+          <span class="chip-static">Proxmox VE</span>
+          <span class="chip-static">OPNsense</span>
+          <span class="chip-static">Windows Server 2022</span>
+          <span class="chip-static">Samba AD</span>
+          <span class="chip-static">iSCSI</span>
+          <span class="chip-static">Veeam Backup</span>
+          <span class="chip-static">OpenVPN</span>
+          <span class="chip-static">AWS EC2</span>
+          <span class="chip-static">Route 53</span>
+          <span class="chip-static">Terraform</span>
+          <span class="chip-static">kubeadm</span>
+          <span class="chip-static">Flannel</span>
+          <span class="chip-static">Docker</span>
+          <span class="chip-static">Caddy</span>
+          <span class="chip-static">Let's Encrypt</span>
+        </div>
+        <div class="subpage-cta">
+          <a href="/assets/docs/Capstone_Technical_Report.pdf" class="btn btn-primary" target="_blank" rel="noopener">Read Technical Report (PDF) ↗</a>
+          <a href="/" class="btn btn-ghost">← Back to portfolio</a>
+        </div>
+      </header>
+
+      <!-- Metrics -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">01</span>By the numbers</h2>
+        <div class="metrics-grid">
+          <div class="metric"><span class="m-val">17</span><span class="m-label">Virtual machines on the public-cloud site</span></div>
+          <div class="metric"><span class="m-val">2</span><span class="m-label">Client tenants (Lumora + ClearRoots)</span></div>
+          <div class="metric"><span class="m-val">8</span><span class="m-label">VLAN segments across MSP, tenant LAN, DMZ, and SAN</span></div>
+          <div class="metric"><span class="m-val">2</span><span class="m-label">Sites linked by OpenVPN with Veeam backup copy</span></div>
+          <div class="metric"><span class="m-val">9</span><span class="m-label">AWS resources provisioned with Terraform</span></div>
+          <div class="metric"><span class="m-val">2</span><span class="m-label">Node kubeadm cluster on EC2 (1 CP + 1 worker)</span></div>
+        </div>
+      </section>
+
+      <!-- The brief -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">02</span>The brief</h2>
+        <p>
+          Emerging Technologies is a capstone course that hands the team a
+          blank-slate MSP contract: design, build, and operate shared
+          infrastructure for two fictional client companies, across two
+          physical sites, to a set of availability and security requirements.
+          The environment is then extended with a public-facing cloud service —
+          the "emerging technology" in our case being Kubernetes on AWS,
+          provisioned with Terraform.
+        </p>
+        <p>
+          Deliverables were a working lab, a 122-page technical report, a
+          client-facing SLA document, and a live defence.
+        </p>
+      </section>
+
+      <!-- On-prem architecture -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">03</span>On-prem MSP environment</h2>
+        <p>
+          Two Proxmox VE hosts, one per site, hosting everything from domain
+          controllers to client workstations. OPNsense handled routing between
+          sites over an OpenVPN site-to-site tunnel, with strict VLAN
+          segmentation so a compromise on one tenant couldn't cross to the
+          other.
+        </p>
+        <ul class="tick-list">
+          <li>Two Proxmox VE clusters, one per site, carrying all client and management VMs.</li>
+          <li>OPNsense firewalls terminating a site-to-site OpenVPN tunnel with per-tenant routing tables.</li>
+          <li>VLAN segmentation per tenant and per function (servers, workstations, management, storage).</li>
+          <li>Windows Server 2022 for one tenant's AD DS forest; Samba AD for the other to demonstrate interop.</li>
+          <li>iSCSI SAN providing shared storage for backups and archival.</li>
+          <li>Veeam Backup &amp; Replication jobs targeting the SAN with retention policies per tenant SLA.</li>
+          <li>Documented runbooks for restore drills, user onboarding, and password reset.</li>
+        </ul>
+      </section>
+
+      <!-- AWS extension -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">04</span>AWS Kubernetes extension</h2>
+        <p>
+          The "emerging technology" portion was a live, public HTTPS service
+          running on a self-managed Kubernetes cluster in AWS, with every AWS
+          resource declared in Terraform so the whole thing could be torn down
+          and rebuilt from scratch during the defence demo.
+        </p>
+
+<pre class="code-block"><code><span class="k">resource</span> <span class="s">"aws_instance" "control_plane"</span> {
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = <span class="s">"t3.medium"</span>
+  subnet_id              = aws_subnet.public.id
+  vpc_security_group_ids = [aws_security_group.k8s.id]
+  key_name               = aws_key_pair.capstone.key_name
+  user_data              = file(<span class="s">"scripts/bootstrap-cp.sh"</span>)
+
+  tags = {
+    Name    = <span class="s">"capstone-k8s-cp"</span>
+    Role    = <span class="s">"control-plane"</span>
+    Project = <span class="s">"capstone"</span>
+  }
+}</code></pre>
+
+        <ul class="tick-list">
+          <li>VPC with public subnet and security groups scoped to 6443, 80, 443, and SSH from a single admin IP.</li>
+          <li>Two EC2 instances (1 control plane, 1 worker) bootstrapped with kubeadm.</li>
+          <li>Flannel CNI for pod networking.</li>
+          <li>Dockerized nginx pod exposing the site.</li>
+          <li>Caddy running on the control-plane host as an ingress proxy, auto-issuing Let's Encrypt TLS.</li>
+          <li>Route 53 A record pointing <code>capstone.&lt;domain&gt;</code> at the control-plane Elastic IP.</li>
+          <li>Terraform remote state in S3 with DynamoDB locking so the team could apply concurrently.</li>
+        </ul>
+      </section>
+
+      <!-- My scope -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">05</span>My scope</h2>
+        <p>
+          End-to-end ownership of the public-cloud site (Site 2) — the MSP edge,
+          both tenants' full infrastructure stacks, the dual-bastion operations
+          layer, the Veeam backup target, and the AWS-hosted public service
+          extension were all designed, built, and operated solo. The on-prem
+          site (Site 1) was delivered collaboratively.
+        </p>
+        <div class="decision-grid">
+          <article class="decision">
+            <h4>MSP edge, segmentation &amp; cross-site</h4>
+            <p>OPNsense gateway (<code>rp-msp-gateway</code>) with 8 VLAN segments across MSP, per-tenant LAN, DMZ, and isolated SAN bridges. Firewall aliases and policies enforcing tenant separation, NAT publication for the bastions only, and a site-to-site OpenVPN tunnel carrying Veeam backup copy and controlled cross-site traffic back to Site 1.</p>
+          </article>
+          <article class="decision">
+            <h4>Lumora (Windows tenant)</h4>
+            <p>Windows Server 2022 AD DS forest <code>c1.local</code> with two domain controllers (DNS, DHCP, Group Policy), a Windows file server presenting SMB shares over an isolated iSCSI SAN, an IIS web server in the DMZ, and Windows + Ubuntu domain-joined endpoints.</p>
+          </article>
+          <article class="decision">
+            <h4>ClearRoots (Linux tenant)</h4>
+            <p>Samba AD on Ubuntu (<code>c2.local</code>) with two DHCP-failover-paired identity nodes (DNS, DHCP, SMB), a Linux file server with iSCSI-backed shares and replicated directory structure, an nginx web server in the DMZ, and a domain-joined Linux client.</p>
+          </article>
+          <article class="decision">
+            <h4>Bastions, backup &amp; operations</h4>
+            <p>Dual-bastion entry model — Jump64 (Windows, RDP-published on a high port) for AD/Veeam work and MSPUbuntuJump (Linux, SSH-published on a high port) for Linux tenant and OPNsense inspection. S2Veeam as the Site 2 backup repository and offsite copy target with explicit firewall paths. Documented runbooks, dependency maps, and fast-triage tables.</p>
+          </article>
+          <article class="decision">
+            <h4>AWS public-service extension</h4>
+            <p>Terraform-provisioned AWS footprint (9 resources: IAM role + instance profile, security group, two EC2 instances, Elastic IP, Route 53 A record, S3 remote state) running a 2-node kubeadm cluster. Nginx Deployment exposed via NodePort, fronted by Caddy on the worker for automatic Let's Encrypt TLS — published at <code>clearroots.omerdengiz.com</code>.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- What I'd change -->
+      <section class="subpage-section">
+        <h2 class="section-title"><span class="section-num">06</span>What I'd change next time</h2>
+        <ul class="tick-list">
+          <li>Move TLS into cert-manager + an nginx ingress controller — more realistic for a production environment.</li>
+          <li>Replace the raw kubeadm cluster with a managed option (EKS, GKE) for a production deployment.</li>
+          <li>Add Prometheus + Grafana to both the MSP and the cluster — the on-prem side had Zabbix, but unified observability would have been cleaner.</li>
+          <li>Terraform modules instead of a single root — the team hit merge pain near deadlines where module boundaries would have helped.</li>
+        </ul>
+      </section>
+
+      <section class="subpage-section subpage-footer-cta">
+        <h2>The full technical report has all the details</h2>
+        <p>
+          Topology diagrams, AD schema, VLAN tables, Terraform files, bootstrap
+          scripts, and the defence demo runbook — 8.7 MB PDF.
+        </p>
+        <div class="subpage-cta">
+          <a href="/assets/docs/Capstone_Technical_Report.pdf" class="btn btn-primary" target="_blank" rel="noopener">Read the Report ↗</a>
+          <a href="/#projects" class="btn btn-ghost">See other projects</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>
+        © <span id="year"></span> Omer Dengiz ·
+        Built with HTML, CSS, and a touch of canvas ·
+        Hosted on AWS S3 + CloudFront + Lambda@Edge ·
+        Provisioned with Terraform
+      </p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+/* ==========================================================================
+   base.css — reset, document defaults, typography, layout primitives
+   ========================================================================== */
+
+@layer reset {
+  *,
+  *::before,
+  *::after { box-sizing: border-box; }
+
+  * { margin: 0; }
+
+  html {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  body {
+    min-height: 100svh;
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  img, picture, svg, video {
+    display: block;
+    max-width: 100%;
+  }
+
+  input, button, textarea, select { font: inherit; color: inherit; }
+
+  p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+
+  ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
+
+  ::selection { background: var(--selection-bg); }
+}
+
+@layer base {
+  body {
+    font-family: var(--font-body);
+    font-size: var(--t-body);
+    background-color: var(--paper);
+    color: var(--ink);
+    /* 8px drafting grid. Every element aligns to it. */
+    background-image:
+      linear-gradient(to right,  var(--grid) var(--hairline), transparent var(--hairline)),
+      linear-gradient(to bottom, var(--grid) var(--hairline), transparent var(--hairline));
+    background-size: var(--grid-size) var(--grid-size);
+  }
+
+  /* Grid can be hidden for review purposes. */
+  body[data-grid='off'] { background-image: none; }
+
+  /* -- Type ------------------------------------------------------------- */
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: var(--leading-h);
+    letter-spacing: var(--track-h);
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--t-h1); }
+  h2 { font-size: var(--t-h2); }
+  h3 { font-size: var(--t-h3); font-family: var(--font-body); font-weight: 600; letter-spacing: 0; }
+
+  p { text-wrap: pretty; }
+
+  code, kbd, samp, pre { font-family: var(--font-mono); font-size: 0.9em; }
+
+  /* -- Links: underline draws in. One of the four site-wide animations. -- */
+
+  :where(a) {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :where(a.u) {
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% var(--hairline);
+    transition: background-size var(--dur) var(--ease-out), color var(--dur) var(--ease);
+    padding-block-end: 0.15em;
+  }
+  :where(a.u):hover,
+  :where(a.u):focus-visible {
+    background-size: 100% var(--hairline);
+    color: var(--accent);
+  }
+
+  /* -- Focus: the legacy site had none at all -------------------------- */
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .skip-link {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    z-index: 999;
+    padding: var(--s-3) var(--s-6);
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    background: var(--paper);
+    border: var(--hairline) solid var(--rule-2);
+    border-block-end-width: 2px;
+    transform: translateY(-120%);
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .skip-link:focus-visible { transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer layout {
+  /* --------------------------------------------------------------------- *
+   * The sheet grid.                                                        *
+   * Prose sits in `content`. Wide artefacts (topology, matrices, tables)   *
+   * opt into `wide` or `full` without leaving the flow.                    *
+   * --------------------------------------------------------------------- */
+  .sheet {
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(var(--gutter), 1fr)
+      [wide-start] minmax(0, calc((var(--measure-wide) - var(--measure)) / 2))
+      [content-start] min(var(--measure), 100% - (var(--gutter) * 2)) [content-end]
+      minmax(0, calc((var(--measure-wide) - var(--measure)) / 2)) [wide-end]
+      minmax(var(--gutter), 1fr) [full-end];
+  }
+
+  .sheet > * { grid-column: content; }
+
+  /*
+   * Sections span the full track set and inherit the parent's columns via
+   * subgrid, so their children can address `content` / `wide` / `full` by the
+   * same names. Without this, a breakout element nested inside a section is
+   * silently clamped to the prose column — the wide artefacts (topology, port
+   * matrix, dimension rows) would never actually break out.
+   */
+  .sheet > .section {
+    grid-column: full;
+    display: grid;
+    grid-template-columns: subgrid;
+    padding-block: var(--s-section);
+  }
+
+  .section > *      { grid-column: content; }
+  .-wide            { grid-column: wide; }
+  .-full            { grid-column: full; }
+
+  /* Fallback for browsers without subgrid: sections stop breaking out, but
+     nothing overflows and the prose column stays correct. */
+  @supports not (grid-template-columns: subgrid) {
+    .sheet > .section {
+      display: block;
+      grid-column: content;
+    }
+  }
+
+  /* Utility stack — consistent spacing without margin collapse surprises */
+  .stack > * + * { margin-block-start: var(--flow, var(--s-4)); }
+  .stack-6 > * + * { margin-block-start: var(--s-6); }
+  .stack-8 > * + * { margin-block-start: var(--s-8); }
+}
+
+@layer utilities {
+  /* The annotation convention: all metadata is set in mono, uppercase,
+     tracked out. This single rule does most of the drafting-document work. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+
+  .label-accent { color: var(--accent); }
+  .label-annotate { color: var(--annotate); }
+
+  .mono { font-family: var(--font-mono); }
+  .dim  { color: var(--ink-2); }
+  .dimmer { color: var(--ink-3); }
+
+  .lede {
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+
+  .visually-hidden:not(:focus):not(:active) {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
