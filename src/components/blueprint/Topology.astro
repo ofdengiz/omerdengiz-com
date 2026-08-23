@@ -1,78 +1,121 @@
 ---
 /**
- * Topology — the capstone network, drawn.
+ * Topology — the capstone network, drawn and interactive.
  *
- * PHASE 2 SCOPE: structure and static rendering only. The layout is computed
- * from src/data/topology.ts rather than hand-drawn, so Phase 4 can add
- * hover/focus interactivity by attaching behaviour to the emitted `data-*`
- * hooks without touching geometry.
+ * Geometry is computed from src/data/topology.ts rather than hand-drawn, so
+ * the diagram cannot drift from the documented design.
  *
  * Drawing conventions, all load-bearing:
  *   - Orthogonal routing only. Connections turn at 90°, like a real diagram.
- *   - Routed segments connect with solid lines to the gateway.
+ *   - Routed segments connect to the gateway with solid lines.
  *   - Storage bridges connect with dashed lines and sit visually detached,
- *     because they genuinely bypass the routed path.
+ *     because they genuinely bypass the OPNsense routed path.
  *   - The tunnel is dashed and leaves the frame, because Site 1 is elsewhere.
+ *
+ * Interaction (Phase 4): pointing at or focusing any node, segment or the
+ * gateway dims the rest of the drawing and lights the elements it actually
+ * touches — its subnet, its uplink to the gateway, and its storage path if it
+ * has one. Relationships are emitted as data attributes on the SVG itself, so
+ * the behaviour script needs no copy of the topology data.
+ *
+ * Accessibility: the keyboard interface is the segment table below, built from
+ * real <button> controls that drive the same highlight logic as pointing at
+ * the drawing. Focusable SVG <g tabindex="0"> was tried first and rejected:
+ * browser support for focus on SVG containers is uneven, buttons carry proper
+ * aria-pressed state, and only buttons give touch users a way in, since hover
+ * does not exist there. The table also stands alone as the complete record, so
+ * the diagram is an enhancement rather than the only route to the information.
+ * The readout is a polite live region shared by both input methods.
  */
-import { segments, gateway, natPublications, site1Link, tenants } from '../../data/topology';
+import {
+  segments,
+  gateway,
+  natPublications,
+  site1Link,
+  tenants,
+} from '../../data/topology';
 
 interface Props {
-  /** Render without the legend — used in tight contexts. */
+  /** Render without the legend and table — used in tight contexts. */
   bare?: boolean;
 }
 const { bare = false } = Astro.props;
 
 /* -- Layout ---------------------------------------------------------------
-   A deterministic three-column arrangement:
-     column 0  MSP (shared)      column 1  Lumora      column 2  ClearRoots
-   The gateway spans the top; WAN sits above it; SAN bridges hang off the
-   bottom of their tenant column, offset to signal detachment.
+   Three columns: 0 = shared MSP, 1 = Lumora, 2 = ClearRoots.
+   The gateway spans the top, WAN sits above it, and each tenant's isolated
+   SAN bridge hangs below its column, offset to signal detachment.
 -------------------------------------------------------------------------- */
 
-const W = 960;
+const W = 980;
 const COL_W = 260;
 const COL_GAP = 40;
 const COLS_X = [80, 80 + COL_W + COL_GAP, 80 + (COL_W + COL_GAP) * 2];
 
 const Y_WAN = 40;
-const Y_GW = 120;
-const Y_BUS = 210;   // horizontal distribution bus under the gateway
-const Y_SEG = 250;   // top of the segment boxes
+const Y_GW = 118;
+const GW_H = 46;
+const Y_BUS = 208;
+const Y_SEG = 248;
 
 const routed = segments.filter((s) => s.routed && s.owner !== 'wan');
 const isolated = segments.filter((s) => !s.routed);
 
-/** Assign each routed segment to a column by owner, stacking within it. */
 const columnOf = (owner: string) => (owner === 'msp' ? 0 : owner === 'c1' ? 1 : 2);
 
+/** Which node initiates iSCSI to which isolated bridge. */
+const storageLinks: Record<string, string> = { c1fs: 'c1san', c2fs: 'c2san' };
+
+const NODE_ROW = 22;
+
 const placed = (() => {
-  const yCursor = [Y_SEG, Y_SEG, Y_SEG];
+  const cursor = [Y_SEG, Y_SEG, Y_SEG];
   return routed.map((seg) => {
     const col = columnOf(seg.owner);
     const x = COLS_X[col];
-    const y = yCursor[col];
-    const h = 56 + seg.nodes.length * 22 + (seg.nodes.length ? 10 : 0);
-    yCursor[col] = y + h + 28;
+    const y = cursor[col];
+    const h = 56 + seg.nodes.length * NODE_ROW + (seg.nodes.length ? 10 : 0);
+    cursor[col] = y + h + 28;
     return { seg, x, y, w: COL_W, h, col };
   });
 })();
 
-const maxY = Math.max(...placed.map((p) => p.y + p.h));
+const columnBottom = [0, 1, 2].map((c) =>
+  Math.max(...placed.filter((p) => p.col === c).map((p) => p.y + p.h), Y_SEG),
+);
+const maxY = Math.max(...columnBottom);
 
-/** SAN bridges hang below their tenant column, offset right to read as detached. */
 const placedIsolated = isolated.map((seg) => {
   const col = columnOf(seg.owner);
-  return { seg, x: COLS_X[col] + 40, y: maxY + 48, w: COL_W - 40, h: 52, col };
+  return {
+    seg,
+    x: COLS_X[col] + 40,
+    y: maxY + 56,
+    w: COL_W - 40,
+    h: 54,
+    col,
+    /** The segment box directly above, which the dashed riser attaches to. */
+    fromY: columnBottom[col],
+  };
 });
 
-const H = maxY + 48 + 52 + 56;
+const H = maxY + 56 + 54 + 48;
 const gwX = COLS_X[1] + COL_W / 2;
+
+/** Serialised detail strings, read by the behaviour script. */
+const detailFor = (label: string, meta: string, desc: string) => ({
+  'data-label': label,
+  'data-meta': meta,
+  'data-desc': desc,
+});
 ---
 
 <figure class="topo" data-topology>
   <figcaption class="topo__caption">
     <span class="label">Fig. 01</span>
-    <span class="topo__title">Site 2 — MSP boundary, tenant segmentation, and storage isolation</span>
+    <span class="topo__title">
+      Site 2 — MSP boundary, tenant segmentation, and storage isolation
+    </span>
   </figcaption>
 
   <div class="topo__frame">
@@ -86,9 +129,10 @@ const gwX = COLS_X[1] + COL_W / 2;
       <desc id="topo-desc">
         An OPNsense gateway routes six segments: a shared MSP management
         segment containing two bastions and a backup server, and LAN plus DMZ
-        segments for each of the two tenants. Two isolated storage bridges sit
-        outside the routed path. A site-to-site VPN tunnel connects to Site 1.
-        Full detail is listed in the table beneath this diagram.
+        segments for each of two tenants. Two isolated storage bridges sit
+        outside the routed path, reached over iSCSI from each tenant's file
+        server. A site-to-site VPN tunnel connects to Site 1. The same
+        information is listed in the table below the diagram.
       </desc>
 
       <defs>
@@ -97,117 +141,417 @@ const gwX = COLS_X[1] + COL_W / 2;
         </marker>
       </defs>
 
-      {/* -- WAN terminator -- */}
+      {/* -- WAN terminator ------------------------------------------- */}
       <g class="topo__wan">
         <rect x={gwX - 70} y={Y_WAN} width="140" height="34" class="topo__box -wan" />
         <text x={gwX} y={Y_WAN + 22} class="topo__label -center">WAN</text>
-        <line x1={gwX} y1={Y_WAN + 34} x2={gwX} y2={Y_GW} class="topo__line" marker-end="url(#tick)" />
+        <line
+          x1={gwX} y1={Y_WAN + 34} x2={gwX} y2={Y_GW}
+          class="topo__line" marker-end="url(#tick)"
+        />
       </g>
 
-      {/* -- Gateway -- */}
-      <g class="topo__gw" data-node="gw">
-        <rect x={gwX - 130} y={Y_GW} width="260" height="46" class="topo__box -gw" />
+      {/* -- Gateway --------------------------------------------------- */}
+      <g
+        class="topo__gw topo__hit"
+        data-node="gw"
+        data-all-routed="true"
+        {...detailFor(
+          gateway.label,
+          'OPNsense · edge',
+          gateway.role,
+        )}
+      >
+        <title>{gateway.label} — {gateway.role}</title>
+        <rect x={gwX - 130} y={Y_GW} width="260" height={GW_H} class="topo__box -gw" />
         <text x={gwX} y={Y_GW + 20} class="topo__label -center -strong">{gateway.label}</text>
-        <text x={gwX} y={Y_GW + 35} class="topo__sub -center">OPNsense · routing · policy · NAT</text>
+        <text x={gwX} y={Y_GW + 35} class="topo__sub -center">
+          routing · policy · NAT · VPN
+        </text>
       </g>
 
-      {/* -- Distribution bus -- */}
-      <line x1={gwX} y1={Y_GW + 46} x2={gwX} y2={Y_BUS} class="topo__line" />
+      {/* -- Distribution bus ------------------------------------------ */}
+      <line x1={gwX} y1={Y_GW + GW_H} x2={gwX} y2={Y_BUS} class="topo__line" />
       <line
-        x1={COLS_X[0] + COL_W / 2}
-        y1={Y_BUS}
-        x2={COLS_X[2] + COL_W / 2}
-        y2={Y_BUS}
+        x1={COLS_X[0] + COL_W / 2} y1={Y_BUS}
+        x2={COLS_X[2] + COL_W / 2} y2={Y_BUS}
         class="topo__line"
       />
 
-      {/* -- Routed segments -- */}
+      {/* -- Routed segments ------------------------------------------- */}
       {
         placed.map(({ seg, x, y, w, h }) => {
           const cx = x + w / 2;
           return (
-            <g class="topo__seg" data-segment={seg.id} data-owner={seg.owner}>
-              {/* drop from the bus, orthogonal */}
-              <line x1={cx} y1={Y_BUS} x2={cx} y2={y} class="topo__line" marker-end="url(#tick)" />
+            <>
+              {/* Uplink drop, individually addressable so it can be lit. */}
+              <line
+                x1={cx} y1={Y_BUS} x2={cx} y2={y}
+                class="topo__line topo__edge"
+                data-edge={`uplink-${seg.id}`}
+                marker-end="url(#tick)"
+              />
 
-              <rect x={x} y={y} width={w} height={h} class="topo__box" />
+              <g
+                class="topo__seg topo__hit"
+                data-segment={seg.id}
+                data-owner={seg.owner}
+                data-uplink={`uplink-${seg.id}`}
+                {...detailFor(
+                  seg.label,
+                  `${seg.cidr}${seg.gateway ? ` · gw ${seg.gateway}` : ''}`,
+                  seg.purpose,
+                )}
+              >
+                <title>{seg.label} {seg.cidr} — {seg.purpose}</title>
 
-              <text x={x + 12} y={y + 20} class="topo__label -strong">{seg.label}</text>
-              <text x={x + w - 12} y={y + 20} class="topo__sub -end">{seg.cidr}</text>
-              <line x1={x} y1={y + 30} x2={x + w} y2={y + 30} class="topo__rule" />
+                <rect x={x} y={y} width={w} height={h} class="topo__box" />
+                <text x={x + 12} y={y + 20} class="topo__label -strong">{seg.label}</text>
+                <text x={x + w - 12} y={y + 20} class="topo__sub -end">{seg.cidr}</text>
+                <line x1={x} y1={y + 30} x2={x + w} y2={y + 30} class="topo__rule" />
 
-              {seg.nodes.map((node, i) => (
-                <g data-node={node.id}>
-                  <text x={x + 12} y={y + 50 + i * 22} class="topo__node">{node.label}</text>
-                  <text x={x + w - 12} y={y + 50 + i * 22} class="topo__sub -end">{node.addr}</text>
-                </g>
-              ))}
+                {seg.nodes.map((node, i) => {
+                  const ny = y + 50 + i * NODE_ROW;
+                  return (
+                    <g
+                      class="topo__node-row topo__hit"
+                      data-node={node.id}
+                      data-in-segment={seg.id}
+                      data-uplink={`uplink-${seg.id}`}
+                      data-storage={storageLinks[node.id] ?? undefined}
+                      {...detailFor(
+                        node.label,
+                        `${seg.label} ${node.addr ?? ''}`.trim(),
+                        node.role,
+                      )}
+                    >
+                      <title>{node.label} — {node.role}</title>
+                      <rect
+                        x={x + 4} y={ny - 12} width={w - 8} height={NODE_ROW - 4}
+                        class="topo__node-hit"
+                      />
+                      <text x={x + 12} y={ny} class="topo__node">{node.label}</text>
+                      <text x={x + w - 12} y={ny} class="topo__sub -end">{node.addr}</text>
+                    </g>
+                  );
+                })}
 
-              {seg.nodes.length === 0 && (
-                <text x={x + 12} y={y + 50} class="topo__sub">{seg.purpose}</text>
-              )}
-            </g>
+                {seg.nodes.length === 0 && (
+                  <text x={x + 12} y={y + 50} class="topo__sub">{seg.purpose}</text>
+                )}
+              </g>
+            </>
           );
         })
       }
 
-      {/* -- Isolated storage bridges: dashed, detached -- */}
+      {/* -- Isolated storage bridges ---------------------------------- */}
       {
-        placedIsolated.map(({ seg, x, y, w, h }) => (
-          <g class="topo__seg -isolated" data-segment={seg.id} data-owner={seg.owner}>
-            <rect x={x} y={y} width={w} height={h} class="topo__box -dashed" />
-            <text x={x + 12} y={y + 22} class="topo__label -strong">{seg.label}</text>
-            <text x={x + w - 12} y={y + 22} class="topo__sub -end">{seg.cidr}</text>
-            <text x={x + 12} y={y + 40} class="topo__sub">outside routed path · iSCSI</text>
-          </g>
-        ))
+        placedIsolated.map(({ seg, x, y, w, h, fromY }) => {
+          const cx = x + w / 2;
+          const initiator = Object.keys(storageLinks).find((k) => storageLinks[k] === seg.id);
+          return (
+            <>
+              {/* Dashed riser: the iSCSI path, which never touches OPNsense. */}
+              <line
+                x1={cx} y1={fromY} x2={cx} y2={y}
+                class="topo__line -dashed topo__edge"
+                data-edge={`storage-${seg.id}`}
+              />
+              <text x={cx + 8} y={(fromY + y) / 2} class="topo__sub">iSCSI</text>
+
+              <g
+                class="topo__seg -isolated topo__hit"
+                data-segment={seg.id}
+                data-owner={seg.owner}
+                data-storage-edge={`storage-${seg.id}`}
+                data-peer={initiator}
+                {...detailFor(seg.label, seg.cidr, seg.purpose)}
+              >
+                <title>{seg.label} {seg.cidr} — {seg.purpose}</title>
+                <rect x={x} y={y} width={w} height={h} class="topo__box -dashed" />
+                <text x={x + 12} y={y + 22} class="topo__label -strong">{seg.label}</text>
+                <text x={x + w - 12} y={y + 22} class="topo__sub -end">{seg.cidr}</text>
+                <text x={x + 12} y={y + 40} class="topo__sub">outside routed path</text>
+              </g>
+            </>
+          );
+        })
       }
 
-      {/* -- Cross-site tunnel, leaving the frame -- */}
-      <g class="topo__tunnel">
-        <line x1={gwX - 130} y1={Y_GW + 23} x2={60} y2={Y_GW + 23} class="topo__line -dashed" />
-        <line x1={60} y1={Y_GW + 23} x2={60} y2={Y_GW - 20} class="topo__line -dashed" />
-        <text x={60} y={Y_GW - 28} class="topo__sub">SITE1_OVPN → {site1Link.label}</text>
+      {/* -- Cross-site tunnel, leaving the frame ---------------------- */}
+      <g
+        class="topo__hit"
+        data-node="site1"
+        {...detailFor(site1Link.label, 'SITE1_OVPN', site1Link.detail)}
+      >
+        <title>{site1Link.label} — {site1Link.detail}</title>
+        <line
+          x1={gwX - 130} y1={Y_GW + GW_H / 2} x2={56} y2={Y_GW + GW_H / 2}
+          class="topo__line -dashed topo__edge" data-edge="tunnel"
+        />
+        <line x1={56} y1={Y_GW + GW_H / 2} x2={56} y2={Y_GW - 16}
+          class="topo__line -dashed topo__edge" data-edge="tunnel" />
+        <text x={56} y={Y_GW - 24} class="topo__sub">SITE1_OVPN → {site1Link.label}</text>
       </g>
     </svg>
   </div>
 
+  {/* -- Readout ---------------------------------------------------- */}
+  <div class="topo__readout" data-topo-readout aria-live="polite">
+    <p class="label topo__readout-label" data-readout-label>Select an element</p>
+    <p class="topo__readout-meta mono" data-readout-meta>
+      Point at or tab to any node, subnet or the gateway
+    </p>
+    <p class="topo__readout-desc" data-readout-desc></p>
+  </div>
+
   {
     !bare && (
-      <div class="topo__legend">
-        <div class="topo__legend-group">
-          <span class="label">Key</span>
-          <ul class="topo__keys" role="list">
-            <li><span class="topo__swatch -solid" aria-hidden="true"></span>Routed via OPNsense</li>
-            <li><span class="topo__swatch -dash" aria-hidden="true"></span>Isolated / tunnelled</li>
-          </ul>
+      <>
+        <div class="topo__legend">
+          <div class="topo__legend-group">
+            <span class="label">Key</span>
+            <ul class="topo__keys" role="list">
+              <li><span class="topo__swatch -solid" aria-hidden="true" />Routed via OPNsense</li>
+              <li><span class="topo__swatch -dash" aria-hidden="true" />Isolated / tunnelled</li>
+            </ul>
+          </div>
+          <div class="topo__legend-group">
+            <span class="label">Tenants</span>
+            <ul class="topo__keys" role="list">
+              <li>{tenants.c1.label} — Windows-centric</li>
+              <li>{tenants.c2.label} — Linux-centric</li>
+            </ul>
+          </div>
+          <div class="topo__legend-group">
+            <span class="label">Published at edge</span>
+            <ul class="topo__keys" role="list">
+              {natPublications.map((n) => (
+                <li>{n.proto} :{n.external} → {n.internal}</li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div class="topo__legend-group">
-          <span class="label">Tenants</span>
-          <ul class="topo__keys" role="list">
-            <li>{tenants.c1.label} — {tenants.c1.full.replace('Company 1 — ', '')}</li>
-            <li>{tenants.c2.label} — {tenants.c2.full.replace('Company 2 — ', '')}</li>
-          </ul>
+
+        {/*
+          The keyboard interface. Every control here drives the same highlight
+          logic as pointing at the drawing, and the table doubles as the
+          complete record for anyone who cannot use the diagram at all.
+        */}
+        <div class="topo__controls">
+          <p class="label" id="topo-controls-label">
+            Inspect — select a system or subnet
+          </p>
+          <div class="topo__control-row" role="group" aria-labelledby="topo-controls-label">
+            <button type="button" class="topo__btn -edge" data-topo-target="gw">
+              {gateway.label}
+            </button>
+            <button type="button" class="topo__btn -edge" data-topo-target="site1">
+              {site1Link.label}
+            </button>
+          </div>
         </div>
-        <div class="topo__legend-group">
-          <span class="label">Published at edge</span>
-          <ul class="topo__keys" role="list">
-            {natPublications.map((n) => (
-              <li>{n.proto} :{n.external} → {n.internal}</li>
-            ))}
-          </ul>
+
+        <div class="topo__table-scroll">
+          <table class="topo__table">
+            <caption class="visually-hidden">
+              Site 2 network segments, addressing, and member systems. Selecting
+              a segment or system highlights it in the diagram above.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Segment</th>
+                <th scope="col">CIDR</th>
+                <th scope="col">Gateway</th>
+                <th scope="col">Members</th>
+              </tr>
+            </thead>
+            <tbody>
+              {segments.filter((s) => s.owner !== 'wan').map((s) => (
+                <tr>
+                  <th scope="row">
+                    <button type="button" class="topo__btn" data-topo-target={s.id}>
+                      {s.label}
+                    </button>
+                  </th>
+                  <td>{s.cidr}</td>
+                  <td>{s.gateway ?? 'none — isolated'}</td>
+                  <td>
+                    {s.nodes.length ? (
+                      <span class="topo__members">
+                        {s.nodes.map((n) => (
+                          <button type="button" class="topo__btn -sm" data-topo-target={n.id}>
+                            {n.label} <span class="topo__btn-addr">{n.addr}</span>
+                          </button>
+                        ))}
+                      </span>
+                    ) : (
+                      s.purpose
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      </>
     )
   }
 </figure>
 
-<style>
-  .topo {
-    display: grid;
-    gap: var(--s-4);
-    margin: 0;
+<script>
+  /**
+   * Topology interaction.
+   *
+   * Relationships come from data attributes on the SVG, so this script holds
+   * no copy of the topology and cannot fall out of sync with the data module.
+   *
+   * Pointer and keyboard drive the same code path: `activate` / `clear`.
+   */
+  type Detail = { label: string; meta: string; desc: string };
+
+  const roots = document.querySelectorAll<HTMLElement>('[data-topology]');
+
+  for (const root of roots) {
+    const svg = root.querySelector('svg');
+    const readoutLabel = root.querySelector<HTMLElement>('[data-readout-label]');
+    const readoutMeta = root.querySelector<HTMLElement>('[data-readout-meta]');
+    const readoutDesc = root.querySelector<HTMLElement>('[data-readout-desc]');
+    if (!svg) continue;
+
+    const defaults: Detail = {
+      label: readoutLabel?.textContent ?? '',
+      meta: readoutMeta?.textContent ?? '',
+      desc: '',
+    };
+
+    const setRelated = (selector: string) => {
+      for (const el of svg.querySelectorAll(selector)) el.classList.add('is-related');
+    };
+
+    function clear() {
+      root.removeAttribute('data-focused');
+      for (const el of svg!.querySelectorAll('.is-active, .is-related')) {
+        el.classList.remove('is-active', 'is-related');
+      }
+      if (readoutLabel) readoutLabel.textContent = defaults.label;
+      if (readoutMeta) readoutMeta.textContent = defaults.meta;
+      if (readoutDesc) readoutDesc.textContent = defaults.desc;
+    }
+
+    function activate(hit: Element) {
+      clear();
+      root.setAttribute('data-focused', 'true');
+      hit.classList.add('is-active');
+
+      const segmentId = hit.getAttribute('data-in-segment');
+      const uplink = hit.getAttribute('data-uplink');
+      const storage = hit.getAttribute('data-storage');
+      const storageEdge = hit.getAttribute('data-storage-edge');
+      const peer = hit.getAttribute('data-peer');
+      const allRouted = hit.hasAttribute('data-all-routed');
+
+      // A node lights its parent subnet.
+      if (segmentId) setRelated(`[data-segment="${segmentId}"]`);
+
+      // Anything with an uplink lights the drop to the distribution bus.
+      if (uplink) setRelated(`[data-edge="${uplink}"]`);
+
+      // A file server lights its iSCSI path and the bridge it reaches.
+      if (storage) {
+        setRelated(`[data-segment="${storage}"]`);
+        setRelated(`[data-edge="storage-${storage}"]`);
+      }
+
+      // A bridge lights the same path from the other end.
+      if (storageEdge) setRelated(`[data-edge="${storageEdge}"]`);
+      if (peer) setRelated(`[data-node="${peer}"]`);
+
+      // The gateway lights every routed uplink at once.
+      if (allRouted) setRelated('[data-edge^="uplink-"]');
+
+      if (readoutLabel) readoutLabel.textContent = hit.getAttribute('data-label') ?? '';
+      if (readoutMeta) readoutMeta.textContent = hit.getAttribute('data-meta') ?? '';
+      if (readoutDesc) readoutDesc.textContent = hit.getAttribute('data-desc') ?? '';
+    }
+
+    const findHit = (id: string) =>
+      svg.querySelector(`[data-node="${id}"], [data-segment="${id}"]`);
+
+    /** A click-pinned selection outranks hover, and survives the pointer leaving. */
+    let pinned: string | null = null;
+
+    /** Return to the pinned selection, or to neutral if nothing is pinned. */
+    function release() {
+      if (!pinned) return clear();
+      const hit = findHit(pinned);
+      if (hit) activate(hit);
+      else clear();
+    }
+
+    /* -- Pointer: the drawing itself ---------------------------------- */
+    for (const hit of svg.querySelectorAll<SVGElement>('.topo__hit')) {
+      hit.addEventListener('pointerenter', () => {
+        if (!pinned) activate(hit);
+      });
+    }
+
+    // One leave handler on the SVG, rather than per element, so moving between
+    // a node and its parent segment does not flicker through a cleared state.
+    svg.addEventListener('pointerleave', release);
+
+    /* -- Keyboard and pointer: the HTML controls ----------------------- */
+
+    for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-topo-target]')) {
+      const id = btn.getAttribute('data-topo-target')!;
+      const hit = findHit(id);
+      if (!hit) continue;
+
+      const show = () => { if (!pinned) activate(hit); };
+      const hide = () => { if (!pinned) clear(); };
+      // `release` (not `clear`) so leaving a control returns to whatever is
+      // pinned rather than wiping the selection.
+
+      btn.addEventListener('pointerenter', show);
+      btn.addEventListener('pointerleave', hide);
+      btn.addEventListener('focus', show);
+      btn.addEventListener('blur', hide);
+
+      // Click pins a selection so it survives moving the pointer away —
+      // useful on touch, where hover does not exist at all.
+      btn.addEventListener('click', () => {
+        if (pinned === id) {
+          pinned = null;
+          btn.setAttribute('aria-pressed', 'false');
+          clear();
+          return;
+        }
+        for (const other of root.querySelectorAll('[data-topo-target]')) {
+          other.setAttribute('aria-pressed', 'false');
+        }
+        pinned = id;
+        btn.setAttribute('aria-pressed', 'true');
+        activate(hit);
+      });
+
+      btn.setAttribute('aria-pressed', 'false');
+    }
+
+    // Escape releases a pinned selection.
+    root.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key !== 'Escape') return;
+      pinned = null;
+      for (const b of root.querySelectorAll('[data-topo-target]')) {
+        b.setAttribute('aria-pressed', 'false');
+      }
+      clear();
+    });
   }
+</script>
+
+<style>
+  .topo { display: grid; gap: var(--s-4); margin: 0; }
 
   .topo__caption {
     display: flex;
@@ -233,7 +577,7 @@ const gwX = COLS_X[1] + COL_W / 2;
 
   .topo__svg {
     display: block;
-    min-inline-size: 46rem;
+    min-inline-size: 48rem;
     inline-size: 100%;
     block-size: auto;
   }
@@ -244,8 +588,9 @@ const gwX = COLS_X[1] + COL_W / 2;
     fill: var(--paper);
     stroke: var(--rule-2);
     stroke-width: 1;
+    transition: stroke var(--dur) var(--ease), opacity var(--dur) var(--ease);
   }
-  .topo__box.-gw  { stroke: var(--accent); }
+  .topo__box.-gw { stroke: var(--accent); }
   .topo__box.-wan { fill: var(--paper-3); }
   .topo__box.-dashed { stroke-dasharray: 3 3; fill: none; }
 
@@ -253,6 +598,8 @@ const gwX = COLS_X[1] + COL_W / 2;
     stroke: var(--rule-2);
     stroke-width: 1;
     fill: none;
+    transition: stroke var(--dur) var(--ease), stroke-width var(--dur) var(--ease),
+      opacity var(--dur) var(--ease);
   }
   .topo__line.-dashed { stroke-dasharray: 4 4; }
 
@@ -266,6 +613,7 @@ const gwX = COLS_X[1] + COL_W / 2;
     letter-spacing: 0.06em;
     fill: var(--ink-2);
     text-transform: uppercase;
+    transition: fill var(--dur) var(--ease);
   }
   .topo__label.-strong { fill: var(--ink); }
   .topo__label.-center { text-anchor: middle; }
@@ -282,19 +630,77 @@ const gwX = COLS_X[1] + COL_W / 2;
     font-family: var(--font-mono);
     font-size: 10.5px;
     fill: var(--ink-2);
+    transition: fill var(--dur) var(--ease);
   }
 
-  /* Tenant tinting is carried by the segment label only — the drawing stays
-     monochrome so the accent means "selected", not "decorated". */
+  /* Invisible hit area so a whole node row is pointable and focusable. */
+  .topo__node-hit { fill: transparent; stroke: none; }
+
   .topo__seg[data-owner='msp'] .topo__label.-strong { fill: var(--accent); }
 
-  /* -- Legend --------------------------------------------------------- */
+  /* -- Interaction ---------------------------------------------------- */
+
+  .topo__hit { cursor: pointer; outline: none; }
+
+  /* Focus is drawn on the element's own box rather than as a browser ring,
+     which would trace the whole group bounding box including its label. */
+  .topo__hit:focus-visible .topo__box,
+  .topo__hit:focus-visible .topo__node-hit {
+    stroke: var(--accent);
+    stroke-width: 2;
+    fill: var(--accent-soft);
+  }
+
+  /* Dim everything while something is selected, then light what matters. */
+  [data-focused='true'] .topo__seg,
+  [data-focused='true'] .topo__edge,
+  [data-focused='true'] .topo__gw,
+  [data-focused='true'] .topo__node-row {
+    opacity: 0.32;
+  }
+
+  [data-focused='true'] .is-active,
+  [data-focused='true'] .is-related { opacity: 1; }
+
+  .is-active .topo__box { stroke: var(--accent); stroke-width: 1.5; }
+  .is-active .topo__label.-strong,
+  .is-active .topo__node { fill: var(--accent); }
+  .is-active .topo__node-hit { fill: var(--accent-soft); }
+
+  .is-related.topo__edge,
+  .is-related .topo__box { stroke: var(--accent); }
+  line.is-related { stroke: var(--accent); stroke-width: 1.5; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .topo__box, .topo__line, .topo__label, .topo__node { transition: none; }
+  }
+
+  /* -- Readout --------------------------------------------------------- */
+
+  .topo__readout {
+    display: grid;
+    gap: var(--s-1);
+    min-block-size: 4.5rem;
+    padding: var(--s-3) var(--s-4);
+    border: var(--hairline) solid var(--rule);
+    background: var(--paper-2);
+    align-content: start;
+  }
+
+  .topo__readout-label { color: var(--ink); }
+  .topo__readout-meta { font-size: var(--t-label); color: var(--accent); }
+  .topo__readout-desc {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+
+  /* -- Legend ---------------------------------------------------------- */
 
   .topo__legend {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
     gap: var(--s-6);
-    padding-block-start: var(--s-2);
   }
 
   .topo__legend-group { display: grid; gap: var(--s-2); align-content: start; }
@@ -320,4 +726,70 @@ const gwX = COLS_X[1] + COL_W / 2;
     flex: none;
   }
   .topo__swatch.-dash { border-block-start-style: dashed; }
+
+  /* -- Table ----------------------------------------------------------- */
+
+  /* -- Controls -------------------------------------------------------- */
+
+  .topo__controls { display: grid; gap: var(--s-2); }
+
+  .topo__control-row { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+
+  .topo__btn {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    background: transparent;
+    border: var(--hairline) solid var(--rule);
+    padding: var(--s-1) var(--s-2);
+    cursor: pointer;
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease),
+      background var(--dur) var(--ease);
+  }
+
+  .topo__btn:hover,
+  .topo__btn:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+  /* Pinned state is filled, because it encodes a persistent selection. */
+  .topo__btn[aria-pressed='true'] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+  }
+  .topo__btn[aria-pressed='true'] .topo__btn-addr { color: var(--paper); opacity: 0.75; }
+
+  .topo__btn.-edge { text-transform: uppercase; }
+  .topo__btn.-sm { padding-inline: var(--s-2); }
+  .topo__btn-addr { color: var(--ink-3); }
+
+  .topo__members { display: flex; flex-wrap: wrap; gap: var(--s-1); }
+
+  .topo__table-scroll { overflow-x: auto; }
+
+  .topo__table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    text-align: start;
+  }
+
+  .topo__table th,
+  .topo__table td {
+    text-align: start;
+    padding: var(--s-2) var(--s-3);
+    border-block-end: var(--hairline) solid var(--rule);
+    vertical-align: top;
+  }
+
+  .topo__table thead th {
+    color: var(--ink-3);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    border-block-end-color: var(--rule-2);
+  }
+
+  .topo__table tbody th { color: var(--ink); white-space: nowrap; }
+  .topo__table td { color: var(--ink-2); }
 </style>

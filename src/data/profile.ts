@@ -41,11 +41,15 @@ export const profile = {
   availability: 'Open to Cloud, DevOps, Systems & Networking roles',
 
   /**
-   * Summary, transcribed from the resume. Rendered on the home page so the
-   * two surfaces cannot drift apart.
+   * Summary, adapted from the resume.
+   *
+   * The "(Apr 2026)" parenthetical was dropped: the credential has been
+   * conferred, so "graduate" already states the fact, and appending the date
+   * to the opening line reads as a fresh-grad tell. The conferral date is
+   * carried once, in the education section, where a recruiter expects it.
    */
   summary:
-    'Computer Systems Technician – Networking graduate (Apr 2026) and AWS Certified Solutions Architect – Associate with hands-on experience in AWS cloud infrastructure, Linux and Windows administration, enterprise networking, and IT operations at Interac Corp. and Nioyatech LLC. Builds reliable hybrid environments with Terraform, Ansible, Docker, Kubernetes, and CI/CD pipelines, and supports teams through structured troubleshooting, clear documentation, and collaboration across engineering, operations, and security functions.',
+    'Computer Systems Technician – Networking graduate and AWS Certified Solutions Architect – Associate with hands-on experience in AWS cloud infrastructure, Linux and Windows administration, enterprise networking, and IT operations at Interac Corp. and Nioyatech LLC. Builds reliable hybrid environments with Terraform, Ansible, Docker, Kubernetes, and CI/CD pipelines, and supports teams through structured troubleshooting, clear documentation, and collaboration across engineering, operations, and security functions.',
 
   email: 'omerdengiz368@gmail.com',
   phone: {
@@ -73,7 +77,7 @@ export const profile = {
    * site content is aligned to — it is displayed, so keep it honest.
    */
   sheet: {
-    revision: '2026.07',
+    revision: '2026.08',
     project: 'omerdengiz.com',
   },
 } as const;

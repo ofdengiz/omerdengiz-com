@@ -138,7 +138,10 @@ const sections = [
           education.map((e) => (
             <article class="edu__item">
               <div class="edu__when">
-                <p class="label"><time datetime={e.endISO}>{e.end}</time></p>
+                <p class="label">
+                  {e.conferred && <span class="edu__conferred">Graduated </span>}
+                  <time datetime={e.endISO}>{e.end}</time>
+                </p>
                 <p class="label edu__where">{e.location}</p>
               </div>
 
@@ -307,6 +310,7 @@ const sections = [
 
   .edu__when { display: grid; gap: var(--s-1); align-content: start; padding-block-start: 0.25rem; }
   .edu__where { color: var(--ink-3); }
+  .edu__conferred { color: var(--ink-3); }
 
   .edu__credential {
     font-family: var(--font-display);

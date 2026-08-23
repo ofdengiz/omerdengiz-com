@@ -1,10 +1,17 @@
 /**
  * experience.ts — professional history and education.
  *
- * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-07-12), transcribed
- * verbatim. The site and the resume must never make different claims, so
- * bullets are copied exactly rather than re-worded for the web. If a bullet
- * reads modestly here, that is deliberate — it is what the resume says.
+ * BASELINE: Omer_Dengiz_Resume.pdf (revision 2026-07-12).
+ *
+ * ⚠ PENDING RESUME SYNC (2026-08-22)
+ * The two Interac bullets below have been strengthened for the Canadian market
+ * and now read more actively than the PDF currently deployed at
+ * /assets/resume/Omer_Dengiz_Resume.pdf. Omer is updating the source document
+ * to match. Until that lands, the site and the resume state the same facts in
+ * different words — see PENDING_RESUME_SYNC.md at the repo root.
+ *
+ * Everything else on this page is the resume's own wording. The rule stands:
+ * the site and the resume must never make different *claims*.
  *
  * Shape notes:
  *   - `start` / `end` are display strings because the resume shows "Sep 2025",
@@ -33,6 +40,12 @@ export interface Education {
   location: string;
   end: string;
   endISO: string;
+  /**
+   * True once the credential has actually been conferred. Drives past-tense
+   * framing ("Graduated") rather than an ambiguous bare date, which reads as
+   * "expected" to a recruiter scanning quickly.
+   */
+  conferred?: boolean;
   /** Honours and marks exactly as the resume states them. */
   marks?: string[];
   description?: string;
@@ -59,8 +72,8 @@ export const roles: Role[] = [
     startISO: '2025-09',
     endISO: '2025-12',
     bullets: [
-      "Wrote a Python script that pulled current device inventory data from vendor portals via their public API, and built a small test harness to validate the team's API key and response schema as a first step toward automating a manual inventory task.",
-      'Shadowed senior network engineers on ServiceNow incident and change tickets and updated internal wiki and runbook pages with step by step procedures, making repeated operational tasks easier for other interns and newly onboarded team members to follow.',
+      'Automated device inventory data extraction from vendor APIs using Python, establishing a validation harness for API credentials and response schema that eliminated manual tracking effort.',
+      'Collaborated with senior network engineers to manage ServiceNow incident and change tickets, and rewrote internal wiki runbooks with step-by-step procedures that accelerated onboarding for new team members.',
     ],
     stack: ['Python', 'REST APIs', 'ServiceNow', 'Runbooks'],
   },
@@ -88,6 +101,7 @@ export const education: Education[] = [
     location: 'Ottawa, ON',
     end: 'Apr 2026',
     endISO: '2026-04',
+    conferred: true,
     // Resume revision 2026-07-12 states GPA only.
     marks: ['GPA 3.75 / 4.0'],
     description:
@@ -108,6 +122,7 @@ export const education: Education[] = [
     location: 'Nanjing, China',
     end: 'Jun 2016',
     endISO: '2016-06',
+    conferred: true,
     description:
       'Four-year immersive program in Mandarin Chinese language, literature, and culture — building the communication skills that support work across multicultural engineering and operations teams.',
   },
