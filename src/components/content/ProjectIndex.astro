@@ -52,7 +52,7 @@ const { projects } = Astro.props;
             )}
             {p.source && (
               <a class="u row__link" href={p.source} target="_blank" rel="noopener">
-                Source <span aria-hidden="true">↗</span>
+                {p.sourceLabel ?? 'Source'} <span aria-hidden="true">↗</span>
                 <span class="visually-hidden">(opens in a new tab)</span>
               </a>
             )}

@@ -26,6 +26,8 @@ export interface Project {
   caseStudy?: string;
   /** Public source, if one exists. */
   source?: string;
+  /** Overrides the "Source" link text where the repo is a subset of the work. */
+  sourceLabel?: string;
   /** Live URL, if one exists. */
   live?: string;
   /** Marks the capstone — rendered with additional prominence. */
@@ -48,6 +50,11 @@ export const projects: Project[] = [
       'Flannel', 'Docker', 'Caddy',
     ],
     caseStudy: '/projects/capstone',
+    // The repository is the cloud site only — the Terraform, the bootstrap
+    // scripts and the manifests behind the public HTTPS service. The
+    // on-premises half was team work and is not published.
+    source: 'https://github.com/ofdengiz/clearroots-k8s-aws',
+    sourceLabel: 'Cloud site source',
     featured: true,
   },
   {

@@ -30,6 +30,12 @@ const projects = defineCollection({
     stack: z.array(z.string()).min(1),
 
     source: z.string().url().optional(),
+    /**
+     * Overrides the "Source" link text. The capstone needs it: the published
+     * repository is the cloud web service alone, and a bare "Source" next to
+     * a 17-VM two-site environment would read as a link to all of it.
+     */
+    sourceLabel: z.string().default('Source'),
     live: z.string().url().optional(),
     /** Supporting document, served from public/. */
     document: z

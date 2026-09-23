@@ -14,7 +14,13 @@ GH   = pathlib.Path(r'C:\Algonquin\github-profile\README.md')
 def norm(s): return ' '.join(s.split())
 def detag(p): return norm(html.unescape(re.sub(r'<[^>]+>', ' ', p.read_text(encoding='utf-8'))))
 
-pdf = norm(' '.join(p.extract_text() for p in PdfReader(ROOT/'Omer_Dengiz_Resume.pdf').pages))
+# The tracked copy under src/assets/ is the one that actually ships, so it is
+# what gets audited. The working master in the repo root is gitignored (this
+# repo is public) and would make the audit unrunnable from a fresh clone.
+RESUME = ROOT/'src/assets/resume/Omer_Dengiz_Resume.pdf'
+if not RESUME.exists():
+    RESUME = ROOT/'Omer_Dengiz_Resume.pdf'
+pdf = norm(' '.join(p.extract_text() for p in PdfReader(RESUME).pages))
 pages = {p.relative_to(ROOT/'dist').as_posix(): detag(p) for p in (ROOT/'dist').rglob('*.html')}
 site = ' '.join(pages.values())
 home = pages.get('index.html', '')
@@ -114,6 +120,44 @@ check('github', '17 VM ikinci siteye atfediliyor, iki-site toplamina degil',
       'teknik rapora gore 17 VM ikinci siteye ait; DL380 sunucular ilk sitede')
 check('github', 'BGP / 802.11 kalintisi yok', 'BGP' not in gh and '802.11' not in gh)
 check('github', 'Nioyatech + Interac ikisi de aniliyor', 'Nioyatech' in gh and 'Interac' in gh)
+
+print("\n=== 10. YAYINLANAN BELGELER " + "="*42)
+# Resume'yi eline alan biri siteye ve GitHub'a ulasabilmeli. Bu satir bir kez
+# dustu ve kimse fark etmedi; tekrar dusmesin diye kontrol burada.
+check('belge', 'resume iletisim satiri siteyi veriyor', 'omerdengiz.com' in pdf)
+check('belge', "resume iletisim satiri GitHub'i veriyor", 'github.com/ofdengiz' in pdf)
+check('belge', "resume LinkedIn'i veriyor", 'linkedin.com/in/omer-faruk-dengiz' in pdf)
+check('belge', 'resume tek sayfa', len(PdfReader(RESUME).pages) == 1)
+
+# Teknik rapor halka acik linkleniyor. Kapagi bir grup odevinin kapagiydi:
+# ders kodu, profesor adi, takim adi ve bes sinif arkadasinin tam adi -- hepsi
+# 1. sayfada. Kapak degistirildi; belgenin kalan 121 sayfasi zaten temizdi.
+_rep = ROOT / 'public/assets/docs/Capstone_Technical_Report.pdf'
+if _rep.exists():
+    _r = PdfReader(_rep)
+    _txt = ' '.join((pg.extract_text() or '') for pg in _r.pages)
+    for _term in ['Raspberry', 'Pioneer', 'CST8248', 'Latremouille', 'Bailey', 'Kulla',
+                  'Elyazid', 'Sidelkheir', 'Ru Wang', 'Rosseleve', 'Yiqin']:
+        check('belge', f"teknik raporda '{_term}' gecmiyor", _term not in _txt)
+    check('belge', 'teknik raporda ad dogru yaziliyor (Omer Deniz degil)',
+          'Omer Deniz ' not in _txt and 'Omer Dengiz' in _txt)
+    check('belge', 'rapor sayfa sayisi sitedeki notla uyusuyor',
+          f'{len(_r.pages)} pages' in site, f'rapor {len(_r.pages)} sayfa')
+    check('belge', 'kapak katki kapsamini durustce beyan ediyor',
+          'six-person group submission' in (_r.pages[0].extract_text() or ''))
+else:
+    check('belge', 'teknik rapor public/ altinda duruyor', False, str(_rep))
+
+print("\n=== 11. CAPSTONE KAYNAK REPOSU " + "="*39)
+# detag() nitelikleri siler, bir href gorunur metin degildir: bu kontrol
+# sayfanin ham HTML'ine bakmak zorunda.
+_cap_html = (ROOT/'dist/projects/capstone/index.html')
+check('repo', 'capstone sayfasi yayinlanan repoyu gosteriyor',
+      _cap_html.exists() and
+      'github.com/ofdengiz/clearroots-k8s-aws' in _cap_html.read_text(encoding='utf-8'))
+check('repo', 'baglanti etiketi repoyu tum capstone sanmaya yol acmiyor',
+      'Cloud site source' in cap,
+      'duz "Source" etiketi 17-VM ortaminin tamaminin repo oldugunu ima eder')
 
 print("\n" + "="*70)
 if findings:

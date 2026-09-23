@@ -35,6 +35,8 @@ cells:
     accent: true
   - label: Delivered
     value: Apr 2026
+source: https://github.com/ofdengiz/clearroots-k8s-aws
+sourceLabel: Cloud site source
 document:
   href: /assets/docs/Capstone_Technical_Report.pdf
   label: Technical report
