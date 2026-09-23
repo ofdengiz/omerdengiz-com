@@ -54,6 +54,15 @@ export interface Education {
 export interface Certification {
   name: string;
   issuer: string;
+  /**
+   * Validity window, when the credential has one.
+   *
+   * Stated rather than omitted: AWS certifications expire after three years,
+   * and presenting one with no date implies it is current indefinitely. The
+   * resume qualifies them, so the site must too — a recruiter comparing the
+   * two should not find the site making the stronger claim.
+   */
+  validity?: string;
   /** Verification URL if one exists. */
   href?: string;
 }
@@ -100,8 +109,7 @@ export const education: Education[] = [
     end: 'Apr 2026',
     endISO: '2026-04',
     conferred: true,
-    // Resume revision 2026-07-12 states GPA only.
-    marks: ['GPA 3.75 / 4.0'],
+    marks: ['Graduated with Honours', 'GPA 3.75 / 4.0'],
     description:
       'Two-year diploma covering enterprise networking, systems and server administration, virtualization and storage, cloud infrastructure, scripting and automation, and information security.',
     areas: [
@@ -130,12 +138,18 @@ export const certifications: Certification[] = [
   {
     name: 'AWS Certified Solutions Architect – Associate',
     issuer: 'Amazon Web Services',
+    validity: '2023 – 2026',
     // href: 'https://www.credly.com/badges/...',   ← add verification link
   },
   {
     name: 'AWS Certified Cloud Practitioner',
     issuer: 'Amazon Web Services',
+    validity: '2023 – 2026',
     // href: 'https://www.credly.com/badges/...',
+  },
+  {
+    name: 'CCNA: Switching, Routing and Wireless Essentials',
+    issuer: 'Cisco Networking Academy',
   },
 ];
 

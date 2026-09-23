@@ -5,8 +5,8 @@ standalone: true
 title: How this site is built
 summary: >-
   A static build on S3 behind CloudFront, with pretty URLs and security
-  headers injected at the edge, provisioned entirely in Terraform across two
-  AWS accounts.
+  headers injected at the edge, provisioned entirely in Terraform — and
+  rebuilt in a different account after the original one became unreachable.
 context: Self-directed · this site
 stack:
   - Astro
@@ -27,9 +27,9 @@ cells:
     value: Lambda@Edge
     accent: true
 metrics:
-  - value: "2"
-    label: AWS accounts
-    note: DNS separated from hosting
+  - value: "1"
+    label: AWS account
+    note: DNS and hosting together, deliberately
   - value: "1"
     label: Edge function
     note: Two event associations
@@ -38,13 +38,26 @@ metrics:
     note: Fonts self-hosted
     accent: true
 notes:
-  - title: DNS lives in a different account from hosting
+  - title: DNS and hosting share an account, after learning why
     body: >-
-      The Route 53 hosted zone sits in one AWS account and the bucket,
-      distribution, and certificate in another. It is more setup than a single
-      account needs, which is the point — the delegation boundary is the part
-      worth having built once before meeting it in an environment where it
-      matters.
+      The zone originally sat in a different account from the bucket and
+      distribution, to exercise a cross-account delegation boundary. That
+      boundary became the failure: when the hosting account went out of reach
+      it took the hosted zone with it, while the .com delegation kept pointing
+      at nameservers that now answered REFUSED. Every resolver returned
+      SERVFAIL and the site was unreachable — with the domain registration
+      itself perfectly healthy in the account still accessible. Keeping the
+      zone with the registration means an account-level problem can no longer
+      separate them.
+  - title: CloudFront reserves alias names across all accounts
+    tone: annotate
+    body: >-
+      Rebuilding in the new account failed with CNAMEAlreadyExists. A
+      suspended account keeps its resources, so the old distribution still
+      held the names. The www alias moved across by publishing a TXT record
+      proving control of the domain; the apex could not, because its
+      verification record would have to be a sibling of the zone rather than
+      a child, and no zone we control can publish it.
   - title: One function, two event associations
     body: >-
       The same Lambda@Edge handler runs on viewer-request to rewrite
@@ -71,12 +84,15 @@ revisions:
 ## The shape of it
 
 Static files in S3, served through CloudFront with an ACM certificate, fronted
-by a Route 53 hosted zone that lives in a **separate AWS account** from the
-hosting infrastructure (see note 1). Everything is declared in Terraform.
+by a Route 53 hosted zone that now sits in the **same account as the domain
+registration** (see note 1). Everything is declared in Terraform, which is what
+made rebuilding the whole stack in a different account a short exercise rather
+than a long one.
 
 The site is small enough that none of this is necessary — which is precisely
 why it is a useful thing to have built. The interesting parts are the joints:
-cross-account DNS delegation, edge behaviour, and cache semantics.
+DNS delegation, edge behaviour, cache semantics, and what happens when one of
+them breaks (see note 2).
 
 ## Pretty URLs at the edge
 

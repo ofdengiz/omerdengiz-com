@@ -56,7 +56,7 @@ export const projects: Project[] = [
     summary:
       'This site. A static build on S3 behind CloudFront, with pretty URLs and security headers injected at the edge, provisioned entirely in Terraform.',
     detail:
-      'Route 53 hosted zone in one AWS account, hosting infrastructure in another. A single Lambda@Edge function handles both viewer-request URL rewriting and viewer-response security headers, including a strict Content-Security-Policy that the build verifies against before it can ship.',
+      'A single Lambda@Edge function handles both viewer-request URL rewriting and viewer-response security headers, including a strict Content-Security-Policy that the build verifies against before it can ship. Rebuilt in a different AWS account in an afternoon after the original became unreachable — the entire stack is Terraform, so the recovery was a re-apply rather than a rebuild from memory.',
     context: 'Self-directed',
     stack: [
       'AWS S3', 'CloudFront', 'ACM', 'Lambda@Edge', 'Route 53', 'Terraform', 'Astro',

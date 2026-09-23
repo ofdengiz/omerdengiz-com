@@ -1,16 +1,21 @@
 # omerdengiz.com
 
-Personal portfolio site for **Omer Dengiz** — a static site hosted on AWS
-(S3 + CloudFront + ACM + Lambda@Edge), provisioned with Terraform, and fronted
-by a Route 53 hosted zone that lives in a *separate* AWS account from the
-hosting infrastructure.
+Personal portfolio site for **Omer Dengiz** — a static Astro build hosted on
+AWS (S3 + CloudFront + ACM + Lambda@Edge) and provisioned entirely with
+Terraform.
 
 ```
-Browser  ──►  Route 53 (domain account)       ──►  CloudFront (hosting account)
-                                                     │  Lambda@Edge  (pretty URLs + security headers)
-                                                     │  ACM cert     (us-east-1, DNS-validated)
-                                                     └─►  S3 bucket (private, OAC)
+Browser  ──►  Route 53  ──►  CloudFront
+                               │  Lambda@Edge  (pretty URLs + security headers)
+                               │  ACM cert     (us-east-1, DNS-validated)
+                               └─►  S3 bucket  (private, OAC)
 ```
+
+The hosted zone and the domain registration deliberately live in the **same**
+AWS account. They used to be split across two, until the account holding the
+zone became unreachable and took DNS down with it while the registration sat
+healthy and untouchable in the other one. The post-mortem is written up at
+[/meta](https://www.omerdengiz.com/meta).
 
 ## Repository layout
 
@@ -50,100 +55,64 @@ Browser  ──►  Route 53 (domain account)       ──►  CloudFront (hosti
 | AWS CLI v2        | 2.x                    | already installed                            |
 | Node.js (optional)| only if you edit edge  | —                                            |
 
-Two AWS CLI profiles are required:
-
-1. **`omerdengiz-hosting`** — the account where the site infrastructure will live.
-2. **`omerdengiz-domain`** — the account that owns `omerdengiz.com` and its Route 53 hosted zone. *Used only for manual DNS steps; Terraform never touches it.*
-
-Configure them:
+One AWS CLI profile is required — the account that holds both the domain
+registration and the hosted zone:
 
 ```powershell
-aws configure --profile omerdengiz-hosting
-aws configure --profile omerdengiz-domain
+aws configure --profile omerdengiz
 ```
+
+Set the same name in `terraform.tfvars` as `aws_profile`.
 
 ---
 
 ## One-time setup (first deploy)
 
-Strategy A: Route 53 hosted zone lives in the **hosting account** (fully managed
-by Terraform). The **domain account** is only touched once, at the registrar
-level, to delegate the name servers.
+Everything lives in one account, so there is no manual cross-account
+delegation step.
 
 ### Step 1 — Configure tfvars
 
 ```bash
 cd terraform
-cp terraform.tfvars.example terraform.tfvars
-```
-
-If you're already logged in as the hosting account via `aws configure`, you can
-**delete** the `aws_profile` line. Otherwise set it to your profile name.
-
-### Step 2 — Create the hosted zone first, get the NS
-
-Because the registrar delegation is the blocking step, create the zone alone
-first so you can grab its 4 NS values:
-
-```bash
+cp terraform.tfvars.example terraform.tfvars   # set aws_profile
 terraform init
-terraform apply -target=aws_route53_zone.site
-terraform output route53_name_servers
 ```
 
-You will see something like:
-
-```
-route53_name_servers = tolist([
-  "ns-123.awsdns-15.com",
-  "ns-456.awsdns-57.net",
-  "ns-789.awsdns-33.org",
-  "ns-012.awsdns-41.co.uk",
-])
-```
-
-### Step 3 — 🔧 MANUAL: delegate DNS at the domain registrar
-
-Sign into the **domain account** (the one that has `omerdengiz.com` registered):
-
-1. Route 53 → **Registered domains** → `omerdengiz.com` → **Edit name servers**
-2. Replace the existing 4 name servers with the 4 values from Step 2
-3. Save
-
-Propagation is usually 5–30 minutes. You can verify with:
-
-```bash
-dig NS omerdengiz.com +short
-# or on Windows PowerShell:
-#   Resolve-DnsName omerdengiz.com -Type NS
-```
-
-Once the new name servers show up, the **old hosted zone in the domain account
-is dormant** — you can delete it (or leave it; it costs ~$0.50/month).
-
-### Step 4 — Full apply
+### Step 2 — Apply
 
 ```bash
 terraform apply
 ```
 
-This will:
-1. Issue the ACM certificate (validated automatically via the Route 53 zone).
-2. Create the Lambda@Edge function and S3 bucket.
-3. Deploy the CloudFront distribution.
-4. Wire up the ALIAS records (apex + www).
+If the hosted zone already exists (for example because the domain was
+registered through Route 53, which creates one), import it first so the
+account does not end up with two:
 
-Total time: ~10–20 minutes, mostly CloudFront propagation.
+```bash
+terraform apply -target=aws_acm_certificate.site   # for_each needs the cert
+terraform import aws_route53_zone.site <ZONE_ID>
+terraform apply
+```
 
-### Step 5 — Upload the site
+### Step 3 — Point the registrar at the zone
+
+Same account, so this is a CLI call rather than a console visit:
+
+```bash
+terraform output -json route53_name_servers
+aws route53domains update-domain-nameservers --region us-east-1   --domain-name omerdengiz.com   --nameservers Name=<ns1> Name=<ns2> Name=<ns3> Name=<ns4>
+```
+
+Deleting and recreating a hosted zone always produces a **new** nameserver
+set, so this must be repeated after any such rebuild.
+
+### Step 4 — Upload the site
 
 ```bash
 cd ..
-chmod +x deploy.sh
 ./deploy.sh
 ```
-
-Visit **https://omerdengiz.com** 🎉
 
 ---
 
@@ -206,7 +175,7 @@ python -c "from pypdf import PdfReader; print('
 
 For recruiters / hiring managers skimming the source:
 
-- **Cross-account AWS architecture** — Route 53 in one account, hosting infrastructure in another, wired up cleanly.
+- **Infrastructure as code that earned its keep** — the original hosting account became unreachable and took the hosted zone and distribution with it. Because the whole stack is Terraform, rebuilding it in the account holding the domain was a re-apply, not a reconstruction. See `src/content/projects/meta.md` for the DNS post-mortem.
 - **S3 origin hardening** — bucket is private, public access blocked, CloudFront reaches it only via Origin Access Control (OAC), encrypted at rest, versioned.
 - **CloudFront best practices** — HTTPS-only, TLS 1.2+, HTTP/2 and HTTP/3, custom 404, compression, AWS-managed cache policies.
 - **Lambda@Edge** — single handler, two CloudFront events (viewer-request + viewer-response), pretty URL rewrites + CSP / HSTS / X-Frame-Options / Permissions-Policy headers.

@@ -41,6 +41,15 @@ export const profile = {
   availability: 'Open to Cloud, DevOps, Systems & Networking roles',
 
   /**
+   * Security screening, when current. Set to null once it lapses.
+   *
+   * Stated on the site because it is on the resume and it materially changes
+   * eligibility for Canadian public-sector and defence work — leaving it off
+   * one surface but not the other is the kind of gap a recruiter notices.
+   */
+  clearance: 'RCMP Facility Access Security Check, Level 2 (current)',
+
+  /**
    * Summary, adapted from the resume.
    *
    * The "(Apr 2026)" parenthetical was dropped: the credential has been

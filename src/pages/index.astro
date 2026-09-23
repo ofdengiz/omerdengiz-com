@@ -50,7 +50,7 @@ const sections = [
         subtitle={profile.role}
         cells={[
           { label: 'Location', value: profile.location.short },
-          { label: 'Certification', value: 'AWS SAA · CCP', accent: true },
+          { label: 'Certification', value: 'AWS SAA · CCP · CCNA', accent: true },
           { label: 'Discipline', value: 'Cloud · Systems · Network' },
           { label: 'Revision', value: profile.sheet.revision },
         ]}
@@ -175,7 +175,9 @@ const sections = [
                     ) : (
                       c.name
                     )}
-                    <span class="edu__issuer">{c.issuer}</span>
+                    <span class="edu__issuer">
+                      {c.issuer}{c.validity && <span class="edu__validity"> · {c.validity}</span>}
+                    </span>
                   </li>
                 ))
               }
@@ -205,6 +207,7 @@ const sections = [
     <section id="contact" class="section">
       <SheetRule sheet="05" title="Contact" note={profile.location.short} />
       <p class="lede">{profile.availability}. Based in {profile.location.metro}.</p>
+      {profile.clearance && <p class="label clearance">{profile.clearance}</p>}
       <div class="-wide">
         <ContactGrid />
       </div>
@@ -362,6 +365,8 @@ const sections = [
   }
   .edu__areas li:first-child { padding-inline-start: 0; border-inline-start: 0; }
 
+  .clearance { color: var(--accent); }
+  .edu__validity { color: var(--ink-3); font-variant-numeric: tabular-nums; }
   .edu__certs { display: grid; gap: var(--s-3); padding: 0; list-style: none; }
   .edu__certs li {
     display: grid;

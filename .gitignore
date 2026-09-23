@@ -63,3 +63,6 @@ npm-debug.log*
 /Omer_Dengiz_*_Application.*
 /Omer_Dengiz_*Application*.pdf
 /*_Application.pdf
+
+# Editing backups of resume sources — local only.
+/*.docx.bak
