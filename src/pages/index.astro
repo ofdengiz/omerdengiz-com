@@ -1,6 +1,6 @@
 ---
 /**
- * Home — the drawing set's first sheet.
+ * Home: the drawing set's first sheet.
  *
  * Structure follows how a recruiter actually reads: who and where (title
  * block), what the work is (index), where it happened (timeline), what the
@@ -36,8 +36,8 @@ const sections = [
 ---
 
 <Base
-  title={`${profile.name} — ${profile.roleShort}`}
-  description={`Portfolio of ${profile.name} — AWS Certified Solutions Architect. Cloud infrastructure, systems administration, and enterprise networking. ${profile.location.short}.`}
+  title={`${profile.name} · ${profile.roleShort}`}
+  description={`Portfolio of ${profile.name}. Cloud infrastructure, systems administration, and enterprise networking. ${profile.location.short}.`}
 >
   <Nav sections={sections} />
 

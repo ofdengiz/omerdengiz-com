@@ -1,5 +1,5 @@
 /**
- * omerdengiz.com — Lambda@Edge handler
+ * omerdengiz.com: Lambda@Edge handler
  *
  * One function, two CloudFront event associations:
  *   1. viewer-request   → normalize request URIs for S3 static hosting
@@ -29,7 +29,7 @@ exports.handler = (event, context, callback) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/* 1. viewer-request — pretty URLs for a static S3 origin                      */
+/* 1. viewer-request: pretty URLs for a static S3 origin                      */
 /* -------------------------------------------------------------------------- */
 function handleViewerRequest(request, callback) {
   let uri = request.uri;
@@ -52,7 +52,7 @@ function handleViewerRequest(request, callback) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 2. viewer-response — security + caching headers                             */
+/* 2. viewer-response: security + caching headers                             */
 /* -------------------------------------------------------------------------- */
 function handleViewerResponse(response, callback) {
   const headers = response.headers;
@@ -80,7 +80,7 @@ function handleViewerResponse(response, callback) {
   // scripts/verify-csp.mjs parses this exact array and audits the built HTML
   // against it on every build, so a page that violates the policy fails CI
   // rather than silently breaking in production. Loosening anything here will
-  // not go unnoticed — but it also will not be caught by the browser until it
+  // not go unnoticed, but it also will not be caught by the browser until it
   // ships, which is the whole reason that check exists.
   setHeader(headers, 'Content-Security-Policy', [
     "default-src 'self'",
@@ -100,7 +100,7 @@ function handleViewerResponse(response, callback) {
     "upgrade-insecure-requests"
   ].join('; '));
 
-  // Brag a little — no functional effect
+  // Brag a little: no functional effect
   setHeader(headers, 'X-Served-By', 'lambda-edge');
 
   return callback(null, response);

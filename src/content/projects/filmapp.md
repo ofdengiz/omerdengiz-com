@@ -1,7 +1,7 @@
 ---
 sheet: "04"
 order: 4
-title: filmapp — DevSecOps Pipeline
+title: filmapp · DevSecOps Pipeline
 summary: >-
   A React and TypeScript application whose real artefact is its pipeline:
   every security gate runs before an image reaches the registry.
@@ -42,7 +42,7 @@ notes:
     body: >-
       Trivy runs against the filesystem and again against the built image, and
       both run before the push. A vulnerable image that reaches the registry
-      has to be assumed pulled — keeping the scan upstream of publication
+      has to be assumed pulled. Keeping the scan upstream of publication
       means a failure is a non-event rather than an incident.
   - title: The application is the smaller half
     tone: annotate
@@ -77,5 +77,5 @@ the build, and a failed build produces no artefact (see note 1).
 ## Rollout
 
 A passing build produces a tagged image and a Kubernetes rollout. The
-deployment step is intentionally unremarkable — by the time it runs, the
+deployment step is intentionally unremarkable. By the time it runs, the
 interesting decisions have already been made and enforced upstream.

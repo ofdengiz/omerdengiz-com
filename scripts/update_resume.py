@@ -4,7 +4,7 @@ Changes:
   1. Append `omerdengiz.com` to the contact line as a styled hyperlink matching the other
      contact items (email, LinkedIn, GitHub).
   2. Extend Networking & Security skills line with new items inline (no "new this semester"
-     framing) — keeps the bold label in run[0], content in run[1], so only the label stays bold.
+     framing). Keeps the bold label in run[0], content in run[1], so only the label stays bold.
   3. Drop the standalone "CERTIFICATIONS & LANGUAGES" section header to keep the resume on
      a single page.
 """
@@ -112,13 +112,13 @@ def append_separator_run(paragraph, text: str = "  \u2022  ") -> None:
 doc = Document(str(SRC))
 paragraphs = doc.paragraphs
 
-# 1) Contact line — append " • omerdengiz.com" as a hyperlink.
+# 1) Contact line: append " • omerdengiz.com" as a hyperlink.
 contact = paragraphs[2]
 if "omerdengiz.com" not in contact.text:
     append_separator_run(contact, "  \u2022  ")
     add_hyperlink(contact, "https://omerdengiz.com", "omerdengiz.com")
 
-# 2) Networking & Security line — update content run only so only the label stays bold.
+# 2) Networking & Security line: update content run only so only the label stays bold.
 ns_idx = next(i for i, p in enumerate(paragraphs) if p.text.startswith("Networking & Security:"))
 update_skill_line(
     paragraphs[ns_idx],

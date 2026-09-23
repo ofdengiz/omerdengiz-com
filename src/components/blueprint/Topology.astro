@@ -1,6 +1,6 @@
 ---
 /**
- * Topology — the capstone network, drawn and interactive.
+ * Topology: the capstone network, drawn and interactive.
  *
  * Geometry is computed from src/data/topology.ts rather than hand-drawn, so
  * the diagram cannot drift from the documented design.
@@ -14,7 +14,7 @@
  *
  * Interaction (Phase 4): pointing at or focusing any node, segment or the
  * gateway dims the rest of the drawing and lights the elements it actually
- * touches — its subnet, its uplink to the gateway, and its storage path if it
+ * touches: its subnet, its uplink to the gateway, and its storage path if it
  * has one. Relationships are emitted as data attributes on the SVG itself, so
  * the behaviour script needs no copy of the topology data.
  *
@@ -36,7 +36,7 @@ import {
 } from '../../data/topology';
 
 interface Props {
-  /** Render without the legend and table — used in tight contexts. */
+  /** Render without the legend and table, used in tight contexts. */
   bare?: boolean;
 }
 const { bare = false } = Astro.props;
@@ -114,7 +114,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
   <figcaption class="topo__caption">
     <span class="label">Fig. 01</span>
     <span class="topo__title">
-      Site 2 — MSP boundary, tenant segmentation, and storage isolation
+      Site 2: MSP boundary, tenant segmentation, and storage isolation
     </span>
   </figcaption>
 
@@ -162,7 +162,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
           gateway.role,
         )}
       >
-        <title>{gateway.label} — {gateway.role}</title>
+        <title>{gateway.label} · {gateway.role}</title>
         <rect x={gwX - 130} y={Y_GW} width="260" height={GW_H} class="topo__box -gw" />
         <text x={gwX} y={Y_GW + 20} class="topo__label -center -strong">{gateway.label}</text>
         <text x={gwX} y={Y_GW + 35} class="topo__sub -center">
@@ -203,7 +203,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
                   seg.purpose,
                 )}
               >
-                <title>{seg.label} {seg.cidr} — {seg.purpose}</title>
+                <title>{seg.label} {seg.cidr} · {seg.purpose}</title>
 
                 <rect x={x} y={y} width={w} height={h} class="topo__box" />
                 <text x={x + 12} y={y + 20} class="topo__label -strong">{seg.label}</text>
@@ -225,7 +225,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
                         node.role,
                       )}
                     >
-                      <title>{node.label} — {node.role}</title>
+                      <title>{node.label} · {node.role}</title>
                       <rect
                         x={x + 4} y={ny - 12} width={w - 8} height={NODE_ROW - 4}
                         class="topo__node-hit"
@@ -268,7 +268,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
                 data-peer={initiator}
                 {...detailFor(seg.label, seg.cidr, seg.purpose)}
               >
-                <title>{seg.label} {seg.cidr} — {seg.purpose}</title>
+                <title>{seg.label} {seg.cidr} · {seg.purpose}</title>
                 <rect x={x} y={y} width={w} height={h} class="topo__box -dashed" />
                 <text x={x + 12} y={y + 22} class="topo__label -strong">{seg.label}</text>
                 <text x={x + w - 12} y={y + 22} class="topo__sub -end">{seg.cidr}</text>
@@ -285,7 +285,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
         data-node="site1"
         {...detailFor(site1Link.label, 'SITE1_OVPN', site1Link.detail)}
       >
-        <title>{site1Link.label} — {site1Link.detail}</title>
+        <title>{site1Link.label} · {site1Link.detail}</title>
         <line
           x1={gwX - 130} y1={Y_GW + GW_H / 2} x2={56} y2={Y_GW + GW_H / 2}
           class="topo__line -dashed topo__edge" data-edge="tunnel"
@@ -320,8 +320,8 @@ const detailFor = (label: string, meta: string, desc: string) => ({
           <div class="topo__legend-group">
             <span class="label">Tenants</span>
             <ul class="topo__keys" role="list">
-              <li>{tenants.c1.label} — Windows-centric</li>
-              <li>{tenants.c2.label} — Linux-centric</li>
+              <li>{tenants.c1.label}: Windows-centric</li>
+              <li>{tenants.c2.label}: Linux-centric</li>
             </ul>
           </div>
           <div class="topo__legend-group">
@@ -341,7 +341,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
         */}
         <div class="topo__controls">
           <p class="label" id="topo-controls-label">
-            Inspect — select a system or subnet
+            Inspect: select a system or subnet
           </p>
           <div class="topo__control-row" role="group" aria-labelledby="topo-controls-label">
             <button type="button" class="topo__btn -edge" data-topo-target="gw">
@@ -376,7 +376,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
                     </button>
                   </th>
                   <td>{s.cidr}</td>
-                  <td>{s.gateway ?? 'none — isolated'}</td>
+                  <td>{s.gateway ?? 'none, isolated'}</td>
                   <td>
                     {s.nodes.length ? (
                       <span class="topo__members">
@@ -518,7 +518,7 @@ const detailFor = (label: string, meta: string, desc: string) => ({
       btn.addEventListener('focus', show);
       btn.addEventListener('blur', hide);
 
-      // Click pins a selection so it survives moving the pointer away —
+      // Click pins a selection so it survives moving the pointer away
       // useful on touch, where hover does not exist at all.
       btn.addEventListener('click', () => {
         if (pinned === id) {

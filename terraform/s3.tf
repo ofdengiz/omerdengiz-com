@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-# S3 — private origin bucket for the static site
+# S3: private origin bucket for the static site
 # Bucket is locked down; CloudFront reaches it via Origin Access Control.
 # ------------------------------------------------------------------
 

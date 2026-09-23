@@ -1,5 +1,5 @@
 /**
- * projects.ts — the work index.
+ * projects.ts: the work index.
  *
  * Editorial discipline: five entries carry the index. Everything else is
  * listed compactly under `additional`. A recruiter reading a portfolio gives
@@ -18,7 +18,7 @@ export interface Project {
   summary: string;
   /** Longer description shown in the expanded row. */
   detail: string;
-  /** Context label — how this work came about. */
+  /** Context label: how this work came about. */
   context: string;
   period?: string;
   stack: string[];
@@ -30,7 +30,7 @@ export interface Project {
   sourceLabel?: string;
   /** Live URL, if one exists. */
   live?: string;
-  /** Marks the capstone — rendered with additional prominence. */
+  /** Marks the capstone: rendered with additional prominence. */
   featured?: boolean;
 }
 
@@ -41,7 +41,7 @@ export const projects: Project[] = [
     summary:
       'A 17-VM, two-site managed-service environment for two client tenants, extended with a public HTTPS service on a Terraform-provisioned Kubernetes cluster.',
     detail:
-      'Two tenants — Lumora on Windows Server 2022 AD DS, ClearRoots on Samba AD — sharing an OPNsense edge across eight VLAN segments, with isolated iSCSI storage bridges deliberately kept off the routed path, Veeam backup copy over a site-to-site OpenVPN tunnel, and a dual-bastion operations model. The cloud site was designed, built and operated end to end; the on-prem site was delivered collaboratively.',
+      'Two tenants, Lumora on Windows Server 2022 AD DS and ClearRoots on Samba AD, sharing an OPNsense edge across eight VLAN segments, with isolated iSCSI storage bridges deliberately kept off the routed path, Veeam backup copy over a site-to-site OpenVPN tunnel, and a dual-bastion operations model. The cloud site was designed, built and operated end to end; the on-prem site was delivered collaboratively.',
     context: 'Algonquin College capstone',
     period: 'Jan – Apr 2026',
     stack: [
@@ -50,7 +50,7 @@ export const projects: Project[] = [
       'Flannel', 'Docker', 'Caddy',
     ],
     caseStudy: '/projects/capstone',
-    // The repository is the cloud site only — the Terraform, the bootstrap
+    // The repository is the cloud site only: the Terraform, the bootstrap
     // scripts and the manifests behind the public HTTPS service. The
     // on-premises half was team work and is not published.
     source: 'https://github.com/ofdengiz/clearroots-k8s-aws',
@@ -63,7 +63,7 @@ export const projects: Project[] = [
     summary:
       'This site. A static build on S3 behind CloudFront, with pretty URLs and security headers injected at the edge, provisioned entirely in Terraform.',
     detail:
-      'A single Lambda@Edge function handles both viewer-request URL rewriting and viewer-response security headers, including a strict Content-Security-Policy that the build verifies against before it can ship. Rebuilt in a different AWS account in an afternoon after the original became unreachable — the entire stack is Terraform, so the recovery was a re-apply rather than a rebuild from memory.',
+      'A single Lambda@Edge function handles both viewer-request URL rewriting and viewer-response security headers, including a strict Content-Security-Policy that the build verifies against before it can ship. The stack was re-applied into a second AWS account after the first became unreachable. The apex name did not transfer: CloudFront reserves alias names across all accounts and the suspended account still holds it, so the site is served from www.',
     context: 'Self-directed',
     stack: [
       'AWS S3', 'CloudFront', 'ACM', 'Lambda@Edge', 'Route 53', 'Terraform', 'Astro',
@@ -92,7 +92,7 @@ export const projects: Project[] = [
   },
   {
     sheet: '04',
-    title: 'filmapp — DevSecOps Pipeline',
+    title: 'filmapp · DevSecOps Pipeline',
     summary:
       'A React and TypeScript application whose real artefact is its pipeline: every security gate runs before an image reaches the registry.',
     detail:

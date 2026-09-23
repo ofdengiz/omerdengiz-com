@@ -1,5 +1,5 @@
 /* ==========================================================================
-   base.css — reset, document defaults, typography, layout primitives
+   base.css: reset, document defaults, typography, layout primitives
    ========================================================================== */
 
 @layer reset {
@@ -149,7 +149,7 @@
    * Sections span the full track set and inherit the parent's columns via
    * subgrid, so their children can address `content` / `wide` / `full` by the
    * same names. Without this, a breakout element nested inside a section is
-   * silently clamped to the prose column — the wide artefacts (topology, port
+   * silently clamped to the prose column: the wide artefacts (topology, port
    * matrix, dimension rows) would never actually break out.
    */
   .sheet > .section {
@@ -172,7 +172,7 @@
     }
   }
 
-  /* Utility stack — consistent spacing without margin collapse surprises */
+  /* Utility stack: consistent spacing without margin collapse surprises */
   .stack > * + * { margin-block-start: var(--flow, var(--s-4)); }
   .stack-6 > * + * { margin-block-start: var(--s-6); }
   .stack-8 > * + * { margin-block-start: var(--s-8); }

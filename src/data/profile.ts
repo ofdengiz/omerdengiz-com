@@ -1,5 +1,5 @@
 /**
- * profile.ts — the single source of truth for identity and contact details.
+ * profile.ts: the single source of truth for identity and contact details.
  *
  * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-07-12), header block.
  *
@@ -11,7 +11,7 @@
 export interface ProfileLink {
   /** Short label used in the contact grid, e.g. "GitHub". */
   label: string;
-  /** Text shown to the reader — usually a shortened form of the URL. */
+  /** Text shown to the reader: usually a shortened form of the URL. */
   display: string;
   href: string;
   /** Machine-readable identifier for structured data / rel attributes. */
@@ -24,7 +24,7 @@ export const profile = {
   /**
    * The resume's positioning line, verbatim.
    *
-   * Systems Administration leads as of the 2026-09 revision — the roles being
+   * Systems Administration leads as of the 2026-09 revision. The roles being
    * targeted are operations-first, and the ordering signals that before any
    * bullet is read.
    */
@@ -37,7 +37,7 @@ export const profile = {
     city: 'Kanata',
     region: 'ON',
     country: 'Canada',
-    /** Rendered in the title block LOCATION cell — matches the resume header. */
+    /** Rendered in the title block LOCATION cell. Matches the resume header. */
     short: 'Kanata, ON',
     /** Wider framing used in prose. */
     metro: 'Ottawa metro',
@@ -50,7 +50,7 @@ export const profile = {
    * Security screening, when current. Set to null once it lapses.
    *
    * Stated on the site because it is on the resume and it materially changes
-   * eligibility for Canadian public-sector and defence work — leaving it off
+   * eligibility for Canadian public-sector and defence work. Leaving it off
    * one surface but not the other is the kind of gap a recruiter notices.
    */
   clearance: 'RCMP Facility Access Security Check, Level 2 (current)',
@@ -63,7 +63,7 @@ export const profile = {
    * roles being targeted care about it more than about a diploma date.
    */
   summary:
-    'Algonquin College Networking graduate with hands-on experience in Windows and Linux server administration, virtualization, networking, and AWS. On a six-person capstone team, owned the second site end to end — Proxmox-hosted infrastructure, Active Directory and Samba AD, segmented VLANs behind OPNsense — and extended it into AWS with Terraform and a Kubernetes cluster behind automated TLS. Previously worked as a DevOps Engineer, automating Linux server configuration with Ansible and building CI/CD pipelines for containerized applications. Holds a current RCMP Facility Access Security Check (Level 2). Fluent in English, Turkish, and Mandarin.',
+    'Algonquin College Networking graduate with hands-on experience in Windows and Linux server administration, virtualization, networking, and AWS. On a six-person capstone team, owned the second site end to end: Proxmox-hosted infrastructure, Active Directory and Samba AD, and segmented VLANs behind OPNsense. Extended it into AWS with Terraform and a Kubernetes cluster behind automated TLS. Previously worked as a DevOps Engineer, automating Linux server configuration with Ansible and building CI/CD pipelines for containerized applications. Holds a current RCMP Facility Access Security Check (Level 2). Fluent in English, Turkish, and Mandarin.',
 
   email: 'omerdengiz368@gmail.com',
   phone: {
@@ -88,7 +88,7 @@ export const profile = {
 
   /**
    * Drawing title-block metadata. `revision` tracks the resume revision the
-   * site content is aligned to — it is displayed, so keep it honest.
+   * site content is aligned to: it is displayed, so keep it honest.
    */
   sheet: {
     revision: '2026.09',

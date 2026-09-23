@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * verify-csp.mjs — check the built site against the CSP we actually serve.
+ * verify-csp.mjs: check the built site against the CSP we actually serve.
  *
  * The Content-Security-Policy lives in lambda-edge/index.js and is applied by
  * CloudFront at viewer-response time, which means a violation is invisible
@@ -67,7 +67,7 @@ function htmlFiles(dir, acc = []) {
 
 /**
  * Only elements that actually FETCH a subresource are governed by CSP fetch
- * directives. An <a href> is navigation — CSP does not restrict where a link
+ * directives. An <a href> is navigation. CSP does not restrict where a link
  * points, and flagging one is a false positive. <base href> is governed by
  * base-uri and <form action> by form-action, both checked separately.
  */
@@ -99,7 +99,7 @@ function audit(file, html, policy) {
     if (!allows('script-src', "'unsafe-inline'")) {
       findings.push({
         rule: 'script-src',
-        detail: `inline <script> (${body.trim().length} chars) — blocked, needs an external file or a hash`,
+        detail: `inline <script> (${body.trim().length} chars): blocked, needs an external file or a hash`,
         sample: body.trim().slice(0, 70).replace(/\s+/g, ' '),
       });
     }
@@ -111,7 +111,7 @@ function audit(file, html, policy) {
     if (!allows('style-src', "'unsafe-inline'")) {
       findings.push({
         rule: 'style-src',
-        detail: `inline <style> (${m[1].trim().length} chars) — blocked`,
+        detail: `inline <style> (${m[1].trim().length} chars): blocked`,
         sample: m[1].trim().slice(0, 70).replace(/\s+/g, ' '),
       });
     }
@@ -122,7 +122,7 @@ function audit(file, html, policy) {
     if (!allows('script-src', "'unsafe-inline'")) {
       findings.push({
         rule: 'script-src',
-        detail: `inline event handler on${m[1]}= — blocked`,
+        detail: `inline event handler on${m[1]}=: blocked`,
         sample: m[0].trim().slice(0, 70),
       });
     }
@@ -133,7 +133,7 @@ function audit(file, html, policy) {
   if (styleAttrs.length && !allows('style-src', "'unsafe-inline'")) {
     findings.push({
       rule: 'style-src',
-      detail: `${styleAttrs.length} inline style="" attribute(s) — blocked`,
+      detail: `${styleAttrs.length} inline style="" attribute(s): blocked`,
       sample: styleAttrs[0][0].trim().slice(0, 70),
     });
   }
@@ -178,7 +178,7 @@ const policy = readPolicy();
 const files = htmlFiles(DIST);
 const all = files.flatMap((f) => audit(f, readFileSync(f, 'utf8'), policy));
 
-console.log('\nCSP verification — policy read from lambda-edge/index.js');
+console.log('\nCSP verification: policy read from lambda-edge/index.js');
 console.log('─'.repeat(64));
 for (const [name, values] of Object.entries(policy)) {
   console.log(`  ${name.padEnd(22)} ${values.join(' ') || '(no value)'}`);
@@ -188,13 +188,13 @@ if (SELF_ORIGIN) console.log(`  'self' resolves to     ${SELF_ORIGIN}`);
 console.log(`  ${files.length} HTML file(s) audited in ${relative(ROOT, DIST).replace(/\\/g, '/')}/\n`);
 
 if (!all.length) {
-  console.log('  PASS — no CSP violations found.\n');
+  console.log('  PASS: no CSP violations found.\n');
   process.exit(0);
 }
 
 const byRule = all.reduce((acc, f) => ((acc[f.rule] ??= []).push(f), acc), {});
 for (const [rule, items] of Object.entries(byRule)) {
-  console.log(`  ${rule} — ${items.length} violation(s)`);
+  console.log(`  ${rule}: ${items.length} violation(s)`);
   for (const i of items) {
     console.log(`    ${i.file}`);
     console.log(`      ${i.detail}`);
@@ -202,5 +202,5 @@ for (const [rule, items] of Object.entries(byRule)) {
   }
   console.log('');
 }
-console.log(`  FAIL — ${all.length} violation(s).\n`);
+console.log(`  FAIL: ${all.length} violation(s).\n`);
 process.exit(1);

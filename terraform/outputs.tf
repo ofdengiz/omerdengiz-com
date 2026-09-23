@@ -23,7 +23,7 @@ output "cloudfront_domain_name" {
 }
 
 # ------------------------------------------------------------------
-# THE IMPORTANT ONE — paste these NS values at your domain registrar
+# THE IMPORTANT ONE: paste these NS values at your domain registrar
 # (in the domain account: Route 53 → Registered domains → omerdengiz.com
 # → Edit name servers). This is the one-time manual step.
 # ------------------------------------------------------------------

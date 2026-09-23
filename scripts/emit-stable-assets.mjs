@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * emit-stable-assets.mjs — publish the resume at stable URLs as well as the
+ * emit-stable-assets.mjs: publish the resume at stable URLs as well as the
  * content-hashed one.
  *
  * WHY
@@ -12,7 +12,7 @@
  *
  * It is wrong for sharing. A hashed URL changes every time the file changes,
  * so a link pasted into a job application breaks the next time the resume is
- * updated — silently, and at the worst possible moment.
+ * updated, silently and at the worst possible moment.
  *
  * So the same bytes are also written to two stable paths:
  *
@@ -47,7 +47,7 @@ if (!existsSync(SOURCE)) {
 }
 
 if (!existsSync(DIST)) {
-  console.error('\n  emit-stable-assets: dist/ not found — run astro build first\n');
+  console.error('\n  emit-stable-assets: dist/ not found. Run astro build first\n');
   process.exit(1);
 }
 
@@ -63,4 +63,4 @@ for (const rel of TARGETS) {
 }
 
 console.log('─'.repeat(64));
-console.log('  Short TTL by deploy.sh — never immutable, since the name is fixed.\n');
+console.log('  Short TTL by deploy.sh: never immutable, since the name is fixed.\n');

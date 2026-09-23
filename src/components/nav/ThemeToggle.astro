@@ -1,6 +1,6 @@
 ---
 /**
- * ThemeToggle — a three-way theme selector.
+ * ThemeToggle: a three-way theme selector.
  *
  * Built as a radio group rather than a two-state button, for three reasons:
  *
@@ -20,7 +20,7 @@
  *
  * On flash-of-wrong-theme: the usual fix is a blocking inline script, which
  * `script-src 'self'` forbids. Rather than weaken the policy, only users who
- * chose a non-OS theme may see a brief correction on first paint — everyone
+ * chose a non-OS theme may see a brief correction on first paint. Everyone
  * else is served correctly by CSS alone, with no render-blocking script.
  */
 const options = [
@@ -151,7 +151,7 @@ const options = [
 
   .theme__cell:hover .theme__label { color: var(--accent); }
 
-  /* Selected cell is filled — the one filled element in the system, justified
+  /* Selected cell is filled: the one filled element in the system, justified
      because it encodes current state. */
   .theme__cell:has(.theme__input:checked) { background: var(--ink); }
   .theme__cell:has(.theme__input:checked) .theme__label { color: var(--paper); }

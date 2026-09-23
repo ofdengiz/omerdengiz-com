@@ -1,12 +1,12 @@
 # ------------------------------------------------------------------
-# ACM — public TLS certificate for CloudFront, issued in us-east-1
+# ACM: public TLS certificate for CloudFront, issued in us-east-1
 #
 # The DNS hosted zone lives in a DIFFERENT AWS account, so this module
 # does NOT create validation records automatically. It creates the cert
 # with DNS validation and exposes the validation CNAMEs as outputs.
 #
 # You add those CNAMEs in the domain account's Route 53 hosted zone,
-# then re-run `terraform apply` — the cert moves to ISSUED.
+# then re-run `terraform apply`: the cert moves to ISSUED.
 # ------------------------------------------------------------------
 
 resource "aws_acm_certificate" "site" {

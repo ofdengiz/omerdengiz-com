@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-# Lambda@Edge — pretty URLs + security headers
+# Lambda@Edge: pretty URLs + security headers
 #
 # Lambda@Edge functions MUST live in us-east-1 regardless of where
 # CloudFront is "deployed" from. The same function code is attached to

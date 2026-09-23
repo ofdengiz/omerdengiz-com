@@ -1,7 +1,7 @@
 """Cross-surface consistency audit: resume PDF vs website vs GitHub profile.
 
 Every check states what it expects and where. A finding is only reported when
-the same *claim* is made differently on two surfaces — not when one surface
+the same *claim* is made differently on two surfaces, not when one surface
 simply omits something the other mentions, which is normal (a resume skills
 block is not an inventory of every technology in every project).
 """
@@ -159,9 +159,34 @@ check('repo', 'baglanti etiketi repoyu tum capstone sanmaya yol acmiyor',
       'Cloud site source' in cap,
       'duz "Source" etiketi 17-VM ortaminin tamaminin repo oldugunu ima eder')
 
+print("\n=== 12. UZUN TIRE (yapay zeka izi) " + "="*35)
+# Cumle baglaci olarak kullanilan uzun tire, bir metnin yapay zeka tarafindan
+# yazildigini en cok ele veren isaretlerden biri. Kisa tire (EN) serbest:
+# tarih araliklari ve "Solutions Architect - Associate" gibi resmi adlar icin
+# dogru tipografi o. Yasaklanan sadece uzun tire.
+EM = chr(8212)
+_pages_em = {n: t.count(EM) for n, t in pages.items() if EM in t}
+check('tire', 'gorunur sayfa metninde uzun tire yok', not _pages_em, str(_pages_em))
+check('tire', 'resume PDF\'inde uzun tire yok', EM not in pdf)
+check('tire', 'github profilinde uzun tire yok', EM not in gh)
+check('tire', 'repo README\'sinde uzun tire yok', EM not in repo)
+
+# og:image paylasim kartinda metin var ve grep onu goremez, o yuzden
+# ureticisinin girdileri kontrol ediliyor.
+_og = ROOT / 'scripts/generate_og.py'
+if _og.exists():
+    _src = _og.read_text(encoding='utf-8')
+    check('tire', 'og karti ureticisinde uzun tire yok', EM not in _src)
+    check('tire', 'og karti olu apex adresini basmiyor',
+          '"omerdengiz.com"' not in _src,
+          'apex TLS hatasi veriyor; kartta www yazmali')
+    check('tire', 'og karti sertifikayi gecerlilik penceresiyle veriyor',
+          'AWS SAA (2023' in _src,
+          'kosulsuz "AWS Certified" iddiasi kartin en belirgin satiriydi')
+
 print("\n" + "="*70)
 if findings:
     print(f"{len(findings)} BULGU:")
     for c,d,x in findings: print(f"  [{c}] {d}" + (f" -> {x}" if x else ''))
     sys.exit(1)
-print("TEMIZ — uc yuzey arasinda celiski bulunamadi.")
+print("TEMIZ: uc yuzey arasinda celiski bulunamadi.")

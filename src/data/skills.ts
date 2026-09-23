@@ -1,5 +1,5 @@
 /**
- * skills.ts — the source for the PortMatrix (patch-panel) component.
+ * skills.ts: the source for the PortMatrix (patch-panel) component.
  *
  * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-09-23), TECHNICAL
  * SKILLS block, transcribed verbatim and in the same order, including the
@@ -8,10 +8,10 @@
  * The groups changed shape in this revision. They used to be split by tooling
  * layer (Cloud & DevOps / Systems & Platforms / Networking & Security /
  * Scripting & Automation); they are now split by what an operations team
- * actually owns — automation, the machines, the network, and the software
+ * actually owns: automation, the machines, the network, and the software
  * running on top. That reordering is deliberate and belongs on both surfaces.
  *
- * If a tool appears here but not on the resume — or the reverse — the two
+ * If a tool appears here but not on the resume, or the reverse, the two
  * surfaces have drifted and one of them is lying to a recruiter. Treat any
  * edit here as an edit to the resume too.
  */

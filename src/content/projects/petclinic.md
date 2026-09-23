@@ -39,12 +39,12 @@ notes:
     body: >-
       The same artefact moves through dev, staging, and production rather than
       being rebuilt per environment. If a build passes staging, the thing that
-      reaches production is the thing that was tested — which removes an
+      reaches production is the thing that was tested, which removes an
       entire class of "it worked in staging" incident.
   - title: Rancher for cluster access, not cluster magic
     body: >-
       Rancher provides a consistent management surface across clusters. It is
-      deliberately not doing the deployment — that stays in the pipeline, so
+      deliberately not doing the deployment. That stays in the pipeline, so
       the delivery path is legible from the Jenkinsfile alone.
 revisions:
   - >-
@@ -62,7 +62,7 @@ Spring PetClinic decomposed into microservices, with a Jenkins pipeline that
 takes a commit through build, test, image publication, and rollout to AWS EKS.
 
 The application is a well-known reference implementation, and that is the
-point — it removes application novelty from the exercise so the delivery
+point: it removes application novelty from the exercise so the delivery
 mechanics are the actual subject.
 
 ## The pipeline
@@ -80,5 +80,5 @@ is validated in a real deployment before it is eligible for the next stage
 
 Prometheus scrapes the cluster and the services; Grafana carries the
 dashboards. The pipeline can report a green build, but a green build that
-produces a service failing its readiness probe is not a successful delivery —
-having the metrics in the same place as the rollout closes that gap.
+produces a service failing its readiness probe is not a successful delivery.
+Having the metrics in the same place as the rollout closes that gap.

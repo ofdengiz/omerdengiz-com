@@ -1,15 +1,15 @@
 /**
- * experience.ts — professional history and education.
+ * experience.ts: professional history and education.
  *
  * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-09-23), transcribed
- * verbatim — including the Interac bullets, which were reworded for the
+ * verbatim: including the Interac bullets, which were reworded for the
  * Canadian market and then carried back into the PDF so both surfaces read
  * identically. Verified by extracting the PDF text and diffing it against
  * this file.
  *
  * The rule: the site and the resume must never make different claims, and
  * should not even use different words. If you edit a bullet here, regenerate
- * the PDF in the same sitting — see the resume workflow in README.md.
+ * the PDF in the same sitting: see the resume workflow in README.md.
  *
  * Shape notes:
  *   - `start` / `end` are display strings because the resume shows "Sep 2025",
@@ -47,7 +47,7 @@ export interface Education {
   /** Honours and marks exactly as the resume states them. */
   marks?: string[];
   description?: string;
-  /** Broad subject areas — deliberately not tool-specific. */
+  /** Broad subject areas: deliberately not tool-specific. */
   areas?: string[];
 }
 
@@ -59,7 +59,7 @@ export interface Certification {
    *
    * Stated rather than omitted: AWS certifications expire after three years,
    * and presenting one with no date implies it is current indefinitely. The
-   * resume qualifies them, so the site must too — a recruiter comparing the
+   * resume qualifies them, so the site must too. A recruiter comparing the
    * two should not find the site making the stronger claim.
    */
   validity?: string;
@@ -105,7 +105,7 @@ export const roles: Role[] = [
 
 export const education: Education[] = [
   {
-    credential: 'Computer Systems Technician — Networking',
+    credential: 'Computer Systems Technician – Networking',
     institution: 'Algonquin College',
     location: 'Ottawa, ON',
     end: 'Apr 2026',
@@ -132,7 +132,7 @@ export const education: Education[] = [
     endISO: '2016-06',
     conferred: true,
     description:
-      'Four-year immersive program in Mandarin Chinese language, literature, and culture — building the communication skills that support work across multicultural engineering and operations teams.',
+      'Four-year immersive program in Mandarin Chinese language, literature, and culture, building the communication skills that support work across multicultural engineering and operations teams.',
   },
 ];
 
@@ -158,5 +158,5 @@ export const certifications: Certification[] = [
 export const languages = [
   { name: 'English', level: 'Professional' },
   { name: 'Turkish', level: 'Native' },
-  { name: 'Mandarin Chinese', level: 'Advanced — HSK 6' },
+  { name: 'Mandarin Chinese', level: 'Advanced (HSK 6)' },
 ];

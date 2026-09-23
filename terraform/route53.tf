@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-# Route 53 — public hosted zone for the domain
+# Route 53: public hosted zone for the domain
 #
 # The registrar and this hosted zone now live in the SAME account, so the
 # delegation is updated with one CLI call instead of a console visit:
@@ -11,7 +11,7 @@
 #
 # WHY THIS MATTERS (2026-09-23): the zone previously lived in a separate
 # hosting account while the domain stayed with the registrar account. When
-# the hosting account became inaccessible, the zone went with it — but the
+# the hosting account became inaccessible, the zone went with it, while the
 # .com delegation still pointed at its nameservers, which then answered
 # REFUSED. Every resolver returned SERVFAIL and the site was unreachable
 # even though the domain registration was perfectly healthy. Keeping the
@@ -24,11 +24,11 @@
 
 resource "aws_route53_zone" "site" {
   name    = var.domain_name
-  comment = "Managed by Terraform — omerdengiz.com static site"
+  comment = "Managed by Terraform: omerdengiz.com static site"
 }
 
 # ------------------------------------------------------------------
-# ACM validation records — created automatically, no manual step.
+# ACM validation records: created automatically, no manual step.
 # ------------------------------------------------------------------
 resource "aws_route53_record" "acm_validation" {
   for_each = {
@@ -48,7 +48,7 @@ resource "aws_route53_record" "acm_validation" {
 }
 
 # ------------------------------------------------------------------
-# Alias records — apex + www → CloudFront
+# Alias records: apex + www → CloudFront
 # ------------------------------------------------------------------
 resource "aws_route53_record" "apex_a" {
   zone_id = aws_route53_zone.site.zone_id

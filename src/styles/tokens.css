@@ -1,5 +1,5 @@
 /* ==========================================================================
-   tokens.css — Blueprint × Editorial design tokens
+   tokens.css: Blueprint × Editorial design tokens
    --------------------------------------------------------------------------
    Colour strategy: every token is defined once with light-dark(). The root
    declares `color-scheme: light dark`, so the browser resolves each pair from
@@ -21,30 +21,30 @@
      * Colour                                                            *
      * ---------------------------------------------------------------- */
 
-    /* Surfaces — warm paper in light, deep board in dark */
+    /* Surfaces: warm paper in light, deep board in dark */
     --paper:    light-dark(#F5F4F0, #0A0D12);
     --paper-2:  light-dark(#EDEBE5, #11151C);
     --paper-3:  light-dark(#E4E1D8, #171C25);
 
-    /* Ink — three levels of emphasis, nothing more */
+    /* Ink: three levels of emphasis, nothing more */
     --ink:      light-dark(#16181D, #E4E7EC);
     --ink-2:    light-dark(#4A4F5A, #9AA3B0);
     --ink-3:    light-dark(#8A9099, #656D7A);
 
-    /* Rules — hairlines are the only separator in this system */
+    /* Rules: hairlines are the only separator in this system */
     --rule:     light-dark(#D6D3CA, #232932);
     --rule-2:   light-dark(#B4B0A4, #333A45);
 
     /* Two hues, total */
     --accent:      light-dark(#0B5C8A, #4EA8DE);  /* drafting blue */
     --accent-soft: light-dark(#0B5C8A1A, #4EA8DE1F);
-    --annotate:    light-dark(#B33A2B, #E4715C);  /* redline — annotation only */
+    --annotate:    light-dark(#B33A2B, #E4715C);  /* redline, annotation only */
 
     /* Selection follows the accent rather than the browser default */
     --selection-bg: light-dark(#0B5C8A22, #4EA8DE33);
 
     /* ---------------------------------------------------------------- *
-     * Drafting grid — 8px base, exposed as a faint underlay            *
+     * Drafting grid: 8px base, exposed as a faint underlay            *
      * ---------------------------------------------------------------- */
     --grid:      light-dark(rgba(22, 24, 29, 0.035), rgba(228, 231, 236, 0.045));
     --grid-size: 8px;
@@ -56,7 +56,7 @@
      * and Plex Mono are a designed pair.                                *
      * ---------------------------------------------------------------- */
     /* The *-Fallback entries are metric-matched aliases of Arial / Courier New
-       (see fonts.css) — they hold the exact box the real face will occupy, so
+       (see fonts.css): they hold the exact box the real face will occupy, so
        the swap on load causes no reflow. They must sit immediately after the
        webfont and before any generic family. */
     --font-display: 'Space Grotesk Variable', 'Space Grotesk Fallback', system-ui, sans-serif;
@@ -72,7 +72,7 @@
     --t-small:   0.875rem;
     --t-label:   0.6875rem;
 
-    /* Tracking — display type tightens, labels open up */
+    /* Tracking: display type tightens, labels open up */
     --track-display: -0.03em;
     --track-h:       -0.015em;
     --track-label:   0.12em;
@@ -82,9 +82,9 @@
     --leading-body:    1.65;
 
     /* ---------------------------------------------------------------- *
-     * Space — every value is a multiple of the 8px grid                *
+     * Space: every value is a multiple of the 8px grid                *
      * ---------------------------------------------------------------- */
-    --s-1:  0.25rem;   /*  4px — sub-grid, hairline offsets only */
+    --s-1:  0.25rem;   /*  4px: sub-grid, hairline offsets only */
     --s-2:  0.5rem;    /*  8px */
     --s-3:  0.75rem;   /* 12px */
     --s-4:  1rem;      /* 16px */
@@ -100,12 +100,12 @@
     /* ---------------------------------------------------------------- *
      * Measure                                                           *
      * ---------------------------------------------------------------- */
-    --measure:      68ch;   /* prose column — Editorial discipline */
+    --measure:      68ch;   /* prose column, Editorial discipline */
     --measure-wide: 88rem;  /* breakout for topology, tables, matrices */
     --gutter:       clamp(1rem, 4vw, 3rem);
 
     /* ---------------------------------------------------------------- *
-     * Motion — four animations exist site-wide. These are their curves. *
+     * Motion: four animations exist site-wide. These are their curves. *
      * ---------------------------------------------------------------- */
     --ease:      cubic-bezier(0.22, 0.61, 0.36, 1);
     --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);

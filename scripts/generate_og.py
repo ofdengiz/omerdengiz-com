@@ -1,199 +1,188 @@
 """
-Generate the og:image (1200x630 PNG) that shows up when omerdengiz.com
-is pasted into LinkedIn / Twitter / Slack / Discord.
+Generate the og:image (1200x630 PNG) that shows up when the site is pasted
+into LinkedIn, Slack, Discord or a chat client.
 
-Aesthetic matches the live site:
-  - dark navy background (#0b1020) with a radial violet/cyan gradient
-  - faint orbital rings echoing the hero canvas
-  - skill-forward copy, no claim sentences
+This card is the most-shared representation of the site, and for a while it
+was the least accurate one. The previous version predated the Blueprint x
+Editorial redesign and still carried its own aesthetic (violet/cyan gradient,
+orbital rings), printed the apex domain that no longer resolves, and stated
+the AWS certification with no validity window, which is a stronger claim than
+the site or the resume makes anywhere else.
 
-Output: site/assets/og.png
-Run:    python site/_tools/generate_og.py
+It is now drawn as a title block, the same primitive the site uses on every
+page: warm paper, hairline rules, ink in three weights, one accent. Type comes
+from the site's own webfonts rather than a system substitute, converted from
+woff2 on the fly so there is no second copy of a font to fall out of date.
+
+Output: public/assets/og.png
+Run:    python scripts/generate_og.py
 """
 
+from __future__ import annotations
+
+import io
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+
+from fontTools.ttLib import TTFont
+from PIL import Image, ImageDraw, ImageFont
+
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "public" / "assets" / "og.png"
+FONTS = ROOT / "node_modules"
 
 W, H = 1200, 630
-OUT = Path(__file__).resolve().parents[1] / "site" / "assets" / "og.png"
+M = 64          # sheet margin
+GUT = 26        # inner gutter between the frame and its contents
 
-# --- palette -----------------------------------------------------------------
-BG_TOP     = (11, 16, 32)      # #0b1020
-BG_BOTTOM  = (18, 22, 48)      # slightly lighter
-CYAN       = (76, 201, 240)    # #4cc9f0
-VIOLET     = (123, 44, 191)    # #7b2cbf
-PINK       = (247, 37, 133)    # #f72585
-TEXT_MAIN  = (231, 236, 255)   # #e7ecff
-TEXT_MUTED = (168, 178, 214)   # #a8b2d6
-ACCENT     = (255, 153, 0)     # AWS orange
-
-# --- helpers -----------------------------------------------------------------
-
-def linear_gradient(size, top, bottom):
-    img = Image.new("RGB", size, top)
-    px = img.load()
-    w, h = size
-    for y in range(h):
-        t = y / (h - 1)
-        r = int(top[0] * (1 - t) + bottom[0] * t)
-        g = int(top[1] * (1 - t) + bottom[1] * t)
-        b = int(top[2] * (1 - t) + bottom[2] * t)
-        for x in range(w):
-            px[x, y] = (r, g, b)
-    return img
+# Light-theme values from src/styles/tokens.css. Kept as literals rather than
+# parsed: the card is generated rarely, and a parser for light-dark() would be
+# more code than the six colours it would resolve.
+PAPER = (245, 244, 240)     # --paper
+PAPER_3 = (228, 225, 216)   # --paper-3
+INK = (22, 24, 29)          # --ink
+INK_2 = (74, 79, 90)        # --ink-2
+INK_3 = (138, 144, 153)     # --ink-3
+RULE = (214, 211, 202)      # --rule
+RULE_2 = (180, 176, 164)    # --rule-2
+ACCENT = (11, 92, 138)      # --accent, drafting blue
 
 
-def radial_glow(size, center, radius, color, alpha_peak=120):
-    """Soft radial gradient blob stamped into an RGBA layer."""
-    w, h = size
-    layer = Image.new("RGBA", size, (0, 0, 0, 0))
-    # Draw on a smaller canvas then upscale+blur for smooth falloff.
-    small_w, small_h = w // 4, h // 4
-    small = Image.new("RGBA", (small_w, small_h), (0, 0, 0, 0))
-    sd = ImageDraw.Draw(small)
-    cx, cy = center[0] // 4, center[1] // 4
-    r = radius // 4
-    steps = 18
-    for i in range(steps, 0, -1):
-        rr = int(r * (i / steps))
-        a = int(alpha_peak * ((steps - i + 1) / steps) ** 2)
-        sd.ellipse(
-            (cx - rr, cy - rr, cx + rr, cy + rr),
-            fill=(color[0], color[1], color[2], a),
-        )
-    small = small.filter(ImageFilter.GaussianBlur(radius=4))
-    return layer.alpha_composite(
-        small.resize((w, h), Image.LANCZOS)
-    ) or layer.__ior__ or layer  # noqa: not used; see next line
-    # NB: alpha_composite mutates in place and returns None. Actual return is below.
+def load(rel: str, size: int, weight: int | None = None) -> ImageFont.FreeTypeFont:
+    """Load one of the site's woff2 faces at `size`.
+
+    Pillow cannot read woff2, so the file is decompressed to an in-memory TTF
+    first. `weight` selects an instance of a variable face; static faces ignore
+    it. Any failure falls back to a system face, because a slightly wrong card
+    is better than a build that cannot produce one at all.
+    """
+    src = FONTS / rel
+    try:
+        tt = TTFont(str(src), fontNumber=0)
+        buf = io.BytesIO()
+        tt.flavor = None          # drop woff2 compression, emit plain TTF
+        tt.save(buf)
+        buf.seek(0)
+        font = ImageFont.truetype(buf, size)
+        if weight is not None:
+            try:
+                font.set_variation_by_axes([weight])
+            except OSError:
+                pass              # not a variable face
+        return font
+    except Exception as exc:                                  # noqa: BLE001
+        print(f"  ! {src.name}: {exc}; falling back to Arial")
+        return ImageFont.truetype(r"C:\Windows\Fonts\arial.ttf", size)
 
 
-def composite_glow(base, center, radius, color, alpha_peak=120):
-    layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
-    small_w, small_h = base.size[0] // 4, base.size[1] // 4
-    small = Image.new("RGBA", (small_w, small_h), (0, 0, 0, 0))
-    sd = ImageDraw.Draw(small)
-    cx, cy = center[0] // 4, center[1] // 4
-    r = radius // 4
-    steps = 18
-    for i in range(steps, 0, -1):
-        rr = int(r * (i / steps))
-        a = int(alpha_peak * ((steps - i + 1) / steps) ** 2)
-        sd.ellipse(
-            (cx - rr, cy - rr, cx + rr, cy + rr),
-            fill=(color[0], color[1], color[2], a),
-        )
-    small = small.filter(ImageFilter.GaussianBlur(radius=4))
-    layer = small.resize(base.size, Image.LANCZOS)
-    return Image.alpha_composite(base.convert("RGBA"), layer)
+SG = "@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2"
+PS = "@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2"
+PM4 = "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2"
+PM5 = "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2"
 
 
-def pick_font(candidates, size):
-    for path in candidates:
-        try:
-            return ImageFont.truetype(path, size)
-        except (OSError, IOError):
-            continue
-    return ImageFont.load_default()
+def tracked(draw, xy, text, font, fill, tracking=0.0):
+    """Draw `text` with letter-spacing, which Pillow does not support."""
+    x, y = xy
+    for ch in text:
+        draw.text((x, y), ch, font=font, fill=fill)
+        x += draw.textlength(ch, font=font) + tracking
+    return x
 
 
-def main():
-    # 1) Dark background with gradient
-    img = linear_gradient((W, H), BG_TOP, BG_BOTTOM).convert("RGBA")
+def main() -> None:
+    img = Image.new("RGB", (W, H), PAPER)
+    d = ImageDraw.Draw(img)
 
-    # 2) Ambient glows (violet top-left, cyan bottom-right, pink mid-right)
-    img = composite_glow(img, (180, 120),  520, VIOLET, alpha_peak=140)
-    img = composite_glow(img, (1080, 520), 480, CYAN,   alpha_peak=110)
-    img = composite_glow(img, (1040, 200), 260, PINK,   alpha_peak=70)
+    f_name = load(SG, 92, weight=700)
+    f_role = load(SG, 30, weight=500)
+    f_body = load(PS, 23, weight=400)
+    f_label = load(PM5, 15)
+    f_cell = load(PM4, 20)
 
-    # 3) Orbital rings — faint concentric circles, right-side echo of hero
-    draw = ImageDraw.Draw(img, "RGBA")
-    ring_cx, ring_cy = 1050, H // 2
-    for r, a in [(320, 34), (260, 42), (200, 50), (140, 58), (80, 80)]:
-        draw.ellipse(
-            (ring_cx - r, ring_cy - r, ring_cx + r, ring_cy + r),
-            outline=(CYAN[0], CYAN[1], CYAN[2], a),
-            width=2,
-        )
-    # Two orbit dots
-    draw.ellipse((ring_cx + 316, ring_cy - 8,  ring_cx + 332, ring_cy + 8),
-                 fill=(CYAN[0], CYAN[1], CYAN[2], 240))
-    draw.ellipse((ring_cx - 204, ring_cy - 6,  ring_cx - 192, ring_cy + 6),
-                 fill=(PINK[0], PINK[1], PINK[2], 230))
-    draw.ellipse((ring_cx + 138, ring_cy - 5,  ring_cx + 148, ring_cy + 5),
-                 fill=(VIOLET[0], VIOLET[1], VIOLET[2], 230))
+    # --- sheet frame: two rules, the outer one lighter ---------------------
+    d.rectangle([M, M, W - M, H - M], outline=RULE, width=1)
+    d.rectangle([M + 8, M + 8, W - M - 8, H - M - 8], outline=PAPER_3, width=1)
 
-    # 4) Fonts
-    inter_bold = [
-        r"C:\Windows\Fonts\segoeuib.ttf",     # Segoe UI Bold
-        r"C:\Windows\Fonts\arialbd.ttf",
+    x = M + GUT
+    right = W - M - GUT
+
+    # --- top label row -----------------------------------------------------
+    y = M + GUT + 2
+    tracked(d, (x, y), "PORTFOLIO", f_label, INK_3, tracking=2.4)
+    w = d.textlength("www.omerdengiz.com", font=f_label)
+    d.text((right - w, y), "www.omerdengiz.com", font=f_label, fill=INK_3)
+
+    y += 30
+    d.line([x, y, right, y], fill=RULE_2, width=1)
+
+    # --- name --------------------------------------------------------------
+    y += 54
+    d.text((x, y), "Omer Dengiz", font=f_name, fill=INK)
+
+    # --- role line, matching profile.ts ------------------------------------
+    #
+    # Measured and shrunk to fit rather than trusted to fit. The first version
+    # of this card ran "IT Operations" past the right rule, which nobody sees
+    # until the link is shared somewhere.
+    parts = ("Systems Administration", "Cloud Infrastructure", "Networking",
+             "IT Operations")
+    gap = 12
+    for size in range(30, 17, -1):
+        f_role = load(SG, size, weight=500)
+        dot = d.textlength("\u00b7", font=f_role)
+        total = (sum(d.textlength(p, font=f_role) for p in parts)
+                 + (len(parts) - 1) * (2 * gap + dot))
+        if x + total <= right:
+            break
+    assert x + total <= right, "role line does not fit the sheet"
+
+    y += 116
+    rx = x
+    for i, part in enumerate(parts):
+        if i:
+            d.text((rx + gap, y), "\u00b7", font=f_role, fill=INK_3)
+            rx += gap + dot + gap
+        d.text((rx, y), part, font=f_role, fill=ACCENT)
+        rx += d.textlength(part, font=f_role)
+
+    # --- one line of substance, no claim sentence --------------------------
+    y += 58
+    d.text(
+        (x, y),
+        "Terraform, AWS, Kubernetes, Linux, Cisco. Infrastructure built as code",
+        font=f_body,
+        fill=INK_2,
+    )
+    d.text((x, y + 32), "and rebuilt the same way.", font=f_body, fill=INK_2)
+
+    # --- title-block cells -------------------------------------------------
+    cy = H - M - GUT - 62
+    d.line([x, cy, right, cy], fill=RULE_2, width=1)
+
+    cells = [
+        ("LOCATION", "Kanata, ON"),
+        ("CREDENTIAL", "AWS SAA (2023 \u2013 2026)"),
+        ("STATUS", "Open to roles in Canada"),
     ]
-    inter_regular = [
-        r"C:\Windows\Fonts\segoeui.ttf",
-        r"C:\Windows\Fonts\arial.ttf",
-    ]
-    mono = [
-        r"C:\Windows\Fonts\consola.ttf",
-        r"C:\Windows\Fonts\consolab.ttf",
-    ]
+    col = (right - x) / len(cells)
+    # Same treatment as the role line. A value that overruns its column lands
+    # on top of the next cell's value, which is what the first card did.
+    for size in range(20, 12, -1):
+        f_cell = load(PM4, size)
+        if max(d.textlength(v, font=f_cell) for _, v in cells) <= col - 26:
+            break
+    for i, (label, value) in enumerate(cells):
+        cx = x + i * col
+        assert d.textlength(value, font=f_cell) <= col - 26, \
+            f"cell {label!r} overruns its column"
+        if i:
+            d.line([cx - 18, cy + 1, cx - 18, H - M - GUT], fill=RULE, width=1)
+        tracked(d, (cx, cy + 16), label, f_label, INK_3, tracking=1.6)
+        d.text((cx, cy + 38), value, font=f_cell, fill=INK)
 
-    f_name     = pick_font(inter_bold,    104)
-    f_skills   = pick_font(inter_bold,     40)
-    f_tools    = pick_font(inter_regular,  28)
-    f_tag      = pick_font(mono,           22)
-    f_brand    = pick_font(mono,           22)
-
-    # 5) Copy (skill-forward, no claim sentences)
-    left_x = 80
-    # Eyebrow (cert · location)
-    draw.text((left_x, 96), "omerdengiz.com", font=f_brand, fill=TEXT_MUTED)
-
-    # Name
-    draw.text((left_x, 150), "Omer Dengiz", font=f_name, fill=TEXT_MAIN)
-
-    # Role line — category-level skills, not a single title
-    draw.text(
-        (left_x, 288),
-        "Cloud  ·  DevOps  ·  Systems  ·  Networking",
-        font=f_skills,
-        fill=(CYAN[0], CYAN[1], CYAN[2], 255),
-    )
-
-    # Tooling line
-    draw.text(
-        (left_x, 362),
-        "AWS  ·  Terraform  ·  Kubernetes  ·  Jenkins  ·  Ansible",
-        font=f_tools,
-        fill=TEXT_MAIN,
-    )
-    draw.text(
-        (left_x, 402),
-        "Linux  ·  Cisco  ·  Python  ·  Bash  ·  PowerShell",
-        font=f_tools,
-        fill=TEXT_MAIN,
-    )
-
-    # Bottom stripe: certs + location
-    stripe_y = 500
-    draw.rectangle((left_x, stripe_y, left_x + 4, stripe_y + 80),
-                   fill=(ACCENT[0], ACCENT[1], ACCENT[2], 255))
-    draw.text(
-        (left_x + 22, stripe_y + 4),
-        "AWS Certified Solutions Architect — Associate",
-        font=f_skills,
-        fill=TEXT_MAIN,
-    )
-    draw.text(
-        (left_x + 22, stripe_y + 50),
-        "Kanata, ON  ·  open to full-time roles in Canada",
-        font=f_tag,
-        fill=TEXT_MUTED,
-    )
-
-    # Save
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    img.convert("RGB").save(OUT, "PNG", optimize=True)
-    print(f"wrote {OUT}  ({OUT.stat().st_size // 1024} KB)")
+    img.save(OUT, "PNG", optimize=True)
+    print(f"  wrote {OUT.relative_to(ROOT)}  ({OUT.stat().st_size // 1024} KB)")
 
 
 if __name__ == "__main__":

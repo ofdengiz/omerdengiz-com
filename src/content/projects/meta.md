@@ -5,7 +5,7 @@ standalone: true
 title: How this site is built
 summary: >-
   A static build on S3 behind CloudFront, with pretty URLs and security
-  headers injected at the edge, provisioned entirely in Terraform — and
+  headers injected at the edge, provisioned entirely in Terraform, and
   rebuilt in a different account after the original one became unreachable.
 context: Self-directed · this site
 stack:
@@ -22,7 +22,7 @@ cells:
   - label: Discipline
     value: Cloud · IaC
   - label: Accounts
-    value: Two, delegated
+    value: One
   - label: Edge
     value: Lambda@Edge
     accent: true
@@ -45,7 +45,7 @@ notes:
       boundary became the failure: when the hosting account went out of reach
       it took the hosted zone with it, while the .com delegation kept pointing
       at nameservers that now answered REFUSED. Every resolver returned
-      SERVFAIL and the site was unreachable — with the domain registration
+      SERVFAIL and the site was unreachable, while the domain registration was
       itself perfectly healthy in the account still accessible. Keeping the
       zone with the registration means an account-level problem can no longer
       separate them.
@@ -76,9 +76,6 @@ revisions:
   - >-
     Move the Terraform state to S3 with locking. It is local today, which is
     fine for one operator and wrong for any number greater than one.
-  - >-
-    Add a stable /resume.pdf alias alongside the content-hashed asset, so a
-    URL pasted into a job application keeps working after the file changes.
 ---
 
 ## The shape of it
@@ -89,8 +86,8 @@ registration** (see note 1). Everything is declared in Terraform, which is what
 made rebuilding the whole stack in a different account a short exercise rather
 than a long one.
 
-The site is small enough that none of this is necessary — which is precisely
-why it is a useful thing to have built. The interesting parts are the joints:
+None of this is necessary for a site this size, which is what makes it a
+useful thing to have built. The interesting parts are the joints:
 DNS delegation, edge behaviour, cache semantics, and what happens when one of
 them breaks (see note 2).
 
@@ -102,24 +99,28 @@ has no matching object; the object is `/projects/capstone/index.html`.
 A **Lambda@Edge** function on viewer-request rewrites directory-style and
 extensionless paths to their index documents. The same function, on
 viewer-response, sets HSTS, `X-Content-Type-Options`, `X-Frame-Options`,
-referrer policy, and a strict Content-Security-Policy (see note 2).
+referrer policy, and a strict Content-Security-Policy (see note 4).
 
-## Caching, and one honest mistake
+## Caching
 
 Assets are served with a one-year `immutable` cache and HTML with
-`max-age=0, must-revalidate`. That split is standard and correct — except the
-resume PDF was an asset that changed. Browsers honour `immutable` by not
-revalidating at all, so an updated resume stayed invisible behind a stale
-copy, and the workaround was appending a version query by hand across five
-HTML files on every update.
+`max-age=0, must-revalidate`. The resume PDF fits neither rule. It changes
+under a fixed name, and browsers honour `immutable` by not revalidating at
+all, so an updated file stayed behind a stale copy until a version query was
+edited into five HTML files by hand.
 
-The fix was not a better query string. Importing the PDF through the build
-pipeline gives it a content-hashed filename, so a new file is a new URL and
-`immutable` becomes *true* rather than a claim. The manual cache-bust is gone.
+Content hashing removed that manual step and introduced a worse problem. A
+hashed filename makes a new file a new URL, so the old object stops existing
+and any page still open from before a deploy gets a 404 on the download.
+Hashing is correct for what a page loads and wrong for what a person clicks.
+
+The resume is served from a stable `/resume.pdf` with a five minute TTL. An
+updated file appears almost immediately, and a URL pasted into a job
+application keeps working.
 
 ## Verifying what ships
 
 The build fails on a CSP violation rather than deferring the discovery to
-production (see note 3). Fonts are self-hosted and subset to Latin, which
-removes the last third-party origin from the critical path — and lets the
-policy drop the font CDN entirely.
+production (see note 4). Fonts are self-hosted and subset to Latin and Latin
+Extended, which removes the last third-party origin from the critical path and
+lets the policy drop the font CDN entirely.

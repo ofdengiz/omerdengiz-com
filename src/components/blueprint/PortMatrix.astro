@@ -1,6 +1,6 @@
 ---
 /**
- * PortMatrix — skills rendered as a patch panel.
+ * PortMatrix: skills rendered as a patch panel.
  *
  * The legacy site showed four identical bordered boxes of bullet lists, which
  * is the most generic possible treatment and gave every skill equal weight.
@@ -8,7 +8,7 @@
  * discrete ports, dense, scannable, and native to the subject matter.
  *
  * Each row carries a two-letter stencil code, the way a real panel labels its
- * rows. Ports are plain text, not badges — no pills, no fills.
+ * rows. Ports are plain text, not badges: no pills, no fills.
  */
 import type { SkillGroup } from '../../data/skills';
 
@@ -64,7 +64,7 @@ const hi = new Set(highlight.map((h) => h.toLowerCase()));
     margin-block-end: var(--s-4);
   }
 
-  /* Stencilled row code — boxed, mono, the panel's identifier. */
+  /* Stencilled row code: boxed, mono, the panel's identifier. */
   .matrix__code {
     display: grid;
     place-items: center;

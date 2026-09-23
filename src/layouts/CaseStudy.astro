@@ -1,6 +1,6 @@
 ---
 /**
- * CaseStudy — the shared sheet layout for every project page.
+ * CaseStudy: the shared sheet layout for every project page.
  *
  * Both /projects/[slug] and the standalone /meta route render through this,
  * so a change to case-study presentation happens in exactly one place.
@@ -37,7 +37,7 @@ const cells = [
 ];
 ---
 
-<Base title={`${p.title} — omerdengiz.com`} description={p.summary}>
+<Base title={`${p.title} · omerdengiz.com`} description={p.summary}>
   <Nav back={{ label: 'All work', href: '/#work' }} />
 
   <main id="main" class="sheet">
@@ -211,7 +211,7 @@ const cells = [
     gap: var(--s-8);
   }
 
-  /* The drawing gets the full sheet width — it is the reason this page exists. */
+  /* The drawing gets the full sheet width: it is the reason this page exists. */
   .topo-stage { margin-block-start: var(--s-6); }
 
   .notes { margin-block-start: var(--s-2); }

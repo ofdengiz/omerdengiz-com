@@ -1,6 +1,6 @@
 ---
 /**
- * TitleBlock — the drawing title block.
+ * TitleBlock: the drawing title block.
  *
  * On a real engineering drawing this sits bottom-right and carries the
  * document's identity: who drew it, what it is, which sheet, which revision.
@@ -14,13 +14,13 @@
 export interface TitleCell {
   label: string;
   value: string;
-  /** Renders the value in the accent colour — use for one cell at most. */
+  /** Renders the value in the accent colour. Use for one cell at most. */
   accent?: boolean;
   href?: string;
 }
 
 interface Props {
-  /** Large primary line — usually the name or the drawing title. */
+  /** Large primary line: usually the name or the drawing title. */
   title: string;
   /** Small line above the title. */
   eyebrow?: string;
@@ -92,13 +92,13 @@ const { title, eyebrow, subtitle, cells = [], scale = 'display' } = Astro.props;
   }
 
   /* Title-block cells: a real drawing divides these with ruled boxes.
-     Hairline dividers only — no fills, no shadows. */
+     Hairline dividers only: no fills, no shadows. */
   /*
     Explicit column counts, not auto-fit.
     `repeat(auto-fit, minmax(9rem, 1fr))` derives the column count from content
     width, so when the webfont swapped in and text measured slightly
-    differently the grid could gain or lose a column — a full structural
-    reflow. It measured as CLS 0.15 on the case-study pages, and metric-matched
+    differently the grid could gain or lose a column, which is a full
+    structural reflow. It measured as CLS 0.15 on the case-study pages, and metric-matched
     fallbacks could not fix it because the trigger is the column count
     flipping, not the text nudging. Fixed counts make the swap a no-op.
   */

@@ -1,6 +1,6 @@
 ---
 /**
- * /styleguide — the Phase 2 alignment gate.
+ * /styleguide: the Phase 2 alignment gate.
  *
  * Every token and primitive rendered in isolation so the visual language can
  * be judged before any page is built on top of it. noindex'd; whether it ships
@@ -47,7 +47,7 @@ const typeSpecimens = [
 ---
 
 <Base
-  title="Style guide — omerdengiz.com"
+  title="Style guide · omerdengiz.com"
   description="Design system reference: tokens, type scale, and blueprint primitives."
   noindex
 >
@@ -81,7 +81,7 @@ const typeSpecimens = [
       <p class="lede">
         Each token is declared once with <code>light-dark()</code>. Switch the
         selector above, or change your OS preference, and every value resolves
-        from the same declaration — there is no second palette to drift.
+        from the same declaration. There is no second palette to drift.
       </p>
 
       <div class="sg-swatches -wide">
@@ -125,7 +125,7 @@ const typeSpecimens = [
       <SheetRule sheet="03" title="Sheet rule" note="Primitive 2 of 6" />
       <p class="lede">
         The section divider, shown above and throughout this page. The number is
-        the sheet index, not ornament — which is the difference between this and
+        the sheet index, not ornament, which is the difference between this and
         the gradient <span class="mono">01 / 02 / 03</span> headings it replaces.
       </p>
       <div class="sg-demo">
@@ -153,8 +153,8 @@ const typeSpecimens = [
     <section class="section">
       <SheetRule sheet="05" title="Callout" note="Primitive 4 of 6" />
       <p class="lede">
-        A numbered leader pointing at a detail. Callouts are referenceable —
-        &ldquo;see 2&rdquo; — which a generic aside is not.
+        A numbered leader pointing at a detail. Callouts are referenceable as
+        &ldquo;see 2&rdquo;, which a generic aside is not.
       </p>
       <div class="sg-demo stack-6">
         <Callout n={1} title="Storage stays off the routed path">
@@ -167,7 +167,7 @@ const typeSpecimens = [
         <Callout n={2} title="Only bastions are published" tone="annotate">
           <p>
             No tenant server is reachable from the edge. The redline tone is
-            reserved for genuine risks and corrections — never for emphasis.
+            reserved for genuine risks and corrections, never for emphasis.
           </p>
         </Callout>
       </div>
@@ -178,7 +178,7 @@ const typeSpecimens = [
       <SheetRule sheet="06" title="Port matrix" note="Primitive 5 of 6" />
       <p class="lede">
         Skills as a patch panel. Dense and scannable, and native to the subject
-        matter — four identical bullet-list boxes were the most generic
+        matter. Four identical bullet-list boxes were the most generic
         treatment available.
       </p>
       <div class="-wide">
@@ -238,7 +238,7 @@ const typeSpecimens = [
 </Base>
 
 <script>
-  // Grid underlay toggle — review aid only, not shipped behaviour.
+  // Grid underlay toggle: review aid only, not shipped behaviour.
   const btn = document.querySelector<HTMLButtonElement>('[data-grid-toggle]');
   btn?.addEventListener('click', () => {
     const off = document.body.dataset.grid === 'off';

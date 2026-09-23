@@ -1,6 +1,6 @@
 # omerdengiz.com
 
-Personal portfolio site for **Omer Dengiz** — a static Astro build hosted on
+Personal portfolio site for **Omer Dengiz**. A static Astro build hosted on
 AWS (S3 + CloudFront + ACM + Lambda@Edge) and provisioned entirely with
 Terraform.
 
@@ -21,7 +21,7 @@ healthy and untouchable in the other one. The post-mortem is written up at
 
 ```
 .
-├── src/                     # Astro source — the site is built from here
+├── src/                     # Astro source: the site is built from here
 │   ├── pages/               # routes: /, /meta, /projects/[slug], /404
 │   ├── layouts/             # Base, CaseStudy
 │   ├── components/          # blueprint primitives, nav, content
@@ -30,7 +30,7 @@ healthy and untouchable in the other one. The post-mortem is written up at
 │   ├── styles/              # tokens, base, fonts, prose
 │   └── assets/resume/       # canonical resume PDF (content-hashed at build)
 ├── public/                  # copied verbatim: og.png, docs, robots.txt
-├── dist/                    # build output — this is what is uploaded (gitignored)
+├── dist/                    # build output: this is what is uploaded (gitignored)
 ├── site-legacy/             # the previous hand-written site, retired 2026-08
 ├── lambda-edge/
 │   └── index.js             # Lambda@Edge handler (viewer-request + viewer-response)
@@ -53,9 +53,9 @@ healthy and untouchable in the other one. The post-mortem is written up at
 | ----------------- | ---------------------- | -------------------------------------------- |
 | Terraform         | ≥ 1.6                  | already installed at `C:\terraform\terraform` |
 | AWS CLI v2        | 2.x                    | already installed                            |
-| Node.js (optional)| only if you edit edge  | —                                            |
+| Node.js (optional)| only if you edit edge  | n/a                                          |
 
-One AWS CLI profile is required — the account that holds both the domain
+One AWS CLI profile is required: the account that holds both the domain
 registration and the hosted zone:
 
 ```powershell
@@ -71,7 +71,7 @@ Set the same name in `terraform.tfvars` as `aws_profile`.
 Everything lives in one account, so there is no manual cross-account
 delegation step.
 
-### Step 1 — Configure tfvars
+### Step 1. Configure tfvars
 
 ```bash
 cd terraform
@@ -79,7 +79,7 @@ cp terraform.tfvars.example terraform.tfvars   # set aws_profile
 terraform init
 ```
 
-### Step 2 — Apply
+### Step 2. Apply
 
 ```bash
 terraform apply
@@ -95,7 +95,7 @@ terraform import aws_route53_zone.site <ZONE_ID>
 terraform apply
 ```
 
-### Step 3 — Point the registrar at the zone
+### Step 3. Point the registrar at the zone
 
 Same account, so this is a CLI call rather than a console visit:
 
@@ -107,7 +107,7 @@ aws route53domains update-domain-nameservers --region us-east-1   --domain-name 
 Deleting and recreating a hosted zone always produces a **new** nameserver
 set, so this must be repeated after any such rebuild.
 
-### Step 4 — Upload the site
+### Step 4. Upload the site
 
 ```bash
 cd ..
@@ -147,7 +147,7 @@ cp Omer_Dengiz_Resume.pdf src/assets/resume/
 #      src/data/skills.ts       skillGroups[].items
 #      src/data/profile.ts      summary
 
-# 3. Build and deploy — this publishes all three URLs at once.
+# 3. Build and deploy. This publishes all three URLs at once.
 bash deploy.sh
 ```
 
@@ -167,7 +167,7 @@ python -c "from pypdf import PdfReader; print('
 '.join(p.extract_text() for p in PdfReader('Omer_Dengiz_Resume.pdf').pages))"
 ```
 
-> **Lambda@Edge destroy caveat:** replicated Lambda@Edge functions take 1–3 hours to fully delete from CloudFront edge locations. `terraform destroy` may fail the first time on the Lambda — wait an hour and re-run.
+> **Lambda@Edge destroy caveat:** replicated Lambda@Edge functions take 1–3 hours to fully delete from CloudFront edge locations. `terraform destroy` may fail the first time on the Lambda. Wait an hour and re-run.
 
 ---
 
@@ -175,13 +175,13 @@ python -c "from pypdf import PdfReader; print('
 
 For recruiters / hiring managers skimming the source:
 
-- **Infrastructure as code that earned its keep** — the original hosting account became unreachable and took the hosted zone and distribution with it. Because the whole stack is Terraform, rebuilding it in the account holding the domain was a re-apply, not a reconstruction. See `src/content/projects/meta.md` for the DNS post-mortem.
-- **S3 origin hardening** — bucket is private, public access blocked, CloudFront reaches it only via Origin Access Control (OAC), encrypted at rest, versioned.
-- **CloudFront best practices** — HTTPS-only, TLS 1.2+, HTTP/2 and HTTP/3, custom 404, compression, AWS-managed cache policies.
-- **Lambda@Edge** — single handler, two CloudFront events (viewer-request + viewer-response), pretty URL rewrites + CSP / HSTS / X-Frame-Options / Permissions-Policy headers.
-- **ACM DNS validation across accounts** — cert issued in the hosting account, validated against DNS records in the domain account.
-- **Terraform** — multi-provider (ca-central-1 + us-east-1 alias), default tags, archive-packaged Lambda, remote-backend-ready.
-- **Deploy hygiene** — cache-control policy tuned per asset type, automatic invalidation, dry-run support.
+- **Infrastructure as code that earned its keep:** the original hosting account became unreachable and took the hosted zone and distribution with it. Because the whole stack is Terraform, rebuilding it in the account holding the domain was a re-apply rather than a reconstruction. The apex name was the exception: CloudFront reserves alias names across all accounts, so the site is served from `www` until the suspended account releases it. See `src/content/projects/meta.md` for the DNS post-mortem.
+- **S3 origin hardening:** bucket is private, public access blocked, CloudFront reaches it only via Origin Access Control (OAC), encrypted at rest, versioned.
+- **CloudFront best practices:** HTTPS-only, TLS 1.2+, HTTP/2 and HTTP/3, custom 404, compression, AWS-managed cache policies.
+- **Lambda@Edge:** single handler, two CloudFront events (viewer-request + viewer-response), pretty URL rewrites + CSP / HSTS / X-Frame-Options / Permissions-Policy headers.
+- **ACM DNS validation across accounts:** cert issued in the hosting account, validated against DNS records in the domain account.
+- **Terraform:** multi-provider (ca-central-1 + us-east-1 alias), default tags, archive-packaged Lambda, remote-backend-ready.
+- **Deploy hygiene:** cache-control policy tuned per asset type, automatic invalidation, dry-run support.
 
 ---
 
@@ -192,7 +192,7 @@ inactive to a recruiter. Three-part mitigation:
 
 1. **This site is a new public repo.** Push `Resume_Web_Sitesi` to GitHub as
    `omerdengiz-com`. The repo (and contribution graph) will be fresh and
-   contain Terraform, IaC, and edge compute — the exact stack the resume
+   contain Terraform, IaC, and edge compute, the exact stack the resume
    claims. Pin it on your GitHub profile.
 2. **Project cards on this site deliberately do not show "last commit."**
    They highlight the technology and outcome instead, which is what actually
@@ -209,8 +209,8 @@ inactive to a recruiter. Three-part mitigation:
 | Symptom                                             | Likely cause / fix                                            |
 | --------------------------------------------------- | ------------------------------------------------------------- |
 | `terraform apply` stalls on `acm_certificate_validation` | NS delegation (Step 3) hasn't propagated yet. Wait, then `dig NS omerdengiz.com +short` to confirm the new name servers are live. |
-| Site loads but `https://` shows a cert warning      | CloudFront is still deploying — wait 15–20 min after apply.   |
-| `403 Forbidden` in browser                          | S3 OAC policy race during first deploy — re-run `./deploy.sh`. |
+| Site loads but `https://` shows a cert warning      | CloudFront is still deploying. Wait 15–20 min after apply.   |
+| `403 Forbidden` in browser                          | S3 OAC policy race during first deploy. Re-run `./deploy.sh`. |
 | Lambda@Edge changes don't take effect               | New version must be `publish = true` (it is). Also: CloudFront edge caches old lambda for up to 5 min; invalidate `/*`. |
 | `terraform destroy` fails on Lambda                 | Replication lingers 1–3 hours; wait then re-run.              |
 
@@ -232,5 +232,5 @@ Expected total: **< $1/month** while under free tier.
 
 ## License
 
-Source code: MIT. Content (copy, resume, capstone report) © Omer Dengiz —
+Source code: MIT. Content (copy, resume, capstone report) © Omer Dengiz,
 all rights reserved.

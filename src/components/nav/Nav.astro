@@ -1,6 +1,6 @@
 ---
 /**
- * Nav — the sheet index.
+ * Nav: the sheet index.
  *
  * Framed as a drawing's sheet list rather than a conventional nav bar: each
  * entry carries its sheet number, so the navigation and the page headings use
@@ -8,8 +8,8 @@
  * beyond what keeps text legible over content.
  *
  * No JavaScript. On narrow viewports the list becomes horizontally scrollable
- * instead of collapsing behind a hamburger — one fewer state to manage, and
- * the destinations stay visible.
+ * instead of collapsing behind a hamburger. That is one fewer state to
+ * manage, and the destinations stay visible.
  */
 import ThemeToggle from './ThemeToggle.astro';
 import ResumeLink from '../content/ResumeLink.astro';
@@ -27,13 +27,13 @@ const { sections = [], back } = Astro.props;
 <nav class="nav" aria-label="Primary">
   {/*
     No aria-label here. An aria-label of "Home" would replace the visible "OD"
-    in the accessible name, which fails WCAG 2.5.3 Label in Name — a
+    in the accessible name, which fails WCAG 2.5.3 Label in Name: a
     voice-control user saying "click OD" would find nothing. Appending hidden
     text instead keeps the visible string inside the accessible name.
   */}
   <a href="/" class="nav__mark">
     <span class="nav__initials">OD</span>
-    <span class="visually-hidden"> — home</span>
+    <span class="visually-hidden">, home</span>
   </a>
 
   {
@@ -145,7 +145,7 @@ const { sections = [], back } = Astro.props;
     .nav { gap: var(--s-4); }
     /*
       Hidden visually, not removed. `display: none` here left each link with
-      only its sheet number, which is aria-hidden — so on narrow viewports the
+      only its sheet number, which is aria-hidden, so on narrow viewports the
       nav links had no accessible name at all. Clipping keeps the label in the
       accessibility tree while the number carries the visual.
     */

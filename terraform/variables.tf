@@ -26,7 +26,7 @@ variable "active_aliases" {
   description = <<-EOT
     Explicit list of alternate domain names to attach to the distribution.
 
-    Leave null in steady state — the distribution then serves domain_name plus
+    Leave null in steady state: the distribution then serves domain_name plus
     extra_aliases, which is what you want.
 
     Set it explicitly only while an alias is stranded. CloudFront enforces

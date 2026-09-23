@@ -60,16 +60,16 @@ notes:
     body: >-
       C1SAN and C2SAN are not carried through OPNsense. Block transport never
       shares a trust boundary with tenant user traffic, and when a share
-      disappears the investigation starts at the consumer — C1FS or C2FS —
-      rather than at the firewall. It makes the storage problem space smaller
+      disappears the investigation starts at the consumer, C1FS or C2FS, rather
+      than at the firewall. It makes the storage problem space smaller
       at the exact moment that matters.
   - title: Only the bastions are published
     body: >-
       No tenant server is reachable from the edge. Jump64 is published on
       33464 to RDP and MSPUbuntuJump on 33564 to SSH; everything else is
       reached from inside. That narrows the attack surface, but the bigger
-      benefit is that it prevents ad-hoc administrative habits — if support
-      work has to begin on a bastion, the audit path stays predictable.
+      benefit is that it prevents ad-hoc administrative habits: if support work
+      has to begin on a bastion, the audit path stays predictable.
   - title: Two directory platforms, on purpose
     body: >-
       Lumora runs Windows Server 2022 AD DS; ClearRoots runs Samba AD on
@@ -88,8 +88,8 @@ notes:
 revisions:
   - >-
     Move TLS into cert-manager with an ingress controller. Caddy on the worker
-    was the right call for a defence demo — one Caddyfile line and no YAML —
-    but it is not how a production cluster should terminate TLS.
+    was the right call for a defence demo (one Caddyfile line and no YAML), but
+    it is not how a production cluster should terminate TLS.
   - >-
     Replace the self-managed kubeadm cluster with EKS for anything beyond a
     teaching environment. Bootstrapping the control plane by hand was the
@@ -108,7 +108,7 @@ revisions:
 Emerging Technologies hands a team a blank-slate managed-service contract:
 design, build, and operate shared infrastructure for two client organisations
 across two physical sites, to a stated set of availability and security
-requirements — then extend it with a public-facing cloud service.
+requirements, then extend it with a public-facing cloud service.
 
 The two clients are deliberately mismatched. **Lumora** is a mission-driven
 organisation that wants a professionally supported environment, predictable
@@ -122,7 +122,7 @@ client-facing SLA, and a live defence.
 
 ## Scope of my work
 
-End-to-end ownership of the **public-cloud site** — the MSP edge, both tenant
+End-to-end ownership of the **public-cloud site**. The MSP edge, both tenant
 stacks, the dual-bastion operations layer, the backup target, and the
 AWS-hosted service extension were designed, built, and operated solo. The
 on-prem site was delivered collaboratively.
@@ -133,17 +133,17 @@ A single OPNsense instance, `rp-msp-gateway`, carries the WAN edge and anchors
 eight internal segments: a shared management network, a LAN and a DMZ for each
 tenant, and two isolated storage bridges.
 
-Segmentation here is not only a security control — it is a triage aid. Each
+Segmentation here is not only a security control. It is also a triage aid. Each
 network tells a support engineer where to look first. If the problem is on the
 MSP segment, it starts at the gateway, a bastion, or the backup host. If it is
 on C1DMZ, it is a Lumora publication issue and not a ClearRoots identity
 issue. If storage breaks, the routed network can be perfectly healthy while the
-file service fails — which is why the SAN bridges sit outside the routed path
+file service fails, which is why the SAN bridges sit outside the routed path
 entirely (see note 1).
 
 Firewall policy is written against named aliases rather than one-off addresses,
 so a tenant's reachable scope is described once and reused. Each tenant LAN may
-reach its own scope, the shared web nodes, and the DNS authorities — and is
+reach its own scope, the shared web nodes, and the DNS authorities, and is
 explicitly blocked from the other tenant's scope.
 
 ## Tenant services
@@ -158,7 +158,7 @@ failover, providing AD-compatible authentication, DNS, and SMB; a Linux file
 server with iSCSI-backed and replicated shares; an nginx server in the DMZ; and
 a domain-joined Linux client.
 
-The interesting work was not either stack individually — it was keeping them
+The interesting work was not either stack individually. It was keeping them
 cleanly separated on shared hardware without letting DNS or DHCP scope bleed
 across the tenant boundary (see note 3).
 
@@ -180,9 +180,9 @@ published at the edge (see note 2).
 The public service is a containerised site running on a **two-node kubeadm
 cluster** on EC2, published at `clearroots.omerdengiz.com`.
 
-Every AWS resource is declared in Terraform — the IAM role and instance
+Every AWS resource is declared in Terraform: the IAM role and instance
 profile, the security group, both instances, the Elastic IP, the Route 53
-record — with remote state in S3 so the environment can be destroyed and
+record. Remote state lives in S3, so the environment can be destroyed and
 rebuilt reproducibly. That mattered concretely: during the defence, the entire
 cloud site was torn down and rebuilt from scratch in front of the panel.
 

@@ -1,5 +1,5 @@
 /**
- * topology.ts — the capstone Site 2 network, as built.
+ * topology.ts: the capstone Site 2 network, as built.
  *
  * Source: "Integrated Technical Design, Configuration, and Handover Report",
  * §3.1 (public-cloud boundary, MSP entry, gateway model), Table 10 (segments
@@ -7,7 +7,7 @@
  *
  * Accuracy is the entire point of this artefact. The two SAN bridges are
  * modelled as `routed: false` because they genuinely sit outside the OPNsense
- * routed path — drawing them as ordinary subnets would misrepresent the
+ * routed path: drawing them as ordinary subnets would misrepresent the
  * design and undercut the one detail that shows real architectural intent.
  */
 
@@ -44,16 +44,16 @@ export interface TopologyEdge {
 }
 
 export const tenants = {
-  msp: { label: 'MSP', full: 'Managed service provider — shared' },
-  c1: { label: 'Lumora', full: 'Company 1 — Windows-centric tenant' },
-  c2: { label: 'ClearRoots', full: 'Company 2 — Linux-centric tenant' },
+  msp: { label: 'MSP', full: 'Managed service provider, shared' },
+  c1: { label: 'Lumora', full: 'Company 1, Windows-centric tenant' },
+  c2: { label: 'ClearRoots', full: 'Company 2, Linux-centric tenant' },
   wan: { label: 'WAN', full: 'Upstream provider network' },
 } as const;
 
 export const gateway: TopologyNode = {
   id: 'gw',
   label: 'rp-msp-gateway',
-  role: 'OPNsense edge — routing, firewall policy, NAT publication, VPN termination',
+  role: 'OPNsense edge: routing, firewall policy, NAT publication, VPN termination',
   os: 'appliance',
 };
 
@@ -75,10 +75,10 @@ export const segments: TopologySegment[] = [
     gateway: '172.30.65.177',
     owner: 'msp',
     routed: true,
-    purpose: 'Shared management and recovery segment — bastions and backup',
+    purpose: 'Shared management and recovery segment: bastions and backup',
     nodes: [
-      { id: 'jump64', label: 'Jump64', addr: '.178', role: 'Windows bastion — AD and Veeam administration', os: 'windows' },
-      { id: 'mspjump', label: 'MSPUbuntuJump', addr: '.179', role: 'Linux bastion — tenant and OPNsense inspection', os: 'linux' },
+      { id: 'jump64', label: 'Jump64', addr: '.178', role: 'Windows bastion: AD and Veeam administration', os: 'windows' },
+      { id: 'mspjump', label: 'MSPUbuntuJump', addr: '.179', role: 'Linux bastion: tenant and OPNsense inspection', os: 'linux' },
       { id: 's2veeam', label: 'S2Veeam', addr: '.180', role: 'Backup repository and offsite copy target', os: 'windows' },
     ],
   },
@@ -91,7 +91,7 @@ export const segments: TopologySegment[] = [
     routed: true,
     purpose: 'Lumora directory, file and endpoint network',
     nodes: [
-      { id: 'c1dc1', label: 'C1DC1', addr: '.2', role: 'Primary domain controller — AD DS, DNS, DHCP, Group Policy', os: 'windows' },
+      { id: 'c1dc1', label: 'C1DC1', addr: '.2', role: 'Primary domain controller: AD DS, DNS, DHCP, Group Policy', os: 'windows' },
       { id: 'c1dc2', label: 'C1DC2', addr: '.3', role: 'Secondary domain controller', os: 'windows' },
       { id: 'c1fs', label: 'C1FS', addr: '.4', role: 'Windows file server, iSCSI initiator', os: 'windows' },
       { id: 'c1win', label: 'C1WindowsClient', addr: '.11', role: 'Domain-joined Windows endpoint', os: 'windows' },
@@ -119,8 +119,8 @@ export const segments: TopologySegment[] = [
     routed: true,
     purpose: 'ClearRoots identity, file and endpoint network',
     nodes: [
-      { id: 'c2idm1', label: 'C2IdM1', addr: '.66', role: 'Samba AD — DNS, DHCP failover primary, SMB', os: 'linux' },
-      { id: 'c2idm2', label: 'C2IdM2', addr: '.67', role: 'Samba AD — DHCP failover secondary', os: 'linux' },
+      { id: 'c2idm1', label: 'C2IdM1', addr: '.66', role: 'Samba AD: DNS, DHCP failover primary, SMB', os: 'linux' },
+      { id: 'c2idm2', label: 'C2IdM2', addr: '.67', role: 'Samba AD: DHCP failover secondary', os: 'linux' },
       { id: 'c2fs', label: 'C2FS', addr: '.68', role: 'Linux file server, iSCSI initiator, replicated shares', os: 'linux' },
       { id: 'c2lin', label: 'C2LinuxClient', addr: '.75', role: 'Domain-joined Linux endpoint', os: 'linux' },
     ],
@@ -144,7 +144,7 @@ export const segments: TopologySegment[] = [
     gateway: null,
     owner: 'c1',
     routed: false,
-    purpose: 'Isolated block storage bridge — deliberately off the routed path',
+    purpose: 'Isolated block storage bridge, deliberately off the routed path',
     nodes: [],
   },
   {
@@ -154,7 +154,7 @@ export const segments: TopologySegment[] = [
     gateway: null,
     owner: 'c2',
     routed: false,
-    purpose: 'Isolated block storage bridge — deliberately off the routed path',
+    purpose: 'Isolated block storage bridge, deliberately off the routed path',
     nodes: [],
   },
 ];
@@ -171,7 +171,7 @@ export const edges: TopologyEdge[] = [
   { from: 'gw', to: 'site1', kind: 'tunnel', label: 'SITE1_OVPN' },
 ];
 
-/** NAT publications — only the two bastions are reachable from the edge. */
+/** NAT publications: only the two bastions are reachable from the edge. */
 export const natPublications = [
   { external: '33464', internal: '172.30.65.178:3389', node: 'jump64', proto: 'RDP' },
   { external: '33564', internal: '172.30.65.179:22', node: 'mspjump', proto: 'SSH' },

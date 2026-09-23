@@ -8,7 +8,7 @@ import { z } from 'zod';
  * Content collections.
  *
  * Case-study prose lives in Markdown; anything the layout needs to *lay out*
- * — metrics, callouts, stack, links — lives in typed frontmatter. That split
+ * (metrics, callouts, stack, links) lives in typed frontmatter. That split
  * is deliberate: it means project copy can be edited without opening an
  * .astro file, while the schema still fails the build if a required field is
  * missing or misspelled, rather than rendering a blank section.
@@ -22,7 +22,7 @@ const projects = defineCollection({
     title: z.string(),
     /** One line. Used in the title block and as the meta description. */
     summary: z.string(),
-    /** How the work came about — "Algonquin College capstone", "Self-directed". */
+    /** How the work came about: "Algonquin College capstone", "Self-directed". */
     context: z.string(),
     period: z.string().optional(),
 
@@ -74,7 +74,7 @@ const projects = defineCollection({
 
     /**
      * Numbered notes. The prose refers to them by number ("see 2"), matching
-     * how a drawing balloons a callout — which is why these are a separate
+     * how a drawing balloons a callout, which is why these are a separate
      * list rather than inline asides.
      */
     notes: z
@@ -92,7 +92,7 @@ const projects = defineCollection({
 
     /** Lower sorts first in any listing. */
     order: z.number().default(99),
-    /** Excluded from /projects/[slug] — used for pages with their own route. */
+    /** Excluded from /projects/[slug]: used for pages with their own route. */
     standalone: z.boolean().default(false),
   }),
 });
