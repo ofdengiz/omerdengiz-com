@@ -4,4 +4,4 @@ Allow: /
 # Internal design-system reference — not content.
 Disallow: /styleguide
 
-Sitemap: https://omerdengiz.com/sitemap-index.xml
+Sitemap: https://www.omerdengiz.com/sitemap-index.xml

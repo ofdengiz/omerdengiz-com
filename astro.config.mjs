@@ -13,7 +13,16 @@ import sitemap from '@astrojs/sitemap';
  * Three settings below are load-bearing for that deployment. See notes.
  */
 export default defineConfig({
-  site: 'https://omerdengiz.com',
+  // MIGRATION STATE (2026-09-23): temporarily www, not the apex.
+  //
+  // This value drives every canonical link, og:url and sitemap entry. The apex
+  // currently fails at TLS because its CloudFront alias is still held by a
+  // distribution in an unreachable AWS account, so pointing canonicals at it
+  // would advertise a URL that cannot be loaded — to crawlers, to social
+  // previews, and to anyone following a share link.
+  //
+  // Revert to 'https://omerdengiz.com' as soon as the apex alias is released.
+  site: 'https://www.omerdengiz.com',
 
   // Fully static output — no SSR adapter, no server runtime.
   output: 'static',

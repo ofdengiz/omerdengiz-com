@@ -1,14 +1,25 @@
 # ------------------------------------------------------------------
-# Route 53 — public hosted zone for the domain (Strategy A: full delegation)
+# Route 53 — public hosted zone for the domain
 #
-# After the first apply:
-#   1. terraform output route53_name_servers   → gives you 4 NS values
-#   2. In the DOMAIN account (the one that has the domain registered):
-#        Route 53 → Registered domains → omerdengiz.com → Edit name servers
-#        → paste the 4 NS values from above
-#   3. DNS propagates in ~5–60 minutes and this hosted zone becomes the
-#      authoritative source of truth. The old zone in the domain account
-#      can be safely deleted once propagation is confirmed.
+# The registrar and this hosted zone now live in the SAME account, so the
+# delegation is updated with one CLI call instead of a console visit:
+#
+#   terraform output -json route53_name_servers
+#   aws route53domains update-domain-nameservers \
+#     --region us-east-1 --domain-name omerdengiz.com \
+#     --nameservers Name=<ns1> Name=<ns2> Name=<ns3> Name=<ns4>
+#
+# WHY THIS MATTERS (2026-09-23): the zone previously lived in a separate
+# hosting account while the domain stayed with the registrar account. When
+# the hosting account became inaccessible, the zone went with it — but the
+# .com delegation still pointed at its nameservers, which then answered
+# REFUSED. Every resolver returned SERVFAIL and the site was unreachable
+# even though the domain registration was perfectly healthy. Keeping the
+# zone and the registration together removes that failure mode: they can no
+# longer be separated by an account-level problem.
+#
+# Deleting and recreating a hosted zone always yields a NEW nameserver set,
+# so the delegation must be updated after any such rebuild.
 # ------------------------------------------------------------------
 
 resource "aws_route53_zone" "site" {

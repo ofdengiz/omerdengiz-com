@@ -56,3 +56,10 @@ node_modules/
 dist/
 .astro/
 npm-debug.log*
+
+# Job-application artefacts — catch-all. The per-pattern list above missed
+# Omer_Dengiz_Deloitte_Application.pdf, which reached a commit before being
+# caught. Anything company-specific at the repo root stays local.
+/Omer_Dengiz_*_Application.*
+/Omer_Dengiz_*Application*.pdf
+/*_Application.pdf
