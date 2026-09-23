@@ -14,6 +14,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "verify:csp": "node scripts/verify-csp.mjs",
+    "audit": "python scripts/audit-consistency.py",
     "astro": "astro"
   },
   "dependencies": {

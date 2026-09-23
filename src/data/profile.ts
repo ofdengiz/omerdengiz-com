@@ -21,11 +21,17 @@ export interface ProfileLink {
 export const profile = {
   name: 'Omer Dengiz',
 
-  /** The resume's positioning line, verbatim. */
-  role: 'Cloud Infrastructure · Systems Administration · Networking · IT Operations',
+  /**
+   * The resume's positioning line, verbatim.
+   *
+   * Systems Administration leads as of the 2026-09 revision — the roles being
+   * targeted are operations-first, and the ordering signals that before any
+   * bullet is read.
+   */
+  role: 'Systems Administration · Cloud Infrastructure · Networking · IT Operations',
 
   /** Compressed form for the title block and tab titles. */
-  roleShort: 'Cloud · Systems · Networking',
+  roleShort: 'Systems · Cloud · Networking',
 
   location: {
     city: 'Kanata',
@@ -50,15 +56,14 @@ export const profile = {
   clearance: 'RCMP Facility Access Security Check, Level 2 (current)',
 
   /**
-   * Summary, adapted from the resume.
+   * Summary, transcribed from the resume (revision 2026-09-23).
    *
-   * The "(Apr 2026)" parenthetical was dropped: the credential has been
-   * conferred, so "graduate" already states the fact, and appending the date
-   * to the opening line reads as a fresh-grad tell. The conferral date is
-   * carried once, in the education section, where a recruiter expects it.
+   * It leads with the capstone rather than the credential, because the
+   * hands-on infrastructure work is the strongest thing on the page and the
+   * roles being targeted care about it more than about a diploma date.
    */
   summary:
-    'Computer Systems Technician – Networking graduate and AWS Certified Solutions Architect – Associate with hands-on experience in AWS cloud infrastructure, Linux and Windows administration, enterprise networking, and IT operations at Interac Corp. and Nioyatech LLC. Builds reliable hybrid environments with Terraform, Ansible, Docker, Kubernetes, and CI/CD pipelines, and supports teams through structured troubleshooting, clear documentation, and collaboration across engineering, operations, and security functions.',
+    'Algonquin College Networking graduate with hands-on experience in Windows and Linux server administration, virtualization, networking, and AWS. On a six-person capstone team, owned the second site end to end — Proxmox-hosted infrastructure, Active Directory and Samba AD, segmented VLANs behind OPNsense — and extended it into AWS with Terraform and a Kubernetes cluster behind automated TLS. Previously worked as a DevOps Engineer, automating Linux server configuration with Ansible and building CI/CD pipelines for containerized applications. Holds a current RCMP Facility Access Security Check (Level 2). Fluent in English, Turkish, and Mandarin.',
 
   email: 'omerdengiz368@gmail.com',
   phone: {
@@ -86,7 +91,7 @@ export const profile = {
    * site content is aligned to — it is displayed, so keep it honest.
    */
   sheet: {
-    revision: '2026.08',
+    revision: '2026.09',
     project: 'omerdengiz.com',
   },
 } as const;

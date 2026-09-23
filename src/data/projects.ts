@@ -63,7 +63,10 @@ export const projects: Project[] = [
     ],
     caseStudy: '/meta',
     source: 'https://github.com/ofdengiz/omerdengiz-com',
-    live: 'https://omerdengiz.com',
+    // www until the apex alias is released from the old account. The apex
+    // currently fails at TLS, so linking it would hand a visitor a
+    // certificate warning from the site's own project index.
+    live: 'https://www.omerdengiz.com',
   },
   {
     sheet: '03',

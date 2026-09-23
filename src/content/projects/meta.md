@@ -17,7 +17,7 @@ stack:
   - Route 53
   - Terraform
 source: https://github.com/ofdengiz/omerdengiz-com
-live: https://omerdengiz.com
+live: https://www.omerdengiz.com
 cells:
   - label: Discipline
     value: Cloud · IaC

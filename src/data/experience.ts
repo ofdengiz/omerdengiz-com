@@ -1,7 +1,7 @@
 /**
  * experience.ts — professional history and education.
  *
- * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-08-22), transcribed
+ * SOURCE OF TRUTH: Omer_Dengiz_Resume.pdf (revision 2026-09-23), transcribed
  * verbatim — including the Interac bullets, which were reworded for the
  * Canadian market and then carried back into the PDF so both surfaces read
  * identically. Verified by extracting the PDF text and diffing it against
@@ -87,15 +87,17 @@ export const roles: Role[] = [
   {
     title: 'DevOps Engineer',
     org: 'Nioyatech LLC',
-    location: 'Remote',
+    location: 'Remote from Ottawa, ON (US-based employer)',
     start: 'Nov 2022',
     end: 'May 2024',
     startISO: '2022-11',
     endISO: '2024-05',
+    // Ansible leads, matching the resume: configuration management is the
+    // closest thing in this role to the operations work being targeted.
     bullets: [
-      'Automated provisioning for 3 multi-tier AWS environments (EC2, S3, RDS, Lambda, IAM, VPC, EKS) with Terraform and CloudFormation, standardizing reusable infrastructure patterns and reducing deployment time for new application stacks.',
-      'Improved reliability across 30+ Linux servers by authoring Ansible playbooks and roles for configuration, patch management, and compliance baselines, cutting manual setup effort and enforcing consistent state across fleets.',
-      'Accelerated delivery for 20+ applications by building Jenkins and Git CI/CD pipelines and deploying containerized workloads with Docker and Kubernetes, enabling zero downtime microservices releases.',
+      'Improved reliability across 30+ Linux servers by authoring Ansible playbooks and roles for configuration, patch management, and compliance baselines, cutting manual setup effort across fleets.',
+      'Automated provisioning for 3 multi-tier AWS environments (EC2, S3, RDS, Lambda, IAM, VPC, EKS) with Terraform and CloudFormation, standardizing reusable infrastructure patterns.',
+      'Built Jenkins and Git CI/CD pipelines for 20+ applications and deployed containerized workloads with Docker and Kubernetes, enabling zero downtime releases.',
     ],
     stack: ['AWS', 'Terraform', 'CloudFormation', 'Ansible', 'Jenkins', 'Docker', 'Kubernetes'],
   },
@@ -136,20 +138,20 @@ export const education: Education[] = [
 
 export const certifications: Certification[] = [
   {
+    name: 'CCNA: Switching, Routing and Wireless Essentials',
+    issuer: 'Cisco Networking Academy',
+  },
+  {
     name: 'AWS Certified Solutions Architect – Associate',
     issuer: 'Amazon Web Services',
-    validity: '2023 – 2026',
+    validity: '2023 – 2026, recertification planned',
     // href: 'https://www.credly.com/badges/...',   ← add verification link
   },
   {
     name: 'AWS Certified Cloud Practitioner',
     issuer: 'Amazon Web Services',
-    validity: '2023 – 2026',
+    validity: '2023 – 2026, recertification planned',
     // href: 'https://www.credly.com/badges/...',
-  },
-  {
-    name: 'CCNA: Switching, Routing and Wireless Essentials',
-    issuer: 'Cisco Networking Academy',
   },
 ];
 
