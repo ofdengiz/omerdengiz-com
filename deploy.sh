@@ -72,10 +72,23 @@ echo "==> Source        : ${DIST_DIR}"
 echo
 
 # --- 1. Hashed bundles — safe to cache forever ----------------------------
-echo "==> Syncing /assets/_/ (content-hashed, immutable)..."
+#
+# Deliberately NOT --delete.
+#
+# These filenames contain a content hash, so a new build never overwrites an
+# old file — it adds a new one. Deleting the old ones looked tidy and broke
+# real sessions: anyone holding a page from before a deploy still references
+# the previous hashes, and those requests started 404ing the moment the sync
+# finished. For CSS and JS that means an unstyled page; for the resume it
+# meant Chrome reporting "file wasn't available on site" on a download that
+# had worked a minute earlier.
+#
+# Old hashed objects are immutable and tiny, so leaving them costs almost
+# nothing and keeps already-served pages working. Prune them occasionally, or
+# add an S3 lifecycle rule expiring assets/_/ objects after ~90 days.
+echo "==> Syncing /assets/_/ (content-hashed, immutable, additive)..."
 aws s3 sync ${DRY_RUN} ${PROFILE_LINE} \
   "${DIST_DIR}/assets/_/" "s3://${BUCKET}/assets/_/" \
-  --delete \
   --cache-control "public, max-age=31536000, immutable"
 
 # --- 2. Everything else, with cleanup -------------------------------------

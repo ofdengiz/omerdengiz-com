@@ -1,36 +1,47 @@
 /**
  * resume.ts — the resume asset, resolved once.
  *
- * WHY THIS FILE EXISTS
- * --------------------
- * The legacy site linked the PDF as a literal path and appended a manual
- * cache-bust query (`?v=20260423d`) because deploy.sh serves everything under
- * /assets/ with `Cache-Control: public, max-age=31536000, immutable`. Browsers
- * honour `immutable` by not even revalidating, so an updated resume stayed
- * invisible until the query string was bumped by hand — across five HTML files,
- * every single time.
+ * WHY THE STABLE URL AND NOT A HASHED ONE
+ * ---------------------------------------
+ * The original problem was that deploy.sh served everything under /assets/
+ * with `Cache-Control: immutable`, and browsers honour that by not
+ * revalidating at all — so an updated resume stayed invisible behind a stale
+ * copy until a `?v=` query was bumped by hand across five HTML files.
  *
- * Importing the PDF from src/ (rather than dropping it in public/) hands it to
- * Vite, which emits it with a content hash in the filename. A new PDF produces
- * a new URL automatically, so `immutable` becomes *true* instead of a lie, and
- * the manual query string is gone permanently.
+ * The first fix was to import the PDF through Vite so it shipped with a
+ * content hash: a new resume produced a new URL, and `immutable` became true
+ * rather than a lie. That worked, and then failed in a way worth recording.
  *
- * IMPORTANT: files in public/ are copied verbatim and are NOT hashed. Moving
- * this PDF to public/ would silently reintroduce the original bug.
+ * Content hashing is right for what a *page loads* — stylesheets, scripts,
+ * fonts. It is wrong for what a *person clicks*. When the resume changed, the
+ * old hashed object stopped existing, and every already-open page still
+ * pointed at it; the download button answered 404 and the browser reported
+ * "file wasn't available on site". A download link has no cache benefit to
+ * gain from hashing and inherits all of its fragility.
  *
- * The `?url` suffix tells Vite to emit the file and give us its final URL
- * rather than trying to parse the bytes.
+ * So the link now uses the stable path, which deploy.sh serves with a five
+ * minute TTL. Short enough that an updated resume appears almost immediately,
+ * stable enough that a link never dies — including the copies pasted into job
+ * applications, which is the same reason the alias exists at all.
+ *
+ * The file is emitted by scripts/emit-stable-assets.mjs during the build.
+ * Note that putting it in public/ instead would NOT work: files there are
+ * copied verbatim and served under the same rules, but the legacy
+ * /assets/resume/ path has to be written too, and only the script does both
+ * from a single source file.
  */
-import resumeHashedUrl from '../assets/resume/Omer_Dengiz_Resume.pdf?url';
 
 export const resume = {
-  /** Content-hashed, cache-immutable URL. Use for every on-site link. */
-  href: resumeHashedUrl,
+  /**
+   * Stable, short-TTL URL. Safe to link from a page that may sit open across
+   * a deploy, and safe to paste into an application.
+   */
+  href: '/resume.pdf',
 
   /**
-   * Filename presented to the reader when they save it. Kept human-readable
-   * on purpose — the hashed name is a caching detail and should never be what
-   * lands on a recruiter's desktop.
+   * Filename presented to the reader when they save it. The `download`
+   * attribute in ResumeLink pins this, so the saved file is never named
+   * after a deployment detail.
    */
   filename: 'Omer_Dengiz_Resume.pdf',
 
@@ -38,5 +49,5 @@ export const resume = {
   format: 'PDF',
 
   /** Bump when the resume content materially changes. Displayed, so keep honest. */
-  revised: 'Apr 2026',
+  revised: 'Sep 2026',
 } as const;
