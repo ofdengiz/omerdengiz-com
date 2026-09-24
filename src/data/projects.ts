@@ -61,9 +61,9 @@ export const projects: Project[] = [
     sheet: '02',
     title: 'omerdengiz.com',
     summary:
-      'This site. A static build on S3 behind CloudFront, with pretty URLs and security headers injected at the edge, provisioned entirely in Terraform.',
+      'This site. A static Astro build served from S3 through CloudFront, with every resource declared in Terraform.',
     detail:
-      'A single Lambda@Edge function handles both viewer-request URL rewriting and viewer-response security headers, including a strict Content-Security-Policy that the build verifies against before it can ship. The stack was re-applied into a second AWS account after the first became unreachable. The apex name did not transfer: CloudFront reserves alias names across all accounts and the suspended account still holds it, so the site is served from www.',
+      'The bucket is private and reachable only through CloudFront Origin Access Control. A single Lambda@Edge function rewrites extensionless URLs on viewer-request and adds security headers on viewer-response, including a strict Content-Security-Policy. The build checks every generated page against that policy and fails on a violation.',
     context: 'Self-directed',
     stack: [
       'AWS S3', 'CloudFront', 'ACM', 'Lambda@Edge', 'Route 53', 'Terraform', 'Astro',

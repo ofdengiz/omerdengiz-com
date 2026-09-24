@@ -11,10 +11,8 @@ Browser  ──►  Route 53  ──►  CloudFront
                                └─►  S3 bucket  (private, OAC)
 ```
 
-The hosted zone and the domain registration deliberately live in the **same**
-AWS account. They used to be split across two, until the account holding the
-zone became unreachable and took DNS down with it while the registration sat
-healthy and untouchable in the other one. The post-mortem is written up at
+The hosted zone, the domain registration and the hosting resources all live
+in one AWS account. The architecture is written up at
 [/meta](https://www.omerdengiz.com/meta).
 
 ## Repository layout
@@ -173,14 +171,12 @@ python -c "from pypdf import PdfReader; print('
 
 ## What this showcase demonstrates
 
-For recruiters / hiring managers skimming the source:
-
-- **Infrastructure as code that earned its keep:** the original hosting account became unreachable and took the hosted zone and distribution with it. Because the whole stack is Terraform, rebuilding it in the account holding the domain was a re-apply rather than a reconstruction. The apex name was the exception: CloudFront reserves alias names across all accounts, so the site is served from `www` until the suspended account releases it. See `src/content/projects/meta.md` for the DNS post-mortem.
+- **Infrastructure as code:** every resource, including DNS records, the certificate and its validation records, and the edge function, is declared in Terraform.
 - **S3 origin hardening:** bucket is private, public access blocked, CloudFront reaches it only via Origin Access Control (OAC), encrypted at rest, versioned.
 - **CloudFront best practices:** HTTPS-only, TLS 1.2+, HTTP/2 and HTTP/3, custom 404, compression, AWS-managed cache policies.
 - **Lambda@Edge:** single handler, two CloudFront events (viewer-request + viewer-response), pretty URL rewrites + CSP / HSTS / X-Frame-Options / Permissions-Policy headers.
-- **ACM DNS validation across accounts:** cert issued in the hosting account, validated against DNS records in the domain account.
-- **Terraform:** multi-provider (ca-central-1 + us-east-1 alias), default tags, archive-packaged Lambda, remote-backend-ready.
+- **ACM DNS validation:** certificate issued in us-east-1 and validated through Route 53 records that Terraform creates, with no manual step.
+- **Terraform:** a second provider aliased to us-east-1 for the resources CloudFront requires there (ACM, Lambda@Edge), default tags, archive-packaged Lambda, remote-backend-ready.
 - **Deploy hygiene:** cache-control policy tuned per asset type, automatic invalidation, dry-run support.
 
 ---
@@ -224,7 +220,7 @@ For a personal portfolio with low traffic:
 - **CloudFront**: free tier (1 TB out + 10M requests / month) covers this easily
 - **ACM**: free
 - **Lambda@Edge**: free for the first 1 M requests; this site won't come close
-- **Route 53** (domain account): $0.50/month per hosted zone + $0.40 per million queries
+- **Route 53**: $0.50/month per hosted zone + $0.40 per million queries
 
 Expected total: **< $1/month** while under free tier.
 

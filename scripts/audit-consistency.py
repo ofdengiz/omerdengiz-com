@@ -99,9 +99,8 @@ check('link', 'canonical www gosteriyor', 'https://www.omerdengiz.com/' in (ROOT
 
 print("\n=== 8. MIMARI IDDIALARI (goc sonrasi) " + "="*32)
 for name, blob in [('site', site), ('github', gh), ('repo README', repo)]:
-    # Present-tense claims only. The word "cross-account" legitimately appears
-    # in the post-mortem ("to exercise a cross-account boundary. That boundary
-    # became the failure") and in a sentence stating there is no such step.
+    # Present-tense architecture claims only. Incident narrative is covered
+    # separately in category 13.
     claims = ['lives in a separate AWS account', 'across two AWS accounts',
               'in one AWS account, hosting infrastructure in another',
               'cross-account AWS static site', 'cross-account AWS architecture',
@@ -183,6 +182,20 @@ if _og.exists():
     check('tire', 'og karti sertifikayi gecerlilik penceresiyle veriyor',
           'AWS SAA (2023' in _src,
           'kosulsuz "AWS Certified" iddiasi kartin en belirgin satiriydi')
+
+print("\n=== 13. OLAY GECMISI ANLATIMI " + "="*40)
+# Portfoy metni bir seyin ne oldugunu anlatir, basina ne geldigini degil.
+# Hesap gocu, askiya alinan hesap ve apex sorunu bir olay kaydiydi ve uc
+# yuzeyde birden anlatiliyordu. "Askiya alinmis hesap" bir bulut pozisyonu
+# icin olumsuz bir soru da davet ediyor. Bu ifadeler geri gelmesin.
+_history = ['suspended account', 'became unreachable', 're-applied into',
+            'second AWS account', 'different account', 'after learning why',
+            'post-mortem', 'used to be split', 'went out of reach',
+            'original hosting account', 'across accounts', 'CNAMEAlreadyExists',
+            'headings it replaces', 'Replaces animated']
+for name, blob in [('site', site), ('github', gh), ('repo README', repo)]:
+    hit = [h for h in _history if h.lower() in blob.lower()]
+    check('gecmis', f'{name}: olay gecmisi anlatimi yok', not hit, f'bulunan: {hit}')
 
 print("\n" + "="*70)
 if findings:
