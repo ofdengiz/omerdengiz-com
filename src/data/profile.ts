@@ -63,7 +63,7 @@ export const profile = {
    * roles being targeted care about it more than about a diploma date.
    */
   summary:
-    'Algonquin College Networking graduate with hands-on experience in Windows and Linux server administration, virtualization, networking, and AWS. On a six-person capstone team, owned the second site end to end: Proxmox-hosted infrastructure, Active Directory and Samba AD, and segmented VLANs behind OPNsense. Extended it into AWS with Terraform and a Kubernetes cluster behind automated TLS. Previously worked as a DevOps Engineer, automating Linux server configuration with Ansible and building CI/CD pipelines for containerized applications. Holds a current RCMP Facility Access Security Check (Level 2). Fluent in English, Turkish, and Mandarin.',
+    'Algonquin College Networking graduate with hands-on experience in cloud operations and Windows and Linux server administration across on-premises, hybrid and AWS environments. On a six-person capstone team, owned the second site end to end: Proxmox-hosted infrastructure, Active Directory and Samba AD, segmented VLANs behind OPNsense, and Veeam backup with an offsite copy. Extended it into AWS with Terraform and a Kubernetes cluster behind automated TLS. Previously worked as a DevOps Engineer, automating Linux server configuration with Ansible and building CI/CD pipelines for containerized applications. Holds a current RCMP Facility Access Security Check (Level 2). Fluent in English, Turkish, and Mandarin.',
 
   email: 'omerdengiz368@gmail.com',
   phone: {

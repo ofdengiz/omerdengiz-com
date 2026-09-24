@@ -1,7 +1,7 @@
 /**
  * projects.ts: the work index.
  *
- * Editorial discipline: five entries carry the index. Everything else is
+ * Editorial discipline: four entries carry the index. Everything else is
  * listed compactly under `additional`. A recruiter reading a portfolio gives
  * it roughly thirty seconds, and seven equally-weighted cards spend that
  * budget flattening the capstone down to the level of a small lab.
@@ -81,10 +81,10 @@ export const projects: Project[] = [
     summary:
       'End-to-end Jenkins pipeline deploying a Java Spring microservices application to AWS EKS.',
     detail:
-      'Multi-branch promotion across dev, staging and production, with Maven builds, images published to AWS ECR, artefacts in Nexus, Rancher-managed clusters, Selenium automation tests, and Prometheus and Grafana for monitoring.',
+      'Multi-branch promotion across dev, staging and production, with Maven builds, images published to AWS ECR, artefacts in Nexus, Helm charts for deployment, Rancher-managed clusters, Selenium automation tests, and Prometheus and Grafana for monitoring.',
     context: 'Self-directed · Spring PetClinic',
     stack: [
-      'Jenkins', 'AWS EKS', 'ECR', 'Rancher', 'Nexus', 'Maven', 'Docker',
+      'Jenkins', 'AWS EKS', 'Helm', 'ECR', 'Rancher', 'Nexus', 'Maven', 'Docker',
       'Selenium', 'Prometheus', 'Grafana',
     ],
     caseStudy: '/projects/petclinic',
@@ -92,21 +92,6 @@ export const projects: Project[] = [
   },
   {
     sheet: '04',
-    title: 'filmapp · DevSecOps Pipeline',
-    summary:
-      'A React and TypeScript application whose real artefact is its pipeline: every security gate runs before an image reaches the registry.',
-    detail:
-      'SonarQube quality gate, OWASP Dependency-Check, and Trivy filesystem and image scans run in sequence, followed by a Kubernetes rollout. A failing gate stops the build rather than producing a warning nobody reads.',
-    context: 'Self-directed',
-    stack: [
-      'React', 'TypeScript', 'Jenkins', 'SonarQube', 'OWASP DC', 'Trivy',
-      'Docker', 'Kubernetes',
-    ],
-    caseStudy: '/projects/filmapp',
-    source: 'https://github.com/ofdengiz/filmapp',
-  },
-  {
-    sheet: '05',
     title: 'Django Blog on Multi-AZ AWS',
     summary:
       'A Django application on a production-shaped AWS architecture: multi-AZ VPC, load-balanced auto-scaling tier, and managed data services.',
@@ -123,7 +108,7 @@ export const projects: Project[] = [
 
 /**
  * Secondary work. Listed so the record is complete, weighted so it does not
- * compete with the five above.
+ * compete with the four above.
  */
 export const additional = [
   {
@@ -140,10 +125,5 @@ export const additional = [
     title: 'ansible-docker-roles',
     summary: 'Reusable Ansible roles for fleet-level Docker and application configuration.',
     source: 'https://github.com/ofdengiz/ansible-docker-roles',
-  },
-  {
-    title: 'jenkins-maven-project',
-    summary: 'Declarative Jenkins pipeline covering the Jenkins → Maven → JUnit loop.',
-    source: 'https://github.com/ofdengiz/jenkins-maven-project',
   },
 ];

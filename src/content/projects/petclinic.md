@@ -9,6 +9,7 @@ context: Self-directed · Spring PetClinic
 stack:
   - Jenkins
   - AWS EKS
+  - Helm
   - ECR
   - Rancher
   - Nexus

@@ -63,6 +63,13 @@ export interface Certification {
    * two should not find the site making the stronger claim.
    */
   validity?: string;
+  /**
+   * 'course' for training that carries a certification's name without being
+   * one. Cisco's "CCNA: Switching, Routing and Wireless Essentials" is a
+   * Networking Academy course, not the CCNA exam; listing it beside the AWS
+   * certifications unmarked would read as the stronger claim.
+   */
+  kind?: 'course';
   /** Verification URL if one exists. */
   href?: string;
 }
@@ -138,10 +145,6 @@ export const education: Education[] = [
 
 export const certifications: Certification[] = [
   {
-    name: 'CCNA: Switching, Routing and Wireless Essentials',
-    issuer: 'Cisco Networking Academy',
-  },
-  {
     name: 'AWS Certified Solutions Architect – Associate',
     issuer: 'Amazon Web Services',
     validity: '2023 – 2026',
@@ -152,6 +155,11 @@ export const certifications: Certification[] = [
     issuer: 'Amazon Web Services',
     validity: '2023 – 2026',
     // href: 'https://www.credly.com/badges/...',
+  },
+  {
+    name: 'CCNA: Switching, Routing and Wireless Essentials',
+    issuer: 'Cisco Networking Academy',
+    kind: 'course',
   },
 ];
 

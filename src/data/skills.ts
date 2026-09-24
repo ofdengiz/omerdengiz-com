@@ -41,7 +41,7 @@ export const skillGroups: SkillGroup[] = [
     items: [
       'Linux (Red Hat, Ubuntu, SUSE)', 'Windows Server 2019/2022',
       'Active Directory', 'Group Policy', 'Samba AD', 'LDAP', 'Kerberos',
-      'SSSD', 'VMware', 'Proxmox VE', 'iSCSI SAN', 'RAID',
+      'SSSD', 'VMware', 'Proxmox VE', 'iSCSI SAN', 'SMB file shares', 'RAID',
       'HP ProLiant hardware', 'Veeam backup and restore',
     ],
   },
@@ -52,14 +52,14 @@ export const skillGroups: SkillGroup[] = [
       'TCP/IP', 'DNS', 'DHCP', 'VLANs', 'IPv4 subnetting',
       'Routing and switching', 'OSPF', 'Firewalls (OPNsense)',
       'NAT and access rules', 'OpenVPN site-to-site',
-      "TLS and Let's Encrypt automation", 'Cisco IOS', 'Wireshark', 'tcpdump',
+      "TLS, OpenSSL and Let's Encrypt automation", 'Cisco IOS', 'Wireshark', 'tcpdump',
     ],
   },
   {
     name: 'Applications & Scripting',
     code: 'AS',
     items: [
-      'Tomcat', 'nginx', 'Caddy reverse proxy', 'MySQL', 'PostgreSQL', 'SQL',
+      'Tomcat and JVM services', 'nginx', 'Caddy reverse proxy', 'MySQL', 'PostgreSQL', 'SQL',
       'Python', 'Bash', 'PowerShell', 'Prometheus', 'Grafana',
       'Technical documentation and runbooks',
     ],

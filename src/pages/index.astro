@@ -50,7 +50,7 @@ const sections = [
         subtitle={profile.role}
         cells={[
           { label: 'Location', value: profile.location.short },
-          { label: 'Certification', value: 'AWS SAA · CCP · CCNA', accent: true },
+          { label: 'Certification', value: 'AWS SAA · CCP', accent: true },
           { label: 'Discipline', value: 'Cloud · Systems · Network' },
           { label: 'Revision', value: profile.sheet.revision },
         ]}
@@ -69,7 +69,7 @@ const sections = [
       <SheetRule sheet="01" title="Selected work" note={`${projects.length} sheets`} />
 
       <p class="lede">
-        Five projects, ordered by weight. Expand a row for the detail, or open
+        Four projects, ordered by weight. Expand a row for the detail, or open
         the case study where one exists.
       </p>
 
@@ -176,7 +176,7 @@ const sections = [
                       c.name
                     )}
                     <span class="edu__issuer">
-                      {c.issuer}{c.validity && <span class="edu__validity"> · {c.validity}</span>}
+                      {c.issuer}{c.kind === 'course' && ' · course'}{c.validity && <span class="edu__validity"> · {c.validity}</span>}
                     </span>
                   </li>
                 ))

@@ -197,6 +197,40 @@ for name, blob in [('site', site), ('github', gh), ('repo README', repo)]:
     hit = [h for h in _history if h.lower() in blob.lower()]
     check('gecmis', f'{name}: olay gecmisi anlatimi yok', not hit, f'bulunan: {hit}')
 
+print("\n=== 14. IDDIA <-> KANIT " + "="*46)
+# Resume'nin capstone maddesi "deployed via Helm charts" diyordu; yayinlanan
+# capstone reposunda Helm yok, duz manifestler var. Helm'in kaniti petclinic.
+check('kanit', 'resume capstone maddesi Helm iddia etmiyor',
+      'cluster deployed via Helm' not in pdf)
+check('kanit', 'Helm petclinic kartinda kanitiyla birlikte duruyor',
+      'Helm charts for deployment' in home)
+
+# Cisco NetAcad "CCNA: Switching, Routing and Wireless Essentials" bir kurs,
+# CCNA sinavi degil. Sertifikalarin yaninda isaretsiz durmasi daha guclu bir
+# iddia gibi okunuyordu.
+check('kanit', 'baslik blogu kursu sertifika gibi gostermiyor',
+      'AWS SAA · CCP · CCNA' not in home)
+check('kanit', 'resume Cisco kursunu Training satirinda, kurs olarak veriyor',
+      'Training: Cisco Networking Academy' in pdf and '(course)' in pdf)
+check('kanit', 'github profili Cisco rozetini sertifika olarak gostermiyor',
+      'alt="CCNA"' not in gh)
+
+# Resume ozeti ile sitenin ozeti ayni metin olmali.
+_sum = re.search(r'Algonquin College Networking graduate.*?Mandarin\.', pdf)
+check('kanit', 'resume ozeti sitede birebir', bool(_sum) and _sum.group(0) in home,
+      'profile.ts summary resume ile ayrismis')
+
+# Profilde calismayan ucuncu taraf gorsel olmasin (servis 503 donuyordu).
+check('kanit', 'github profilinde kirik istatistik gorseli yok', 'github-readme-stats' not in gh)
+
+# Private yapilan repolara hicbir yuzey baglanmasin.
+_private = ['filmapp', 'aws-python-workspace', 'jenkinsfile-pipeline-project',
+            'jenkins-maven-project']
+for name, blob in [('site', ' '.join(p.read_text(encoding='utf-8') for p in (ROOT/'dist').rglob('*.html'))),
+                   ('github', gh), ('repo README', repo)]:
+    hit = [r for r in _private if f'ofdengiz/{r}' in blob]
+    check('kanit', f'{name}: private repolara baglanti yok', not hit, f'bulunan: {hit}')
+
 print("\n" + "="*70)
 if findings:
     print(f"{len(findings)} BULGU:")
