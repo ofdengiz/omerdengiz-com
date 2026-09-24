@@ -179,9 +179,9 @@ if _og.exists():
     check('tire', 'og karti olu apex adresini basmiyor',
           '"omerdengiz.com"' not in _src,
           'apex TLS hatasi veriyor; kartta www yazmali')
-    check('tire', 'og karti sertifikayi gecerlilik penceresiyle veriyor',
-          'AWS SAA (2023' in _src,
-          'kosulsuz "AWS Certified" iddiasi kartin en belirgin satiriydi')
+    check('tire', 'og karti suresi dolmus sertifikayi one cikarmiyor',
+          'AWS SAA' not in _src and '"SCREENING", "RCMP Level 2' in _src,
+          'AWS sertifikalari Tem/Agu 2026 sona erdi; kartta guncel tarama yazmali')
 
 print("\n=== 13. OLAY GECMISI ANLATIMI " + "="*40)
 # Portfoy metni bir seyin ne oldugunu anlatir, basina ne geldigini degil.
@@ -230,6 +230,15 @@ for name, blob in [('site', ' '.join(p.read_text(encoding='utf-8') for p in (ROO
                    ('github', gh), ('repo README', repo)]:
     hit = [r for r in _private if f'ofdengiz/{r}' in blob]
     check('kanit', f'{name}: private repolara baglanti yok', not hit, f'bulunan: {hit}')
+
+print("\n=== 15. SURESI DOLAN SERTIFIKALAR " + "="*36)
+# AWS SAA Agu 2026, CCP Tem 2026 sona erdi (LinkedIn "Expired" diyor). Her
+# yuzey bunu acikca soylemeli; tarihsiz bir "AWS SAA" gecerli iddiasi olur.
+check('sure', 'resume iki AWS sertifikasini da expired olarak veriyor', pdf.count('expired') >= 2)
+check('sure', 'site sertifika listesinde expired isareti var', home.count('expired') >= 2)
+check('sure', 'github profilinde expired isareti var', gh.count('expired') >= 2)
+check('sure', 'site baslik blogu tarihsiz AWS iddiasi tasimiyor', 'AWS SAA · CCP' not in home)
+check('sure', 'github profilinde AWS sertifika rozeti yok', 'badge/AWS_Certified' not in gh)
 
 print("\n" + "="*70)
 if findings:

@@ -161,7 +161,10 @@ def main() -> None:
 
     cells = [
         ("LOCATION", "Kanata, ON"),
-        ("CREDENTIAL", "AWS SAA (2023 \u2013 2026)"),
+        # The AWS certifications lapsed in Jul and Aug 2026. The card is the
+        # most-shared view of the site, so it carries the credential that is
+        # current rather than one that needs a date to be read correctly.
+        ("SCREENING", "RCMP Level 2 (current)"),
         ("STATUS", "Open to roles in Canada"),
     ]
     col = (right - x) / len(cells)

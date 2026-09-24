@@ -147,13 +147,13 @@ export const certifications: Certification[] = [
   {
     name: 'AWS Certified Solutions Architect – Associate',
     issuer: 'Amazon Web Services',
-    validity: '2023 – 2026',
+    validity: 'Aug 2023 – Aug 2026, expired',
     // href: 'https://www.credly.com/badges/...',   ← add verification link
   },
   {
     name: 'AWS Certified Cloud Practitioner',
     issuer: 'Amazon Web Services',
-    validity: '2023 – 2026',
+    validity: 'Jul 2023 – Jul 2026, expired',
     // href: 'https://www.credly.com/badges/...',
   },
   {
