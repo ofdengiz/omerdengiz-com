@@ -228,7 +228,7 @@ check('kanit', 'github profilinde kirik istatistik gorseli yok', 'github-readme-
 
 # Private yapilan repolara hicbir yuzey baglanmasin.
 _private = ['filmapp', 'aws-python-workspace', 'jenkinsfile-pipeline-project',
-            'jenkins-maven-project']
+            'jenkins-maven-project', 'terraform-aws-patterns']
 for name, blob in [('site', ' '.join(p.read_text(encoding='utf-8') for p in (ROOT/'dist').rglob('*.html'))),
                    ('github', gh), ('repo README', repo)]:
     hit = [r for r in _private if f'ofdengiz/{r}' in blob]

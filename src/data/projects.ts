@@ -111,11 +111,6 @@ export const projects: Project[] = [
  */
 export const additional = [
   {
-    title: 'Terraform AWS patterns',
-    summary: 'S3 static site behind CloudFront, with ACM certificate validation and Route 53 records in Terraform.',
-    source: 'https://github.com/ofdengiz/terraform-aws-patterns',
-  },
-  {
     title: 'terraform-aws-docker-instance',
     summary: 'Terraform pattern for bootstrapping a Dockerized EC2 workload.',
     source: 'https://github.com/ofdengiz/terraform-aws-docker-instance',
