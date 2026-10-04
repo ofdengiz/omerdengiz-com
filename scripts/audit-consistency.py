@@ -90,7 +90,7 @@ for g, items in groups.items():
 check('beceri', 'site, resume\'de olmayan beceri iddia etmiyor',
       not any(x in home for x in ['802.11','802.1X','ArubaOS','CVSS','IDS/IPS','Packet Tracer']))
 
-print("\n=== 7. OLU BAGLANTILAR (apex su an TLS hatasi veriyor) " + "="*15)
+print("\n=== 7. KANONIK ADRES (www) " + "="*42)
 apex = re.compile(r'https://omerdengiz\.com')
 check('link', 'site kaynaginda apex linki yok', not apex.search((ROOT/'dist/index.html').read_text(encoding='utf-8')))
 check('link', 'github profilinde apex linki yok', not apex.search(gh))

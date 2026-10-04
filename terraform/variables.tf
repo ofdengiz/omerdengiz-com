@@ -38,10 +38,15 @@ variable "active_aliases" {
 
     Recover a stranded alias by publishing a TXT record named `_<alias>` whose
     value is the target distribution's domain name, then calling
-    `aws cloudfront associate-alias`. Note this is impossible for a zone apex:
-    `_example.com` is a sibling of `example.com`, not a child, so it cannot be
-    created in that zone. Apex recovery needs AWS Support or access to the
-    account holding it.
+    `aws cloudfront associate-alias`. That does not work for a zone apex,
+    because `_example.com` is a sibling of `example.com`, not a child.
+
+    For an apex, publish the TXT record as `_.example.com` instead and call
+    `aws cloudfront update-domain-association --domain example.com
+    --target-resource DistributionId=<id> --if-match <etag>`. It moves the
+    alias without access to the source account, provided the source
+    distribution is disabled, as it is when that account is suspended.
+    Requires AWS CLI 2.2x or later.
   EOT
   type        = list(string)
   default     = null

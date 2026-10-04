@@ -68,3 +68,7 @@ npm-debug.log*
 /*.docx.bak
 /*.pdf.bak
 /*.bak
+
+# Personal academic records: never publish
+*transcript*
+*Transcript*
