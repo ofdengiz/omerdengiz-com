@@ -3,11 +3,9 @@
  * ContactGrid: contact details as title-block cells.
  *
  * Reuses the drawing title-block grammar rather than inventing a new card
- * treatment: labelled cells divided by hairlines. The resume link is included
- * because that is the action most visitors are here to take.
+ * treatment: labelled cells divided by hairlines.
  */
 import { profile } from '../../data/profile';
-import ResumeLink from './ResumeLink.astro';
 ---
 
 <div class="contact">
@@ -36,11 +34,6 @@ import ResumeLink from './ResumeLink.astro';
   <div class="cell cell--location">
     <span class="label">Based in</span>
     <span class="cell__value">{profile.location.short}</span>
-  </div>
-
-  <div class="cell cell--action">
-    <span class="label">Resume</span>
-    <ResumeLink variant="inline" label="Omer_Dengiz_Resume.pdf" />
   </div>
 </div>
 
@@ -75,5 +68,4 @@ import ResumeLink from './ResumeLink.astro';
     word-break: break-word;
   }
 
-  .cell--action { align-content: start; }
 </style>

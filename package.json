@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/emit-stable-assets.mjs && node scripts/verify-csp.mjs",
+    "build": "astro build && node scripts/verify-csp.mjs",
     "build:only": "astro build",
     "preview": "astro preview",
     "check": "astro check",

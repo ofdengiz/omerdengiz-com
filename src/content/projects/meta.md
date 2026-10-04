@@ -87,10 +87,6 @@ Content-hashed assets are served with a one-year `immutable` cache and HTML
 with `max-age=0, must-revalidate`, so a deploy shows on the next page load and
 no unchanged asset is fetched twice.
 
-The resume is the exception. It keeps a fixed address, `/resume.pdf`, so a
-link pasted into an application stays valid, and it is served with a
-five-minute TTL so an updated file appears almost immediately.
-
 ## Verifying what ships
 
 The build fails on a CSP violation (see note 3). Fonts are self-hosted and

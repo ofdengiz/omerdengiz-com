@@ -8,17 +8,10 @@
 # CACHING MODEL
 # -------------
 # Only content-hashed files may be `immutable`. Everything else gets a short
-# TTL. The previous version applied a one-year immutable header to all of
-# /assets/, including the resume PDF — a file that changes under a fixed name.
-# Browsers honour `immutable` by not revalidating at all, so updated resumes
-# stayed invisible and had to be forced out with a hand-edited ?v= query on
-# every page. Splitting the rules by whether the name is content-derived
-# removes that whole class of problem.
+# TTL.
 #
 #   /assets/_/**            hashed by Vite        1 year, immutable
 #   *.html                  mutable, tiny         must-revalidate
-#   /resume.pdf             stable share URL      5 minutes
-#   /assets/resume/**       legacy stable URL     5 minutes
 #   everything else         docs, og, favicon     1 hour
 # --------------------------------------------------------------------------
 set -euo pipefail
@@ -79,9 +72,7 @@ echo
 # old file — it adds a new one. Deleting the old ones looked tidy and broke
 # real sessions: anyone holding a page from before a deploy still references
 # the previous hashes, and those requests started 404ing the moment the sync
-# finished. For CSS and JS that means an unstyled page; for the resume it
-# meant Chrome reporting "file wasn't available on site" on a download that
-# had worked a minute earlier.
+# finished, and for CSS and JS that means an unstyled page.
 #
 # Old hashed objects are immutable and tiny, so leaving them costs almost
 # nothing and keeps already-served pages working. Prune them occasionally, or
@@ -110,26 +101,13 @@ aws s3 sync ${DRY_RUN} ${PROFILE_LINE} \
   --cache-control "public, max-age=0, must-revalidate" \
   --content-type "text/html; charset=utf-8"
 
-# --- 4. Stable resume URLs — short TTL ------------------------------------
-# These are the URLs that go into job applications. They must stay valid, and
-# they must not be cached hard, because the file changes under a fixed name.
-echo "==> Re-syncing stable resume URLs with a 5 minute TTL..."
-for KEY in "resume.pdf" "assets/resume/Omer_Dengiz_Resume.pdf"; do
-  if [[ -f "${DIST_DIR}/${KEY}" ]]; then
-    aws s3 cp ${DRY_RUN} ${PROFILE_LINE} \
-      "${DIST_DIR}/${KEY}" "s3://${BUCKET}/${KEY}" \
-      --cache-control "public, max-age=300, must-revalidate" \
-      --content-type "application/pdf"
-  fi
-done
-
 if [[ -n "${DRY_RUN}" ]]; then
   echo
   echo "==> Dry run complete. Skipping invalidation."
   exit 0
 fi
 
-# --- 5. Invalidate CloudFront ---------------------------------------------
+# --- 4. Invalidate CloudFront ---------------------------------------------
 echo
 echo "==> Creating CloudFront invalidation for /* ..."
 aws cloudfront create-invalidation \

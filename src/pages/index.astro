@@ -19,7 +19,6 @@ import PortMatrix from '../components/blueprint/PortMatrix.astro';
 import ProjectIndex from '../components/content/ProjectIndex.astro';
 import Timeline from '../components/content/Timeline.astro';
 import ContactGrid from '../components/content/ContactGrid.astro';
-import ResumeLink from '../components/content/ResumeLink.astro';
 
 import { profile } from '../data/profile';
 import { projects, additional } from '../data/projects';
@@ -59,7 +58,6 @@ const sections = [
       <p class="lede hero__summary">{profile.summary}</p>
 
       <div class="hero__actions">
-        <ResumeLink mode="download" label="Download resume" />
         <a class="u hero__jump" href="#work">See the work ↓</a>
       </div>
     </div>

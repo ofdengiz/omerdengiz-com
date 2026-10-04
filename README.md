@@ -25,8 +25,7 @@ in one AWS account. The architecture is written up at
 │   ├── components/          # blueprint primitives, nav, content
 │   ├── content/projects/    # case studies in Markdown (Zod-validated)
 │   ├── data/                # profile, experience, skills, projects, topology
-│   ├── styles/              # tokens, base, fonts, prose
-│   └── assets/resume/       # canonical resume PDF (content-hashed at build)
+│   └── styles/              # tokens, base, fonts, prose
 ├── public/                  # copied verbatim: og.png, docs, robots.txt
 ├── dist/                    # build output: this is what is uploaded (gitignored)
 ├── site-legacy/             # the previous hand-written site, retired 2026-08
@@ -37,8 +36,7 @@ in one AWS account. The architecture is written up at
 │   ├── s3.tf acm.tf lambda.tf cloudfront.tf outputs.tf
 │   └── terraform.tfvars.example
 ├── scripts/
-│   ├── verify-csp.mjs       # audits dist/ against the live CSP; fails the build
-│   └── emit-stable-assets.mjs  # stable /resume.pdf alongside the hashed copy
+│   └── verify-csp.mjs       # audits dist/ against the live CSP; fails the build
 ├── deploy.sh                # build → sync dist/ → S3 + invalidate CloudFront
 └── README.md
 ```
@@ -119,7 +117,7 @@ cd ..
 | Task                                    | Command                          |
 | --------------------------------------- | -------------------------------- |
 | Edit project copy                       | edit `src/content/projects/*.md` |
-| Edit resume-derived data                | edit `src/data/*.ts`             |
+| Edit experience, skills, summary        | edit `src/data/*.ts`             |
 | Preview locally                         | `npm run dev`                    |
 | Build + verify CSP                      | `npm run build`                  |
 | Deploy changes                          | `./deploy.sh`                    |
@@ -130,40 +128,12 @@ cd ..
 
 ---
 
-## Updating the resume
+## The resume is not published here
 
-The resume exists in two places that must never disagree: the PDF a recruiter
-downloads, and the experience/skills text rendered on the site. Both are
-derived from one source file.
-
-```bash
-# 1. Regenerate Omer_Dengiz_Resume.pdf from the .docx, then:
-cp Omer_Dengiz_Resume.pdf src/assets/resume/
-
-# 2. If any bullet or skill changed, mirror the exact wording into:
-#      src/data/experience.ts   roles[].bullets, education
-#      src/data/skills.ts       skillGroups[].items
-#      src/data/profile.ts      summary
-
-# 3. Build and deploy. This publishes all three URLs at once.
-bash deploy.sh
-```
-
-That single deploy publishes:
-
-| URL | Cache | Purpose |
-| --- | --- | --- |
-| `/assets/_/Omer_Dengiz_Resume.<hash>.pdf` | 1 year, immutable | what the site links to |
-| `/resume.pdf` | 5 minutes | the stable URL to put in applications |
-| `/assets/resume/Omer_Dengiz_Resume.pdf` | 5 minutes | legacy path, kept for links already sent |
-
-The hash changes automatically when the file does, so there is no cache-bust
-query to maintain. Verify the site and the PDF agree by extracting the text:
-
-```bash
-python -c "from pypdf import PdfReader; print('
-'.join(p.extract_text() for p in PdfReader('Omer_Dengiz_Resume.pdf').pages))"
-```
+The resume is tailored per application, so it is sent directly and not
+hosted on the site. The site's experience, skills and summary are a general
+version kept consistent with the master resume; `npm run audit` checks the
+two against each other.
 
 > **Lambda@Edge destroy caveat:** replicated Lambda@Edge functions take 1–3 hours to fully delete from CloudFront edge locations. `terraform destroy` may fail the first time on the Lambda. Wait an hour and re-run.
 
@@ -228,5 +198,5 @@ Expected total: **< $1/month** while under free tier.
 
 ## License
 
-Source code: MIT. Content (copy, resume, capstone report) © Omer Dengiz,
+Source code: MIT. Content (copy, capstone report) © Omer Dengiz,
 all rights reserved.

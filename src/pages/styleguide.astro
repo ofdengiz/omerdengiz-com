@@ -15,12 +15,10 @@ import DimensionLine from '../components/blueprint/DimensionLine.astro';
 import Callout from '../components/blueprint/Callout.astro';
 import PortMatrix from '../components/blueprint/PortMatrix.astro';
 import Topology from '../components/blueprint/Topology.astro';
-import ResumeLink from '../components/content/ResumeLink.astro';
 
 import { profile } from '../data/profile';
 import { skillGroups } from '../data/skills';
 import { roles } from '../data/experience';
-import { resume } from '../data/resume';
 
 const swatches = [
   { name: 'paper', token: '--paper', note: 'page ground' },
@@ -200,27 +198,10 @@ const typeSpecimens = [
       </div>
     </section>
 
-    {/* ---------------------------------------------------------------- */}
-    <section class="section">
-      <SheetRule sheet="08" title="Resume link" note="Cache-bust retired" />
-      <p class="lede">
-        Both variants resolve the same content-hashed URL from
-        <code>src/data/resume.ts</code>.
-      </p>
-      <div class="sg-demo sg-row">
-        <ResumeLink />
-        <ResumeLink mode="download" />
-        <ResumeLink variant="inline" label="View resume" />
-      </div>
-      <dl class="sg-kv">
-        <div><dt class="label">Resolved href</dt><dd class="mono">{resume.href}</dd></div>
-        <div><dt class="label">Saves as</dt><dd class="mono">{resume.filename}</dd></div>
-      </dl>
-    </section>
 
     {/* ---------------------------------------------------------------- */}
     <section class="section">
-      <SheetRule sheet="09" title="Data layer" note="Typed, single-source" />
+      <SheetRule sheet="08" title="Data layer" note="Typed, single-source" />
       <p class="lede">
         Content lives in <code>src/data/</code>, not in markup. Nothing about
         Omer is hard-coded into a template.

@@ -14,12 +14,10 @@ GH   = pathlib.Path(r'C:\Algonquin\github-profile\README.md')
 def norm(s): return ' '.join(s.split())
 def detag(p): return norm(html.unescape(re.sub(r'<[^>]+>', ' ', p.read_text(encoding='utf-8'))))
 
-# The tracked copy under src/assets/ is the one that actually ships, so it is
-# what gets audited. The working master in the repo root is gitignored (this
-# repo is public) and would make the audit unrunnable from a fresh clone.
-RESUME = ROOT/'src/assets/resume/Omer_Dengiz_Resume.pdf'
-if not RESUME.exists():
-    RESUME = ROOT/'Omer_Dengiz_Resume.pdf'
+# The resume is no longer published on the site; it is tailored per
+# application. The working master in the repo root (gitignored) is what the
+# site's experience, skills and summary are checked against.
+RESUME = ROOT/'Omer_Dengiz_Resume.pdf'
 pdf = norm(' '.join(p.extract_text() for p in PdfReader(RESUME).pages))
 pages = {p.relative_to(ROOT/'dist').as_posix(): detag(p) for p in (ROOT/'dist').rglob('*.html')}
 site = ' '.join(pages.values())

@@ -12,7 +12,6 @@
  * manage, and the destinations stay visible.
  */
 import ThemeToggle from './ThemeToggle.astro';
-import ResumeLink from '../content/ResumeLink.astro';
 
 interface Props {
   /** Sheet entries. Omit on subpages to render a back link instead. */
@@ -54,7 +53,6 @@ const { sections = [], back } = Astro.props;
   }
 
   <div class="nav__controls">
-    <ResumeLink variant="inline" label="Resume" class="nav__resume" />
     <ThemeToggle />
   </div>
 </nav>
@@ -138,9 +136,6 @@ const { sections = [], back } = Astro.props;
     gap: var(--s-4);
   }
 
-  /* The resume link is the one action in the bar; below the sheet list's
-     breakpoint it would crowd the toggle, so it drops out and the contact
-     sheet carries it instead. */
   @media (max-width: 52rem) {
     .nav { gap: var(--s-4); }
     /*
@@ -161,6 +156,5 @@ const { sections = [], back } = Astro.props;
   }
 
   @media (max-width: 36rem) {
-    .nav__resume { display: none; }
   }
 </style>
