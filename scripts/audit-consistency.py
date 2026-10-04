@@ -71,7 +71,7 @@ check('deneyim', 'eskimis bullet kalintisi yok',
 print("\n=== 5. CAPSTONE CERCEVESI " + "="*43)
 cap = pages.get('projects/capstone/index.html', '')
 check('capstone', 'resume 6 kisilik takimi belirtiyor', '6-person team' in pdf)
-check('capstone', 'resume ikinci siteyi sahiplendigini soyluyor', 'Owned the 17-VM second site' in pdf)
+check('capstone', 'resume ikinci siteyi sahiplendigini soyluyor', 'Owned Site 2 (17 VMs)' in pdf)
 check('capstone', 'site de ayni ayrimi yapiyor (cloud sahiplik / on-prem katki)',
       'solo' in cap and 'collaborativ' in cap)
 check('capstone', '17 VM sayisi tutarli', '17' in pdf and '17' in cap)
@@ -154,7 +154,7 @@ check('repo', 'capstone sayfasi yayinlanan repoyu gosteriyor',
       _cap_html.exists() and
       'github.com/ofdengiz/clearroots-k8s-aws' in _cap_html.read_text(encoding='utf-8'))
 check('repo', 'baglanti etiketi repoyu tum capstone sanmaya yol acmiyor',
-      'Cloud site source' in cap,
+      'AWS extension source' in cap,
       'duz "Source" etiketi 17-VM ortaminin tamaminin repo oldugunu ima eder')
 
 print("\n=== 12. UZUN TIRE (yapay zeka izi) " + "="*35)

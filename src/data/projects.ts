@@ -41,7 +41,7 @@ export const projects: Project[] = [
     summary:
       'Two sites, two client organizations, one shared MSP edge, extended to AWS with a Terraform-provisioned Kubernetes cluster.',
     detail:
-      'The second site (17 VMs on Proxmox) was designed, built and run end to end: Active Directory and Samba AD tenants, eight VLANs behind OPNsense, an isolated iSCSI SAN, Veeam with offsite copy over a site-to-site VPN, and an AWS extension running a kubeadm cluster behind Caddy TLS, all in Terraform. The on-premises site was delivered with the team.',
+      'Site 2 (17 VMs on Proxmox) was designed, built and run end to end: Active Directory and Samba AD tenants, eight VLANs behind OPNsense, an isolated iSCSI SAN, Veeam with offsite copy over a site-to-site VPN, and an AWS extension running a kubeadm cluster behind Caddy TLS, all in Terraform. Site 1, the on-premises site, was delivered with the team.',
     context: 'Algonquin College capstone',
     period: 'Jan – Apr 2026',
     stack: [
@@ -50,11 +50,11 @@ export const projects: Project[] = [
       'Flannel', 'Docker', 'Caddy',
     ],
     caseStudy: '/projects/capstone',
-    // The repository is the cloud site only: the Terraform, the bootstrap
+    // The repository is the AWS extension only: the Terraform, the bootstrap
     // scripts and the manifests behind the public HTTPS service. The
     // on-premises half was team work and is not published.
     source: 'https://github.com/ofdengiz/clearroots-k8s-aws',
-    sourceLabel: 'Cloud site source',
+    sourceLabel: 'AWS extension source',
     featured: true,
   },
   {

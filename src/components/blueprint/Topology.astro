@@ -87,6 +87,17 @@ const maxY = Math.max(...columnBottom);
 
 const placedIsolated = isolated.map((seg) => {
   const col = columnOf(seg.owner);
+  /*
+   * The iSCSI path starts at the initiator's own row (the tenant file server
+   * in the LAN), not at whatever box happens to sit lowest in the column.
+   * That box is the DMZ, and attaching the riser to it drew the SAN as if the
+   * web server consumed it. The path leaves the LAN box on its right edge,
+   * runs down the column gutter past the DMZ, and enters the bridge from the
+   * side, so it never crosses a segment it does not belong to.
+   */
+  const initiator = Object.keys(storageLinks).find((k) => storageLinks[k] === seg.id)!;
+  const host = placed.find((p) => p.seg.nodes.some((n) => n.id === initiator))!;
+  const row = host.seg.nodes.findIndex((n) => n.id === initiator);
   return {
     seg,
     x: COLS_X[col] + 40,
@@ -94,8 +105,10 @@ const placedIsolated = isolated.map((seg) => {
     w: COL_W - 40,
     h: 54,
     col,
-    /** The segment box directly above, which the dashed riser attaches to. */
-    fromY: columnBottom[col],
+    initiator,
+    fromX: host.x + host.w,
+    fromY: host.y + 50 + row * NODE_ROW - 3,
+    gutterX: host.x + host.w + COL_GAP / 2,
   };
 });
 
@@ -247,18 +260,18 @@ const detailFor = (label: string, meta: string, desc: string) => ({
 
       {/* -- Isolated storage bridges ---------------------------------- */}
       {
-        placedIsolated.map(({ seg, x, y, w, h, fromY }) => {
-          const cx = x + w / 2;
-          const initiator = Object.keys(storageLinks).find((k) => storageLinks[k] === seg.id);
+        placedIsolated.map(({ seg, x, y, w, h, initiator, fromX, fromY, gutterX }) => {
+          const midY = y + h / 2;
           return (
             <>
-              {/* Dashed riser: the iSCSI path, which never touches OPNsense. */}
-              <line
-                x1={cx} y1={fromY} x2={cx} y2={y}
+              {/* Dashed iSCSI path from the file server to its bridge; it never touches OPNsense. */}
+              <polyline
+                points={`${fromX},${fromY} ${gutterX},${fromY} ${gutterX},${midY} ${x + w},${midY}`}
+                fill="none"
                 class="topo__line -dashed topo__edge"
                 data-edge={`storage-${seg.id}`}
               />
-              <text x={cx + 8} y={(fromY + y) / 2} class="topo__sub">iSCSI</text>
+              <text x={gutterX - 6} y={y - 8} class="topo__sub -end">iSCSI</text>
 
               <g
                 class="topo__seg -isolated topo__hit"

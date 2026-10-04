@@ -52,7 +52,7 @@ export const tenants = {
 
 export const gateway: TopologyNode = {
   id: 'gw',
-  label: 'rp-msp-gateway',
+  label: 'msp-gateway',
   role: 'OPNsense edge: routing, firewall policy, NAT publication, VPN termination',
   os: 'appliance',
 };

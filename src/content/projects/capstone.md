@@ -35,7 +35,7 @@ cells:
   - label: Delivered
     value: Apr 2026
 source: https://github.com/ofdengiz/clearroots-k8s-aws
-sourceLabel: Cloud site source
+sourceLabel: AWS extension source
 document:
   href: /assets/docs/Capstone_Technical_Report.pdf
   label: Technical report
@@ -43,7 +43,7 @@ document:
 metrics:
   - value: "17"
     label: Virtual machines
-    note: Public-cloud site
+    note: Site 2
   - value: "8"
     label: VLAN segments
     note: MSP · LAN · DMZ · SAN
@@ -76,7 +76,7 @@ notes:
       have demonstrated nothing. No cross-domain trust exists between
       c1.local and c2.local, so administrative independence is structural
       rather than procedural.
-  - title: The cloud site is genuinely independent
+  - title: The AWS extension is genuinely independent
     tone: annotate
     body: >-
       clearroots.omerdengiz.com does not traverse the OPNsense edge, the VPN
@@ -97,9 +97,9 @@ revisions:
     Split the Terraform root into modules. The team hit merge pain near
     deadlines exactly where module boundaries would have absorbed it.
   - >-
-    Extend Prometheus and Grafana across both sites. The on-prem side had
-    Zabbix and the cloud side had nothing; one observability story would have
-    been cleaner than two partial ones.
+    Extend monitoring across both sites. Site 1 had a Grafana and InfluxDB
+    dashboard and Site 2 had none; one observability story would have been
+    cleaner than two partial ones.
 ---
 
 ## The brief
@@ -121,14 +121,14 @@ client-facing SLA, and a live defence.
 
 ## Scope of my work
 
-End-to-end ownership of the **public-cloud site**. The MSP edge, both tenant
+End-to-end ownership of **Site 2**, the simulated public-cloud site. The MSP edge, both tenant
 stacks, the dual-bastion operations layer, the backup target, and the
-AWS-hosted service extension were designed, built, and operated solo. The
-on-prem site was delivered collaboratively.
+AWS extension were designed, built, and operated solo. Site 1, the
+on-premises site, was delivered collaboratively.
 
 ## The MSP boundary
 
-A single OPNsense instance, `rp-msp-gateway`, carries the WAN edge and anchors
+A single OPNsense instance, `msp-gateway`, carries the WAN edge and anchors
 eight internal segments: a shared management network, a LAN and a DMZ for each
 tenant, and two isolated storage bridges.
 
@@ -183,7 +183,7 @@ Every AWS resource is declared in Terraform: the IAM role and instance
 profile, the security group, both instances, the Elastic IP, the Route 53
 record. Remote state lives in S3, so the environment can be destroyed and
 rebuilt reproducibly. That mattered concretely: during the defence, the entire
-cloud site was torn down and rebuilt from scratch in front of the panel.
+AWS extension was torn down and rebuilt from scratch in front of the panel.
 
 The worker carries the Elastic IP because it is the traffic-serving node, which
 keeps the DNS record valid across worker reboots. The control plane needs no
