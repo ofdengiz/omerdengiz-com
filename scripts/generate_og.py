@@ -124,8 +124,8 @@ def main() -> None:
     # Measured and shrunk to fit rather than trusted to fit. The first version
     # of this card ran "IT Operations" past the right rule, which nobody sees
     # until the link is shared somewhere.
-    parts = ("Systems Administration", "Cloud Infrastructure", "Networking",
-             "IT Operations")
+    parts = ("Systems Administration", "Network Engineering", "Cloud Infrastructure",
+             "DevOps")
     gap = 12
     for size in range(30, 17, -1):
         f_role = load(SG, size, weight=500)
@@ -149,11 +149,11 @@ def main() -> None:
     y += 58
     d.text(
         (x, y),
-        "Terraform, AWS, Kubernetes, Linux, Cisco. Infrastructure built as code",
+        "Cisco routing and switching, Windows Server and Linux, AWS built with",
         font=f_body,
         fill=INK_2,
     )
-    d.text((x, y + 32), "and rebuilt the same way.", font=f_body, fill=INK_2)
+    d.text((x, y + 32), "Terraform, Ansible and Kubernetes.", font=f_body, fill=INK_2)
 
     # --- title-block cells -------------------------------------------------
     cy = H - M - GUT - 62

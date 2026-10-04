@@ -128,13 +128,6 @@ cd ..
 
 ---
 
-## The resume is not published here
-
-The resume is tailored per application, so it is sent directly and not
-hosted on the site. The site's experience, skills and summary are a general
-version kept consistent with the master resume; `npm run audit` checks the
-two against each other.
-
 > **Lambda@Edge destroy caveat:** replicated Lambda@Edge functions take 1–3 hours to fully delete from CloudFront edge locations. `terraform destroy` may fail the first time on the Lambda. Wait an hour and re-run.
 
 ---

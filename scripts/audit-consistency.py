@@ -35,14 +35,14 @@ check('kimlik', 'telefon her yerde ayni', '(647) 446-9905' in pdf and '(647) 446
 check('kimlik', 'e-posta her yerde ayni', 'omerdengiz368@gmail.com' in pdf and 'omerdengiz368@gmail.com' in home)
 check('kimlik', 'konum Kanata, ON', 'Kanata, ON' in pdf and 'Kanata' in home)
 check('kimlik', 'pozisyon satiri sirasi ayni (Systems Administration once)',
-      'Systems Administration | Cloud Infrastructure' in pdf and
+      'Systems Administration | Network Engineering | Cloud Infrastructure | DevOps' in pdf and
       'Systems Administration' in home and
       home.find('Systems Administration') < home.find('Cloud Infrastructure') if 'Cloud Infrastructure' in home else True)
 
 print("\n=== 2. KREDILER " + "="*53)
 check('kredi', 'RCMP taramasi resume+site', 'RCMP' in pdf and 'RCMP' in site)
-check('kredi', 'CCNA resume+site+github', 'CCNA' in pdf and 'CCNA' in site and 'CCNA' in gh)
-check('kredi', 'AWS gecerlilik penceresi site+github', '2023' in pdf and '2023' in site and '2023' in gh)
+check('kredi', 'Cisco kursu resume+site', 'CCNA' in pdf and 'CCNA' in site)
+check('kredi', 'AWS gecerlilik penceresi resume+site', '2023' in pdf and '2023' in site)
 check('kredi', 'site kosulsuz "AWS Certified" iddiasi yok (meta aciklama dahil)',
       'AWS Certified Solutions Architect. Cloud' not in home,
       'index.astro meta description hala kosulsuz iddia ediyor olabilir')
@@ -55,11 +55,12 @@ check('egitim', "gecersiz 'Dean's Honour List' kalintisi yok",
 check('egitim', 'mezuniyet Apr 2026', 'Apr 2026' in pdf and 'Apr 2026' in site)
 
 print("\n=== 4. DENEYIM " + "="*54)
-for b in ['Improved reliability across 30+ Linux servers',
-          'Automated provisioning for 3 multi-tier AWS environments',
-          'Built Jenkins and Git CI/CD pipelines for 20+ applications',
-          'Developed a Python-based Proof of Concept',
-          'Collaborated with senior engineers to manage ServiceNow incidents']:
+for b in ['Authored Ansible playbooks and roles for configuration, patching',
+          'Provisioned three multi-tier AWS environments',
+          'Built Jenkins and Git CI/CD pipelines for 20+ microservices',
+          'Built a Python proof of concept that extracts device inventory',
+          'Monitored distributed systems and triaged incidents through ServiceNow',
+          'Maintained internal runbooks and wiki procedures']:
     check('deneyim', f'bullet birebir: {b[:42]}...', b in pdf and b in home)
 check('deneyim', 'Nioyatech konumu tutarli',
       'Remote from Ottawa' in pdf and 'Remote from Ottawa' in home)
@@ -78,10 +79,10 @@ check('capstone', 'resume 17 VM\'i DL380\'lere baglamiyor',
       '17-VM environment on two HP ProLiant' not in pdf)
 
 print("\n=== 6. BECERILER (resume <-> site birebir) " + "="*27)
-groups = {'Cloud & Automation': ['Azure','Terraform','Ansible','Helm','Jenkins'],
-          'Systems & Virtualization': ['LDAP','Kerberos','SSSD','RAID','HP ProLiant','Veeam'],
-          'Networking & Security': ['IPv4 subnetting','OSPF','OPNsense','tcpdump','Wireshark'],
-          'Applications & Scripting': ['Tomcat','nginx','Caddy','PostgreSQL','Prometheus']}
+groups = {'Networking': ['Cisco IOS','OSPF','OPNsense','OpenVPN','tcpdump','Wireshark'],
+          'Systems': ['Active Directory','Group Policy','LDAP','Kerberos','RHEL','Proxmox VE','Veeam'],
+          'Cloud & DevOps': ['Terraform','Ansible','Helm','Jenkins','CloudFront'],
+          'Scripting & Services': ['PowerShell','Caddy','Tomcat','Prometheus','ServiceNow']}
 for g, items in groups.items():
     miss = [i for i in items if not (i in pdf and i in home)]
     check('beceri', f'{g} ogeleri her ikisinde', not miss, f'eksik: {miss}')
@@ -201,7 +202,7 @@ print("\n=== 14. IDDIA <-> KANIT " + "="*46)
 check('kanit', 'resume capstone maddesi Helm iddia etmiyor',
       'cluster deployed via Helm' not in pdf)
 check('kanit', 'Helm petclinic kartinda kanitiyla birlikte duruyor',
-      'Helm charts for deployment' in home)
+      'Deployed with Helm charts' in home)
 
 # Cisco NetAcad "CCNA: Switching, Routing and Wireless Essentials" bir kurs,
 # CCNA sinavi degil. Sertifikalarin yaninda isaretsiz durmasi daha guclu bir
@@ -214,8 +215,12 @@ check('kanit', 'github profili Cisco rozetini sertifika olarak gostermiyor',
       'alt="CCNA"' not in gh)
 
 # Resume ozeti ile sitenin ozeti ayni metin olmali.
-_sum = re.search(r'Algonquin College Networking graduate.*?Mandarin\.', pdf)
-check('kanit', 'resume ozeti sitede birebir', bool(_sum) and _sum.group(0) in home,
+_sum = re.search(r'Systems and network administrator.*?\(GPA 3\.75\)\.', pdf)
+# PDF text extraction splits hyphenated words at line ends ("on -premises"),
+# so hyphens are compared without the whitespace around them.
+_dehyph = lambda t: re.sub(r'\s*-\s*', '-', t)
+check('kanit', 'resume ozeti sitede birebir',
+      bool(_sum) and _dehyph(_sum.group(0)) in _dehyph(home),
       'profile.ts summary resume ile ayrismis')
 
 # Profilde calismayan ucuncu taraf gorsel olmasin (servis 503 donuyordu).
@@ -234,9 +239,24 @@ print("\n=== 15. SURESI DOLAN SERTIFIKALAR " + "="*36)
 # yuzey bunu acikca soylemeli; tarihsiz bir "AWS SAA" gecerli iddiasi olur.
 check('sure', 'resume iki AWS sertifikasini da expired olarak veriyor', pdf.count('expired') >= 2)
 check('sure', 'site sertifika listesinde expired isareti var', home.count('expired') >= 2)
-check('sure', 'github profilinde expired isareti var', gh.count('expired') >= 2)
+check('sure', 'github profili AWS sertifikasini gecerli gibi gostermiyor',
+      'AWS Certified' not in gh or gh.count('expired') >= gh.count('AWS Certified'))
 check('sure', 'site baslik blogu tarihsiz AWS iddiasi tasimiyor', 'AWS SAA · CCP' not in home)
 check('sure', 'github profilinde AWS sertifika rozeti yok', 'badge/AWS_Certified' not in gh)
+
+print("\n=== 16. EVRENSEL PORTFOY KURALLARI " + "="*36)
+# Profiller tek basina duran bir portfoy gibi okunmali: basvuru stratejisi
+# notu, kalip arayuz cumleleri ve "burada olmayanlar" savunmalari yok. Ozet ag
+# becerilerini adiyla soyluyor.
+_rules = {'basvuru notu': ['resume is tailored', 'not published here', 'sent directly'],
+          'kalip arayuz cumlesi': ['ordered by weight', 'Expand a row for the detail'],
+          'savunma bolumu': ['Not in this repository']}
+for name, blob in [('site', site), ('github', gh), ('repo README', repo)]:
+    for kind, phrases in _rules.items():
+        hit = [x for x in phrases if x in blob]
+        check('evrensel', f'{name}: {kind} yok', not hit, f'bulunan: {hit}')
+check('evrensel', 'ozet ag becerilerini adiyla anlatiyor',
+      all(k in home for k in ['Cisco IOS routing and switching', 'VLAN segmentation', 'site-to-site VPNs']))
 
 print("\n" + "="*70)
 if findings:

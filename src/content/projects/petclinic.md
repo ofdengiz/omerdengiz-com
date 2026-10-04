@@ -1,10 +1,10 @@
 ---
 sheet: "03"
 order: 3
-title: Enterprise Microservices CI/CD Pipeline
+title: Spring PetClinic CI/CD on AWS EKS
 summary: >-
-  End-to-end Jenkins pipeline deploying a Java Spring microservices
-  application to AWS EKS, with promotion across three environments.
+  Jenkins pipelines that build once and promote the same artifact through
+  dev, staging and production on AWS EKS.
 context: Self-directed · Spring PetClinic
 stack:
   - Jenkins

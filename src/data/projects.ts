@@ -37,11 +37,11 @@ export interface Project {
 export const projects: Project[] = [
   {
     sheet: '01',
-    title: 'Hybrid MSP Infrastructure & AWS Kubernetes Service',
+    title: 'Hybrid Managed-Service Environment',
     summary:
-      'A 17-VM, two-site managed-service environment for two client tenants, extended with a public HTTPS service on a Terraform-provisioned Kubernetes cluster.',
+      'Two sites, two client organizations, one shared MSP edge, extended to AWS with a Terraform-provisioned Kubernetes cluster.',
     detail:
-      'Two tenants, Lumora on Windows Server 2022 AD DS and ClearRoots on Samba AD, sharing an OPNsense edge across eight VLAN segments, with isolated iSCSI storage bridges deliberately kept off the routed path, Veeam backup copy over a site-to-site OpenVPN tunnel, and a dual-bastion operations model. The cloud site was designed, built and operated end to end; the on-prem site was delivered collaboratively.',
+      'The second site (17 VMs on Proxmox) was designed, built and run end to end: Active Directory and Samba AD tenants, eight VLANs behind OPNsense, an isolated iSCSI SAN, Veeam with offsite copy over a site-to-site VPN, and an AWS extension running a kubeadm cluster behind Caddy TLS, all in Terraform. The on-premises site was delivered with the team.',
     context: 'Algonquin College capstone',
     period: 'Jan – Apr 2026',
     stack: [
@@ -61,9 +61,9 @@ export const projects: Project[] = [
     sheet: '02',
     title: 'omerdengiz.com',
     summary:
-      'This site. A static Astro build served from S3 through CloudFront, with every resource declared in Terraform.',
+      'This site: a private S3 origin behind CloudFront, with every resource in Terraform.',
     detail:
-      'The bucket is private and reachable only through CloudFront Origin Access Control. A single Lambda@Edge function rewrites extensionless URLs on viewer-request and adds security headers on viewer-response, including a strict Content-Security-Policy. The build checks every generated page against that policy and fails on a violation.',
+      'One Lambda@Edge function rewrites URLs on request and sets security headers on response, and the build fails on any Content-Security-Policy violation.',
     context: 'Self-directed',
     stack: [
       'AWS S3', 'CloudFront', 'ACM', 'Lambda@Edge', 'Route 53', 'Terraform', 'Astro',
@@ -76,11 +76,11 @@ export const projects: Project[] = [
   },
   {
     sheet: '03',
-    title: 'Enterprise Microservices CI/CD Pipeline',
+    title: 'Spring PetClinic CI/CD on AWS EKS',
     summary:
-      'End-to-end Jenkins pipeline deploying a Java Spring microservices application to AWS EKS.',
+      'Jenkins pipelines that build once and promote the same artifact through dev, staging and production on AWS EKS.',
     detail:
-      'Multi-branch promotion across dev, staging and production, with Maven builds, images published to AWS ECR, artefacts in Nexus, Helm charts for deployment, Rancher-managed clusters, Selenium automation tests, and Prometheus and Grafana for monitoring.',
+      'Deployed with Helm charts and observed through Prometheus and Grafana, with Maven builds, images in AWS ECR, artefacts in Nexus, Rancher-managed clusters and Selenium tests.',
     context: 'Self-directed · Spring PetClinic',
     stack: [
       'Jenkins', 'AWS EKS', 'Helm', 'ECR', 'Rancher', 'Nexus', 'Maven', 'Docker',
@@ -91,9 +91,9 @@ export const projects: Project[] = [
   },
   {
     sheet: '04',
-    title: 'Django Blog on Multi-AZ AWS',
+    title: 'Multi-AZ AWS Architecture',
     summary:
-      'A Django application on a production-shaped AWS architecture: multi-AZ VPC, load-balanced auto-scaling tier, and managed data services.',
+      'An Application Load Balancer and Auto Scaling group across availability zones, with RDS MySQL in private subnets and CloudFront at the edge.',
     detail:
       'Application Load Balancer fronting an Auto Scaling Group across public and private subnets, RDS MySQL isolated in private subnets, S3 and DynamoDB for media and state, CloudFront for edge delivery, and ACM-issued TLS.',
     context: 'Self-directed AWS reference build',
@@ -112,7 +112,7 @@ export const projects: Project[] = [
 export const additional = [
   {
     title: 'Terraform AWS patterns',
-    summary: 'Reference modules for ALB, Launch Template, Auto Scaling Group and RDS wiring.',
+    summary: 'S3 static site behind CloudFront, with ACM certificate validation and Route 53 records in Terraform.',
     source: 'https://github.com/ofdengiz/terraform-aws-patterns',
   },
   {

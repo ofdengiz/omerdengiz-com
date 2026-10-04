@@ -26,42 +26,38 @@ export interface SkillGroup {
 
 export const skillGroups: SkillGroup[] = [
   {
-    name: 'Cloud & Automation',
-    code: 'CA',
+    name: 'Networking',
+    code: 'NW',
     items: [
-      'AWS EC2', 'VPC', 'IAM', 'S3', 'RDS', 'Route 53', 'EKS',
-      'CloudFormation', 'CloudWatch', 'Azure', 'Terraform', 'Ansible',
-      'Helm', 'Docker', 'Kubernetes', 'Jenkins', 'Git', 'CI/CD pipelines',
-      'Infrastructure as code',
+      'Cisco IOS', 'Routing and switching', 'OSPF', 'VLANs and IPv4 subnetting',
+      'TCP/IP', 'DNS', 'DHCP', 'OPNsense firewalls', 'NAT and access rules',
+      'OpenVPN site-to-site', 'TLS and OpenSSL', 'Wireshark', 'tcpdump',
     ],
   },
   {
-    name: 'Systems & Virtualization',
-    code: 'SV',
+    name: 'Systems',
+    code: 'SY',
     items: [
-      'Linux (Red Hat, Ubuntu, SUSE)', 'Windows Server 2019/2022',
-      'Active Directory', 'Group Policy', 'Samba AD', 'LDAP', 'Kerberos',
-      'SSSD', 'VMware', 'Proxmox VE', 'iSCSI SAN', 'SMB file shares', 'RAID',
-      'HP ProLiant hardware', 'Veeam backup and restore',
+      'Windows Server 2019/2022', 'Active Directory', 'Group Policy', 'Samba AD',
+      'LDAP', 'Kerberos', 'SSSD', 'Ubuntu', 'RHEL', 'Proxmox VE', 'VMware',
+      'iSCSI SAN', 'RAID', 'Veeam backup and restore',
     ],
   },
   {
-    name: 'Networking & Security',
-    code: 'NS',
+    name: 'Cloud & DevOps',
+    code: 'CD',
     items: [
-      'TCP/IP', 'DNS', 'DHCP', 'VLANs', 'IPv4 subnetting',
-      'Routing and switching', 'OSPF', 'Firewalls (OPNsense)',
-      'NAT and access rules', 'OpenVPN site-to-site',
-      "TLS, OpenSSL and Let's Encrypt automation", 'Cisco IOS', 'Wireshark', 'tcpdump',
+      'AWS EC2', 'VPC', 'IAM', 'S3', 'RDS', 'Route 53', 'EKS', 'CloudFront',
+      'CloudWatch', 'Terraform', 'Ansible', 'Docker', 'Kubernetes (kubeadm, EKS)',
+      'Helm', 'Jenkins', 'Git', 'CI/CD',
     ],
   },
   {
-    name: 'Applications & Scripting',
-    code: 'AS',
+    name: 'Scripting & Services',
+    code: 'SS',
     items: [
-      'Tomcat and JVM services', 'nginx', 'Caddy reverse proxy', 'MySQL', 'PostgreSQL', 'SQL',
-      'Python', 'Bash', 'PowerShell', 'Prometheus', 'Grafana',
-      'Technical documentation and runbooks',
+      'Python', 'Bash', 'PowerShell', 'SQL', 'nginx', 'Caddy', 'Tomcat',
+      'Prometheus', 'Grafana', 'ServiceNow',
     ],
   },
 ];

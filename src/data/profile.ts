@@ -28,10 +28,10 @@ export const profile = {
    * targeted are operations-first, and the ordering signals that before any
    * bullet is read.
    */
-  role: 'Systems Administration · Cloud Infrastructure · Networking · IT Operations',
+  role: 'Systems Administration · Network Engineering · Cloud Infrastructure · DevOps',
 
   /** Compressed form for the title block and tab titles. */
-  roleShort: 'Systems · Cloud · Networking',
+  roleShort: 'Systems · Network · Cloud',
 
   location: {
     city: 'Kanata',
@@ -63,7 +63,7 @@ export const profile = {
    * roles being targeted care about it more than about a diploma date.
    */
   summary:
-    'Algonquin College Networking graduate with hands-on experience in cloud operations and Windows and Linux server administration across on-premises, hybrid and AWS environments. On a six-person capstone team, owned the second site end to end: Proxmox-hosted infrastructure, Active Directory and Samba AD, segmented VLANs behind OPNsense, and Veeam backup with an offsite copy. Extended it into AWS with Terraform and a Kubernetes cluster behind automated TLS. Previously worked as a DevOps Engineer, automating Linux server configuration with Ansible and building CI/CD pipelines for containerized applications. Holds a current RCMP Facility Access Security Check (Level 2). Fluent in English, Turkish, and Mandarin.',
+    'Systems and network administrator with cloud and DevOps experience across on-premises, hybrid and AWS environments. Configures Cisco IOS routing and switching, VLAN segmentation, OPNsense firewalls and site-to-site VPNs; administers Windows Server 2022 Active Directory and Group Policy alongside Ubuntu and RHEL; and builds infrastructure as code with Terraform, Ansible and Kubernetes. Previous DevOps engineering covered configuration management for 30+ Linux servers and CI/CD for 20+ microservices. Computer Systems Technician – Networking graduate of Algonquin College with Honours (GPA 3.75).',
 
   email: 'omerdengiz368@gmail.com',
   phone: {

@@ -1,11 +1,10 @@
 ---
 sheet: "01"
 order: 1
-title: Hybrid MSP Infrastructure & AWS Kubernetes Service
+title: Hybrid Managed-Service Environment
 summary: >-
-  A 17-VM, two-site managed-service environment for two client tenants,
-  extended with a public HTTPS service on a Terraform-provisioned Kubernetes
-  cluster.
+  Two sites, two client organizations, one shared MSP edge, extended to AWS
+  with a Terraform-provisioned Kubernetes cluster.
 context: Algonquin College capstone
 period: Jan – Apr 2026
 topology: true

@@ -86,8 +86,9 @@ export const roles: Role[] = [
     startISO: '2025-09',
     endISO: '2025-12',
     bullets: [
-      'Developed a Python-based Proof of Concept to automate device inventory extraction from vendor APIs, establishing a validation schema that paved the way for replacing manual tracking.',
-      'Collaborated with senior engineers to manage ServiceNow incidents and updated internal wiki runbooks, accelerating onboarding for new team members.',
+      'Monitored distributed systems and triaged incidents through ServiceNow alongside senior engineers.',
+      'Built a Python proof of concept that extracts device inventory from vendor APIs against a validation schema, laying the groundwork to retire manual tracking.',
+      'Maintained internal runbooks and wiki procedures, shortening onboarding for new team members.',
     ],
     stack: ['Python', 'REST APIs', 'ServiceNow', 'Runbooks'],
   },
@@ -102,9 +103,9 @@ export const roles: Role[] = [
     // Ansible leads, matching the resume: configuration management is the
     // closest thing in this role to the operations work being targeted.
     bullets: [
-      'Improved reliability across 30+ Linux servers by authoring Ansible playbooks and roles for configuration, patch management, and compliance baselines, cutting manual setup effort across fleets.',
-      'Automated provisioning for 3 multi-tier AWS environments (EC2, S3, RDS, Lambda, IAM, VPC, EKS) with Terraform and CloudFormation, standardizing reusable infrastructure patterns.',
-      'Built Jenkins and Git CI/CD pipelines for 20+ applications and deployed containerized workloads with Docker and Kubernetes, enabling zero downtime releases.',
+      'Authored Ansible playbooks and roles for configuration, patching and compliance baselines across 30+ Linux servers.',
+      'Provisioned three multi-tier AWS environments (EC2, VPC, IAM, S3, RDS, Lambda, EKS) with Terraform and CloudFormation as reusable patterns.',
+      'Built Jenkins and Git CI/CD pipelines for 20+ microservices, deploying containerized workloads to Kubernetes with zero-downtime releases.',
     ],
     stack: ['AWS', 'Terraform', 'CloudFormation', 'Ansible', 'Jenkins', 'Docker', 'Kubernetes'],
   },
